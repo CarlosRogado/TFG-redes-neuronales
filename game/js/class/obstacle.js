@@ -20,6 +20,9 @@ class obstacle{
         rect(this.x, 0, this.width, this.top);
         // Tubo inferior
         rect(this.x, height - this.bottom, this.width, this.bottom);
+
+        fill(255, 0, 0);
+        ellipse(this.x + this.width/2, this.top + this.gap/2, 10, 10);
     }
     update(){
         // Mueve el tubo hacia la izquierda segun la velocidad
@@ -31,9 +34,18 @@ class obstacle{
     }
 
     hits(rocket){
-        let rHalf = 16;
-        if(rocket.x + rHalf > this.x && rocket.x - rHalf < this.x +this.width){
-            if(rocket.y - rHalf < this.top || rocket.y + rHalf > height - this.bottom){
+        let rLeft = rocket.x;
+        let rRight = rocket.x + rocket.width;
+        let rTop = rocket.y;
+        let rBottom = rocket.y + rocket.height;
+
+        let tLeft = this.x;
+        let tRight = this.x + this.width;
+        let tTopY= this.top;
+        let tBottomY = height - this.bottom;
+
+        if(rRight > tLeft && rLeft < tRight){
+            if(rTop < tTopY || rBottom > tBottomY){
                 return true;
             }
         }
