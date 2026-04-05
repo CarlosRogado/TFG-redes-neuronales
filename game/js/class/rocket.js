@@ -84,8 +84,7 @@ class rocket {
                 const ys = this.brain.predict(xs);
                 const outputs = ys.dataSync();
 
-                // LOG DE CONTROL: Descomenta esto para ver qué está pensando la IA
-                // console.log(outputs[0]); 
+                // LOG DE CONTROL: Descomenta esto para ver qué está pensando la IA 
 
                 if (outputs[0] > 0.5) {
                     this.jump();
