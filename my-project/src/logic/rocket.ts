@@ -14,6 +14,7 @@ export default class rocket {
     score: number;
     fitness: number;
     brain: tf.Sequential;
+    pendingThink: boolean;
     constructor(x: number, y: number, id: number, brain?: tf.Sequential) {
         this.x = x;
         this.y = y;
@@ -23,8 +24,9 @@ export default class rocket {
         this.velocity = 0;
         this.lift = 10;
         this.id = id;
-        this.score = 0;   // Usaremos 'score' para mayor claridad
+        this.score = 0;  
         this.fitness = 0;
+        this.pendingThink = false;
 
         this.brain = brain ? brain : this.createBrain();
     }
@@ -79,32 +81,36 @@ export default class rocket {
     }
 
     think(closest: obstacle, p: p5) { // Asegúrate de que recibe el objeto 'closest' directamente
-        if (closest) {
+        if (!closest || this.pendingThink) {
+            return;
+        }
 
-            let oData = closest.getData(p); // Coge los datos del obstaculo mas cercano
-            tf.tidy(() => {
-                // NORMALIZACIÓN CRÍTICA
-                let inputs = [
-                    this.y / p.height,                // Posición Y del cohete (0 a 1)
-                    this.velocity / 10,             // Velocidad (normalizada aprox)
-                    oData.x / p.width,   // Distancia horizontal relativa
-                    oData.center / p.height            // Altura del hueco
-                ];
+        let oData = closest.getData(p); // Coge los datos del obstaculo mas cercano
+        // NORMALIZACIÓN CRÍTICA
+        let inputs = [
+            this.y / p.height,                // Posición Y del cohete (0 a 1)
+            this.velocity / 10,             // Velocidad (normalizada aprox)
+            oData.x / p.width,   // Distancia horizontal relativa
+            oData.center / p.height            // Altura del hueco
+        ];
 
-                // const xs = tf.tensor2d([inputs]);
-                // const ys = this.brain.predict(xs);
-                // const outputs = ys.dataSync();
+        this.pendingThink = true;
 
-                const xs = tf.tensor2d([inputs]);
-                const pred = this.brain.predict(xs);
-                const y = Array.isArray(pred) ? pred[0] : pred;
-                const outputs = y.dataSync();
+        const xs = tf.tensor2d([inputs]);
+        const pred = this.brain.predict(xs);
+        const y = Array.isArray(pred) ? pred[0] : pred;
 
+        y.data()
+            .then((outputs) => {
                 if (outputs[0] > 0.5) {
                     this.jump();
                 }
+            })
+            .finally(() => {
+                xs.dispose();
+                y.dispose();
+                this.pendingThink = false;
             });
-        }
     }
     show(p: p5) {
         p.fill(255, 0, 0, 150); 
