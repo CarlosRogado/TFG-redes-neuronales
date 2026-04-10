@@ -2,6 +2,7 @@ import React, { useEffect, useRef } from "react";
 import p5 from "p5"; // Librería para gráficos
 import rocket from "./logic/rocket"; // Clase cohete
 import obstacle from "./logic/obstacle"; // Clase obstáculo
+import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts";
 
 import "./style.css";
 
@@ -10,7 +11,13 @@ function App() {
   const [generacion, setGeneracion] = React.useState(1); // Estado para la generación actual
   const [vivos, setVivos] = React.useState(0); // Estado para el número de cohetes vivos
 
-  const [TOTAL, setTotal] = React.useState(10); // Total de cohetes por generación
+  interface DatosGrafico {
+    segundos: number;
+    generacion: number;
+  }
+  const [historial, setHistorial] = React.useState<DatosGrafico[]>([]); // Estado para almacenar la puntuacion de cada generación.
+
+  const [TOTAL, setTotal] = React.useState(100); // Total de cohetes por generación
   const [MUTATION_RATE, setMutationRate] = React.useState(0.2); // Tasa de mutación para la generación de nuevos cohetes
   useEffect(() => {
     const canvasElement = canvasRef.current; // Obtener el elemento del DOM donde se renderizará el canvas
@@ -71,8 +78,8 @@ function App() {
         for (let i = cohetes.length - 1; i >= 0; i--) {
           let c = cohetes[i];
 
-          // Recibe el obstáculo más cercano para que el cohete pueda tomar una decisión basada en su posición
-          if (closest) {
+          // Recibe el obstáculo más cercano para que el cohete pueda tomar una decisión basada en su posición, se ejecuta cada 8 frames para no sobrecargar el procesamiento
+          if (closest && frames % 8 === 0) {
             c.think(closest, p);
           }
           c.update(); // Actualiza la posición del cohete según la decisión tomada
@@ -85,8 +92,10 @@ function App() {
           // Si el cohete ha sido golpeado, se mueve del array de cohetes vivos al array de cohetes muertos, y se actualizan los vivos
           if (hit) {
             cohetesMuertos.push(cohetes.splice(i, 1)[0]);
-            setVivos(cohetes.length);
           }
+        }
+        if (frames % 8 === 0) {
+          setVivos(cohetes.length);
         }
         // Si no quedan cohetes vivos, se inicia la siguiente generación
         if (cohetes.length === 0) {
@@ -114,10 +123,15 @@ function App() {
           }
           nuevosCohetes.push(nuevoHijo);
         }
-        // Limpiar los recursos de los cohetes anteriores para evitar fugas de memoria
-        for (let c of cohetes) {
+        // Limpiar los recursos de los cohetes muertos para evitar fugas de memoria
+        for (let c of cohetesMuertos) {
           c.brain.dispose();
         }
+
+        // Calculo de historial y puntos
+        const s = frames / 60; // Convertir frames a segundos
+        setHistorial((prev) => [...prev, {segundos:Number(s.toFixed(2)), generacion:generacion}]);
+
         // Reset de las variables para la nueva generación
         cohetes = nuevosCohetes;
         cohetesMuertos = [];
@@ -190,7 +204,18 @@ function App() {
           </div>
         </div>
         {/* div instrucciones */}
-        <div className="w-3xl h-lg bg-gray-800 rounded-lg mt-15"></div>
+        <div className="w-3xl h-lg bg-gray-800 rounded-lg mt-15">
+          <ResponsiveContainer width="90%" height="90%">
+            <LineChart data={historial}>
+              <XAxis dataKey="generacion" stroke="#ccc"/>
+              <YAxis stroke="#ccc" />
+              <Tooltip contentStyle={{
+                backgroundColor:'#1f2937', border:'none', color:'white'
+              }}/>
+              <Line type="monotone" dataKey="segundos" stroke="#8884d8" strokeWidth={2} dot={{r:3}} activeDot={{ r: 5 }} />
+            </LineChart>
+          </ResponsiveContainer>
+        </div>
 
         <div className="w-3xl h-lg bg-gray-800 rounded-lg mt-15">
           <h2 className="text-bold text-white p-4">Instrucciones</h2>
