@@ -36,7 +36,7 @@ function App() {
         p.createCanvas(768, 512).parent(canvasElement); // Creación del canvas
         // Inicialización de cohetes y obstáculos
         for (let i = 0; i < TOTAL; i++) {
-          cohetes.push(new rocket(50, p.height / 2, i));
+          cohetes.push(new rocket(200, p.height / 2, i));
         }
         obstacles.push(new obstacle(p));
         setVivos(TOTAL);
