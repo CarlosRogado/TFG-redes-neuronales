@@ -17,8 +17,28 @@ function App() {
   }
   const [historial, setHistorial] = React.useState<DatosGrafico[]>([]); // Estado para almacenar la puntuacion de cada generación.
 
-  const [TOTAL, setTotal] = React.useState(100); // Total de cohetes por generación
-  const [MUTATION_RATE, setMutationRate] = React.useState(0.2); // Tasa de mutación para la generación de nuevos cohetes
+
+  // Incialización de la tasa de mutación, con persistencia en localStorage para mantener el valor entre sesiones
+  // tasaMutacion es lo que se pinta en pantalla
+  // tasaMutacionref es lo que carga la lógica para mutar los cohetes.
+  const [tasaMutacion, setTasaMutacion] = React.useState(() => {
+    const obtenerTasa = localStorage.getItem("tasaMutacion");
+    return obtenerTasa ? parseFloat(obtenerTasa) : 0.1; // Si hay una tasa guardada, usarla, sino usar 0.1 por defecto
+  });
+  const tasaMutacionRef = useRef(tasaMutacion);
+
+  // useEffect para actualizar la referencia de tasaMutacion cada vez que cambia el estado, asegurando que la lógica de mutación siempre tenga el valor actualizado
+  useEffect(() => {
+    tasaMutacionRef.current = tasaMutacion;
+  }, [tasaMutacion]);
+
+  // Inicialización del total de cohetes, con persistencia en localStorage para mantener el valor entre sesiones
+  // Al cambiar el total de cohetes, se recarga la página para reiniciar el juego con el nuevo total.
+  const [totalCohetes, setTotal] = React.useState(() => {
+    const obtenerTotal = localStorage.getItem("totalCohetes");
+    return obtenerTotal ? parseInt(obtenerTotal) : 50; // Si hay un total guardado, usarlo, sino usar 50 por defecto
+  });
+
   useEffect(() => {
     const canvasElement = canvasRef.current; // Obtener el elemento del DOM donde se renderizará el canvas
 
@@ -35,11 +55,11 @@ function App() {
       p.setup = () => {
         p.createCanvas(768, 512).parent(canvasElement); // Creación del canvas
         // Inicialización de cohetes y obstáculos
-        for (let i = 0; i < TOTAL; i++) {
+        for (let i = 0; i < totalCohetes; i++) {
           cohetes.push(new rocket(200, p.height / 2, i));
         }
         obstacles.push(new obstacle(p));
-        setVivos(TOTAL);
+        setVivos(totalCohetes);
       };
       // Función principal de dibujo y lógica del juego que se ejecuta en cada frame
       p.draw = () => {
@@ -115,11 +135,12 @@ function App() {
 
         // Array de nuevos cohetes mutados del mejor cohete de la generación anterior
         const nuevosCohetes: rocket[] = [];
-        for (let i = 0; i < TOTAL; i++) {
+        for (let i = 0; i < totalCohetes; i++) {
           let cerebroCopiado = elMejor.copy();
           let nuevoHijo = new rocket(200, p.height / 2, i, cerebroCopiado);
           if (i > 0) {
-            nuevoHijo.mutate(MUTATION_RATE, p);
+            nuevoHijo.mutate(tasaMutacionRef.current, p);
+            console.log(`Cohete ${i} mutado con tasa ${tasaMutacionRef.current}`); // Log para verificar la mutación
           }
           nuevosCohetes.push(nuevoHijo);
         }
@@ -137,7 +158,7 @@ function App() {
         cohetesMuertos = [];
         obstacles = [new obstacle(p)];
         frames = 0;
-        setVivos(TOTAL);
+        setVivos(totalCohetes);
       };
     };
 
@@ -179,31 +200,38 @@ function App() {
           <div className="w-3xl h-lg bg-gray-800 rounded-lg mt-15">
             <h2 className="text-bold text-white p-4">Configuracion</h2>
             <div className="text-lg text-gray-300 mb-2 grid grid-cols-1 p-5">
-              <p>Tasa de Mutación: {MUTATION_RATE}</p>
+              <p>Tasa de Mutación: {Math.round(tasaMutacion * 100)}%</p>
               <input
                 type="range"
                 min="0"
                 max="1"
                 step="0.01"
-                value={MUTATION_RATE}
-                onChange={(e) => setMutationRate(parseFloat(e.target.value))}
+                value={tasaMutacion}
+                onChange={(e) => {
+                  setTasaMutacion(parseFloat(e.target.value));
+                  localStorage.setItem("tasaMutacion", e.target.value);
+                }}
               />
             </div>
 
             <div className="text-lg text-gray-300 mb-2 grid grid-cols-1 p-5">
-              <p>Total de Cohetes: {TOTAL}</p>
+              <p>Total de Cohetes: {totalCohetes}</p>
               <input
                 type="range"
                 min="1"
                 max="100"
                 step="1"
-                value={TOTAL}
-                onChange={(e) => setTotal(parseInt(e.target.value))}
+                value={totalCohetes}
+                onChange={(e) => {
+                  setTotal(parseInt(e.target.value));
+                  localStorage.setItem("totalCohetes", e.target.value);
+                  window.location.reload(); // Recargar la página para reiniciar el juego con el nuevo total de cohetes
+                }}
               />
             </div>
           </div>
         </div>
-        {/* div instrucciones */}
+        {/* div gráfica */}
         <div className="w-3xl h-lg bg-gray-800 rounded-lg mt-15">
           <ResponsiveContainer width="90%" height="90%">
             <LineChart data={historial}>
