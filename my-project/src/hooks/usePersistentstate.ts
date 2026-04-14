@@ -1,0 +1,1 @@
+// Sincronizar el estado con el localStorage
