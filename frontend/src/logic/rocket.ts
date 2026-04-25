@@ -15,6 +15,7 @@ export default class rocket {
     fitness: number;
     brain: tf.Sequential;
     pendingThink: boolean;
+    causaMuerte: string;
     constructor(x: number, y: number, id: number, brain?: tf.Sequential) {
         this.x = x;
         this.y = y;
@@ -27,7 +28,7 @@ export default class rocket {
         this.score = 0;  
         this.fitness = 0;
         this.pendingThink = false;
-
+        this.causaMuerte = 'Vivo';
         this.brain = brain ? brain : this.createBrain();
     }
 
