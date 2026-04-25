@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import GameCanvas from "../components/GameCanvas";
 import LineChart from "../components/LineChart";
 import Barchar from "../components/Barchar";

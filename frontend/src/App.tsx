@@ -1,12 +1,20 @@
-import React from "react";
-import { BrowserRouter, Routes, Route, Link } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Link, Navigate } from "react-router-dom";
 
 import Home from "./views/Home";
 import Register from "./views/Register";
-// import Login from "./views/Login";
+import Login from "./views/Login";
 // import Docs from "./views/Docs";
 import Simulation from "./views/Simulation";
 import LogoRedNeuronal from "./components/Logo.tsx"
+import { AuthService } from "./services/AuthService";
+
+function ProtectedSimulationRoute() {
+  if (!AuthService.hasActiveSession()) {
+    return <Navigate to="/login" replace />;
+  }
+
+  return <Simulation />;
+}
 
 function App() {
   return (
@@ -45,9 +53,9 @@ function App() {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/register" element={<Register />} />
-        {/*<Route path="/login" element={<Login />} />
-        <Route path="/docs" element={<Docs />} /> */}
-        <Route path="/simulation" element={<Simulation />} />
+        <Route path="/login" element={<Login />} />
+        {/*<Route path="/docs" element={<Docs />} /> */}
+        <Route path="/simulation" element={<ProtectedSimulationRoute />} />
         <Route path="*" element={<Home />} /> {/* Ruta comodín para redirigir a Home si no se encuentra la ruta */}
       </Routes>
     </BrowserRouter>

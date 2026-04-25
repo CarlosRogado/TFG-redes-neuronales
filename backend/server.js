@@ -1,6 +1,7 @@
 const express = require('express');
 const { PrismaClient } = require('@prisma/client');
 const cors = require('cors');
+const bcrypt = require('bcryptjs');
 
 const prisma = new PrismaClient();
 const app = express(); // API REST para el backend
@@ -9,15 +10,16 @@ const ADMIN_EMAIL = process.env.ADMIN_EMAIL || 'admin@simulation.local';
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || '1234';
 
 async function ensureAdminUser() {
+  const hashedPassword = await bcrypt.hash(ADMIN_PASSWORD, 10);
   await prisma.user.upsert({
     where: { email: ADMIN_EMAIL },
     update: {
-      password: ADMIN_PASSWORD,
+      password: hashedPassword,
       role: 'Admin'
     },
     create: {
       email: ADMIN_EMAIL,
-      password: ADMIN_PASSWORD,
+      password: hashedPassword,
       role: 'Admin'
     }
   });
@@ -26,16 +28,112 @@ async function ensureAdminUser() {
 app.use(cors()); // Permite solicitudes desde el frontend
 app.use(express.json()); // Permite recibir JSON en el body de las solicitudes
 
-// Endpoint para simular el AuthService (Register)
+// Validación de email
+function isValidEmail(email) {
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  return emailRegex.test(email);
+}
+
+// Validación de contraseña (mínimo 8 caracteres)
+function isValidPassword(password) {
+  return password && password.length >= 8;
+}
+
+// Endpoint para registrar un nuevo usuario
 app.post('/register', async (req, res) => {
-  const { email, password, role } = req.body; // Req.body es el POST enviado desde el frontend
+  const { email, password } = req.body;
+  
   try {
-    const user = await prisma.user.create({
-      data: { email, password, role }
+    // Validaciones
+    if (!email || !password) {
+      return res.status(400).json({ error: "Email y contraseña son requeridos" });
+    }
+
+    if (!isValidEmail(email)) {
+      return res.status(400).json({ error: "Email no válido" });
+    }
+
+    if (!isValidPassword(password)) {
+      return res.status(400).json({ error: "La contraseña debe tener mínimo 8 caracteres" });
+    }
+
+    // Verificar si el usuario ya existe
+    const existingUser = await prisma.user.findUnique({
+      where: { email }
     });
-    res.json(user);
+
+    if (existingUser) {
+      return res.status(400).json({ error: "El email ya está registrado" });
+    }
+
+    // Hash de la contraseña
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    // Crear usuario
+    const user = await prisma.user.create({
+      data: {
+        email,
+        password: hashedPassword,
+        role: 'User'
+      }
+    });
+
+    res.json({
+      uid: user.uid,
+      email: user.email,
+      role: user.role,
+      message: "Usuario registrado exitosamente"
+    });
   } catch (e) {
-    res.status(400).json({ error: "Error al crear usuario" });
+    console.error(e);
+    res.status(500).json({ error: "Error al registrar usuario" });
+  }
+});
+
+// Endpoint para login
+app.post('/login', async (req, res) => {
+  const { email, password } = req.body;
+
+  try {
+    // Validaciones
+    if (!email || !password) {
+      return res.status(400).json({ error: "Email y contraseña son requeridos" });
+    }
+
+    if (!isValidEmail(email)) {
+      return res.status(400).json({ error: "Email no válido" });
+    }
+
+    if (!isValidPassword(password)) {
+      return res.status(400).json({ error: "La contraseña debe tener mínimo 8 caracteres" });
+    }
+
+    // Buscar usuario por email
+    const user = await prisma.user.findUnique({
+      where: { email }
+    });
+
+    if (!user) {
+      return res.status(401).json({ error: "Email o contraseña incorrectos" });
+    }
+
+    // Verificar contraseña
+    const isPasswordValid = await bcrypt.compare(password, user.password);
+
+    if (!isPasswordValid) {
+      return res.status(401).json({ error: "Email o contraseña incorrectos" });
+    }
+
+    // Login exitoso
+    res.json({
+      uid: user.uid,
+      email: user.email,
+      role: user.role,
+      message: "Login exitoso"
+    });
+  } catch (e) {
+    console.error(e);
+    res.status(500).json({ error: "Error al iniciar sesión" });
   }
 });
 
@@ -55,10 +153,6 @@ app.post('/save-simulation', async (req, res) => {
     res.status(500).json({ error: "Error al guardar simulación" });
   }
 });
-
-
-
-
 
 
 async function startServer() {

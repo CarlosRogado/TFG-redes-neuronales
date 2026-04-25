@@ -1,8 +1,19 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import LogoRedNeuronal from '../components/Logo';
+import { AuthService } from '../services/AuthService';
 
 export default function Home() {
+    const navigate = useNavigate();
+
+    const handleStartSimulation = () => {
+        if (AuthService.hasActiveSession()) {
+            navigate('/simulation');
+            return;
+        }
+
+        navigate('/login');
+    };
+
     return (
         <div className="h-[95.6vh] bg-gray-900 text-white font-sans">
             <main className="flex flex-col items-center justify-center min-h-[60vh] px-4 text-center">
@@ -16,12 +27,13 @@ export default function Home() {
             
             {/* Botones de acción (El Link a /simulacion arranca el juego) */}
             <div className="flex gap-4">
-            <Link 
-                to="/simulation" 
+            <button
+                type="button"
+                onClick={handleStartSimulation}
                 className="px-8 py-3 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-lg shadow-lg transition-transform transform hover:scale-105"
             >
                 Iniciar Simulación 🚀
-            </Link>
+            </button>
             <Link 
                 to="/register" 
                 className="px-8 py-3 bg-gray-700 hover:bg-gray-600 text-white font-bold rounded-lg shadow-lg transition-colors"

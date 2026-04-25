@@ -1,12 +1,10 @@
-version: '3.8'
-
 services:
   # Base de datos PostgreSQL
   db:
     image: postgres:15-alpine
     environment:
-      POSTGRES_USER: user_admin
-      POSTGRES_PASSWORD: password123
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: 1234
       POSTGRES_DB: simulation_db
     ports:
       - "5432:5432"
@@ -28,9 +26,9 @@ services:
   backend:
     build: ./backend
     environment:
-      DATABASE_URL: "postgresql://user_admin:password123@db:5432/simulation_db"
+      DATABASE_URL: "postgresql://admin:1234@db:5432/simulation_db"
       ADMIN_EMAIL: "admin@simulation.local"
-      ADMIN_PASSWORD: "admin123"
+      ADMIN_PASSWORD: "1234"
     ports:
       - "4000:4000"
     depends_on:

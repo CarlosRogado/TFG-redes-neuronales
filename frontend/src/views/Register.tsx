@@ -1,27 +1,35 @@
 import React, { useState } from 'react';
 import { AuthService }  from '../services/AuthService';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 export default function Register() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-    const [role, setRole] = useState('User');
     const [loading, setLoading] = useState(false);
     const [message, setMessage] = useState('');
     const [error, setError] = useState('');
+    const navigate = useNavigate();
 
-    const hanndleSubmit = async (e: React.FormEvent) => {
+    // Validaciones en tiempo real
+    const isEmailValid = email === '' || AuthService.isValidEmail(email);
+    const isPasswordValid = password === '' || AuthService.isValidPassword(password);
+    const canSubmit = isEmailValid && isPasswordValid && email !== '' && password !== '';
+
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setLoading(true);
         setMessage('');
         setError('');
 
         try {
-            const newUser = await AuthService.registerUser(email, password, role);
-            setMessage(`Usuario ${newUser.email} registrado con éxito!`);
+            await AuthService.registerUser(email, password);
+            setMessage('¡Registrado exitosamente! Ahora inicia sesión');
             setEmail('');
             setPassword('');
-            setRole('User');
+
+          setTimeout(() => {
+            navigate('/login');
+          }, 1200);
         } catch (err: any) {
             setError(err.message || 'Error al registrar el usuario');
         } finally {
@@ -36,13 +44,13 @@ export default function Register() {
           <h1 className="mb-2 text-center text-3xl font-extrabold text-transparent bg-clip-text bg-linear-to-r from-blue-400 to-purple-600">
             Crear cuenta
           </h1>
-          <p className="mb-8 text-center text-gray-300">
-            Registra un usuario para acceder al simulador.
-          </p>
 
-          <form className="space-y-5" onSubmit={hanndleSubmit}>
+          <form className="space-y-5" onSubmit={handleSubmit}>
             <div>
-              <label htmlFor="email" className="mb-2 block text-sm font-semibold text-gray-200">
+              <label
+                htmlFor="email"
+                className="mb-2 block text-sm font-semibold text-gray-200"
+              >
                 Email
               </label>
               <input
@@ -52,14 +60,24 @@ export default function Register() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="usuario@demo.com"
-                className="w-full rounded-lg border border-gray-600 bg-gray-900/80 px-4 py-3 text-white placeholder:text-gray-500 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/40"
+                className={`w-full rounded-lg border px-4 py-3 text-white placeholder:text-gray-500 focus:outline-none focus:ring-2 ${
+                  isEmailValid
+                    ? 'border-gray-600 bg-gray-900/80 focus:border-blue-500 focus:ring-blue-500/40'
+                    : 'border-red-500 bg-gray-900/80 focus:border-red-500 focus:ring-red-500/40'
+                }`}
                 required
               />
+              {!isEmailValid && (
+                <p className="mt-1 text-xs text-red-400">Email no válido</p>
+              )}
             </div>
 
             <div>
-              <label htmlFor="password" className="mb-2 block text-sm font-semibold text-gray-200">
-                Contrasena
+              <label
+                htmlFor="password"
+                className="mb-2 block text-sm font-semibold text-gray-200"
+              >
+                Contraseña
               </label>
               <input
                 id="password"
@@ -67,35 +85,30 @@ export default function Register() {
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                placeholder="123456"
-                className="w-full rounded-lg border border-gray-600 bg-gray-900/80 px-4 py-3 text-white placeholder:text-gray-500 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/40"
+                placeholder="Mínimo 8 caracteres"
+                className={`w-full rounded-lg border px-4 py-3 text-white placeholder:text-gray-500 focus:outline-none focus:ring-2 ${
+                  isPasswordValid
+                    ? 'border-gray-600 bg-gray-900/80 focus:border-blue-500 focus:ring-blue-500/40'
+                    : 'border-red-500 bg-gray-900/80 focus:border-red-500 focus:ring-red-500/40'
+                }`}
                 required
               />
-            </div>
-
-            <div>
-              <label htmlFor="role" className="mb-2 block text-sm font-semibold text-gray-200">
-                Rol
-              </label>
-              <select
-                id="role"
-                name="role"
-                value={role}
-                onChange={(e) => setRole(e.target.value)}
-                className="w-full rounded-lg border border-gray-600 bg-gray-900/80 px-4 py-3 text-white focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/40"
-              >
-                <option value="User">User</option>
-                <option value="Admin">Admin</option>
-                <option value="Guest">Guest</option>
-              </select>
+              {!isPasswordValid && (
+                <p className="mt-1 text-xs text-red-400">Mínimo 8 caracteres</p>
+              )}
+              {password !== '' && (
+                <p className="mt-1 text-xs text-gray-400">
+                  {password.length}/8 caracteres
+                </p>
+              )}
             </div>
 
             <button
               type="submit"
-              disabled={loading}
+              disabled={!canSubmit || loading}
               className="w-full rounded-lg bg-blue-600 px-4 py-3 font-bold text-white shadow-lg transition hover:bg-blue-500 disabled:cursor-not-allowed disabled:opacity-60"
             >
-              {loading ? 'Enviando...' : 'Registrar usuario'}
+              {loading ? "Registrando..." : "Registrar"}
             </button>
           </form>
 
@@ -111,9 +124,21 @@ export default function Register() {
           )}
 
           <p className="mt-6 text-center text-sm text-gray-400">
-            Volver a{' '}
-            <Link to="/" className="font-semibold text-blue-400 transition hover:text-blue-300">
-              inicio
+            ¿Ya tienes cuenta?{" "}
+            <Link
+              to="/login"
+              className="font-semibold text-blue-400 transition hover:text-blue-300"
+            >
+              Inicia sesión
+            </Link>
+          </p>
+
+          <p className="mt-4 text-center text-sm text-gray-400">
+            <Link
+              to="/"
+              className="font-semibold text-blue-400 transition hover:text-blue-300"
+            >
+              Volver al inicio
             </Link>
           </p>
         </section>

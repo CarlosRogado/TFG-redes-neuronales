@@ -4,12 +4,12 @@ WORKDIR /app
 
 # Instalar dependencias
 COPY package*.json ./
-RUN npm install
+RUN npm install --include=dev
 
 # Copiar código y esquema de Prisma
 COPY . .
 
-# Generar el cliente de Prisma (para que Node entienda los modelos)
+# Generar cliente Prisma para la plataforma Linux del contenedor
 RUN npx prisma generate
 
 # EXPLICACIÓN DEL CMD:
