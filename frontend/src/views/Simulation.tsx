@@ -3,6 +3,9 @@ import GameCanvas from "../components/GameCanvas";
 import LineChart from "../components/LineChart";
 import Barchar from "../components/Barchar";
 import CardGrafica from "../components/CardGrafica";
+import PieChart from "../components/PieChart";
+import DispersionChart from "../components/DispersionChart";
+import type { DatosDispersion } from "../components/GameCanvas";
 import "../style.css";
 
 export type HistorialEntry = {
@@ -16,10 +19,13 @@ export type BarcharData = {
 };
 
 export default function Simulation() {
+  const [esPausa, setEsPausa] = React.useState(false); // Estado para controlar si el juego está en pausa o no
   const [generacion, setGeneracion] = React.useState(1); // Estado para la generación actual
   const [vivos, setVivos] = React.useState(0); // Estado para el número de cohetes vivos
   const [historial, setHistorial] = React.useState<HistorialEntry[]>([]); // Estado para almacenar la puntuacion de cada generación.
   const [barcharData, setBarcharData] = React.useState<BarcharData[]>([]); // Estado para almacenar los datos del BarChart
+  const [causaMuerteData, setCausaMuerteData] = React.useState<{ name: string; value: number }[]>([]); // Estado para almacenar los datos del PieChart
+  const [datosDispersion, setDatosDispersion] = React.useState<DatosDispersion[]>([]); // Estado para almacenar los datos del DispersionChart
   const [totalCohetes, setTotalCohetes] = React.useState(() => {
     const obtenerTotal = localStorage.getItem("totalCohetes");
     return obtenerTotal ? parseInt(obtenerTotal) : 50; // Si hay un total guardado, usarlo, sino usar 50 por defecto
@@ -53,18 +59,24 @@ export default function Simulation() {
       <main className="max-w-6xl mx-auto flex flex-col gap-6">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="bg-black rounded-xl overflow-hidden aspect-square relative flex items-center justify-center border border-slate-700 shadow-lg">
-            <button className="absolute top-4 left-4 border-2 border-white text-white rounde-full w-8 h-8 flex items-center justify-center text-xs font-bold hover:bg-white hover:text-black transition">
-              II
+            <button 
+              onClick={() => setEsPausa(!esPausa)}
+              className={`absolute top-4 left-4 border-2 border-white rounded-full w-8 h-8 flex items-center justify-center text-xs font-bold transition z-10 ${esPausa ? 'bg-red-500 text-white border-red-500' : 'text-white hover:bg-white hover:text-black'}`}
+            >
+              {esPausa ? ">" : "II"}
             </button>
             <GameCanvas
               totalCohetes={totalCohetes}
               tasaMutacion={tasaMutacion}
+              isPausa={esPausa}
               onGeneracionChange={setGeneracion}
               onVivosChange={setVivos}
               onHistorialEntry={(entry) => {
                 setHistorial([...historial, entry]);
               }}
               onBarcharDataChange={setBarcharData}
+              onCausaMuerteChange={setCausaMuerteData}
+              onDatosDispersionChange={setDatosDispersion}
             />
           </div>
           <div className="bg-[#282f44] rounded-xl p-8 shadow-lg">
@@ -174,6 +186,56 @@ export default function Simulation() {
               <div className="bg-white text-black rounded-lg overflow-hidden flex flex-col shadow">
                 <CardGrafica titulo="Gráfica de supervivencia" infoTexto="Esta gráfica muestra el tiempo que han sobrevivido los cohetes en cada generación. El objetivo es observar cómo la red neuronal va mejorando su capacidad para esquivar los obstáculos a lo largo de las generaciones, lo que se refleja en un aumento del tiempo de supervivencia." >
                     <Barchar data={barcharData} />
+                </CardGrafica>
+              </div>
+            </div>
+            <span className="flex items-center mb-8">
+                <span className="h-px flex-1 bg-linear-to-r from-transparent to-gray-300 dark:to-gray-600"></span>
+
+                <span className="shrink-0 px-4 text-gray-900 dark:text-white">Gráfica Forense</span>
+
+                <span className="h-px flex-1 bg-linear-to-l from-transparent to-gray-300 dark:to-gray-600"></span>
+              </span>
+            {/* Fila Gráfica 1 (Líneas) */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10">
+              {/* Gráfica Izquierda */}
+              <div className="flex flex-col">
+                <button className="bg-yellow-500 hover:bg-yellow-400 text-black font-bold px-6 py-1.5 rounded-full w-fit text-sm shadow mb-8">
+                  Guardar
+                </button>
+                <div className="h-70 bg-[#1c2135] rounded-lg  mb-3 flex items-center justify-center text-slate-500 border border-slate-600">
+                  <PieChart data={causaMuerteData} />
+                </div>
+              </div>
+              {/* Caja de Texto Derecha */}
+              <div className="bg-white text-black rounded-lg overflow-hidden flex flex-col shadow">
+                <CardGrafica titulo="Gráfica de causas de muerte" infoTexto="Esta gráfica muestra el número de cohetes que han muerto por cada causa en cada generación." >
+                    <PieChart data={causaMuerteData} />
+                </CardGrafica>
+              </div>
+            </div>
+            <span className="flex items-center mb-8">
+                <span className="h-px flex-1 bg-linear-to-r from-transparent to-gray-300 dark:to-gray-600"></span>
+
+                <span className="shrink-0 px-4 text-gray-900 dark:text-white">Gráfica de pesos</span>
+
+                <span className="h-px flex-1 bg-linear-to-l from-transparent to-gray-300 dark:to-gray-600"></span>
+              </span>
+            {/* Fila Gráfica 1 (Líneas) */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10">
+              {/* Gráfica Izquierda */}
+              <div className="flex flex-col">
+                <button className="bg-yellow-500 hover:bg-yellow-400 text-black font-bold px-6 py-1.5 rounded-full w-fit text-sm shadow mb-8">
+                  Guardar
+                </button>
+                <div className="h-70 bg-[#1c2135] rounded-lg  mb-3 flex items-center justify-center text-slate-500 border border-slate-600">
+                  <DispersionChart data={datosDispersion} />
+                </div>
+              </div>
+              {/* Caja de Texto Derecha */}
+              <div className="bg-white text-black rounded-lg overflow-hidden flex flex-col shadow">
+                <CardGrafica titulo="Gráfica de pesos" infoTexto="Esta gráfica muestra la distribución de los pesos en la red neuronal." >
+                    <DispersionChart data={datosDispersion} />
                 </CardGrafica>
               </div>
             </div>

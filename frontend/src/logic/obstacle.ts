@@ -51,8 +51,13 @@ export default class obstacle{
         let tTopY= this.top;
         let tBottomY = p.height - this.bottom;
 
-        if(rRight > tLeft && rLeft < tRight){
-            if(rTop < tTopY || rBottom > tBottomY){
+        if (rRight > tLeft && rLeft < tRight) {
+            if(rTop < tTopY){
+                rocket.causaMuerte = 'Tubo Superior';
+                return true;
+            }
+            if(rBottom > tBottomY){
+                rocket.causaMuerte = 'Tubo Inferior';
                 return true;
             }
         }
