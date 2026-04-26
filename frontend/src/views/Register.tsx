@@ -136,7 +136,7 @@ export default function Register() {
           <p className="mt-4 text-center text-sm text-gray-400">
             <Link
               to="/"
-              className="font-semibold text-green-400 transition hover:text-green-300"
+              className="font-semibold text-blue-400 transition hover:text-blue-300"
             >
               Volver al inicio
             </Link>

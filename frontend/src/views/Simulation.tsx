@@ -38,10 +38,7 @@ export default function Simulation() {
   >([]); // Estado para almacenar los datos del DispersionChart
 
   // Estados persistentes
-  const [totalCohetes, setTotalCohetes] = usePersistentState(
-    "totalCohetes",
-    50,
-  ); // Estado para el total de cohetes, con persistencia en localStorage
+  const [totalCohetes, setTotalCohetes] = usePersistentState("totalCohetes",50,); // Estado para el total de cohetes, con persistencia en localStorage
   const [tasaMutacion, setTasaMutacion] = usePersistentState(
     "tasaMutacion",
     0.1,
@@ -64,7 +61,7 @@ export default function Simulation() {
       <header className="max-w-6xl mx-auto flex justify-between items-center mb-8">
         <div className="mb-8 text-center">
           <h1 className="text-6xl font-black text-transparent bg-clip-text bg-linear-to-r from-green-300 to-blue-300">
-            Red Neuronal en JS
+            Redes Neuronales en JS
           </h1>
         </div>
       </header>

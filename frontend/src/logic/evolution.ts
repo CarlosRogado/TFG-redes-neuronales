@@ -47,10 +47,6 @@ export default function nextGeneration({ // Desestructuramos los parámetros de 
 
     const nuevaGeneracion = generacion + 1;
 
-    const elMejor = cohetesMuertos.reduce((prev, curr) =>
-        curr.score > prev.score ? curr : prev,
-    );
-
     const nuevosCohetes: rocket[] = [];
 
     // Ordenar cohetes muertos del mejor al peor

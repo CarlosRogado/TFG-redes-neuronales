@@ -80,7 +80,7 @@ export default function Login() {
                 <p className="mt-1 text-xs text-red-400">Email no válido</p>
               )}
             </div>
-
+            
             <div>
               <label htmlFor="password" className="mb-2 block text-sm font-semibold text-gray-200">
                 Contraseña
@@ -108,7 +108,7 @@ export default function Login() {
                 </p>
               )}
             </div>
-
+              <p className="text-xs text-slate-400 italic">* prueba con <strong>admin@admin.es</strong> / <strong>password123</strong></p>
             <button
               type="submit"
               disabled={!canSubmit || loading}
@@ -142,7 +142,7 @@ export default function Login() {
           </div>
 
           <p className="mt-4 text-center text-sm text-gray-400">
-            <Link to="/" className="font-semibold text-green-400 transition hover:text-green-300">
+            <Link to="/" className="font-semibold text-blue-400 transition hover:text-blue-300">
               Volver al inicio
             </Link>
           </p>
