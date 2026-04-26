@@ -96,7 +96,7 @@ export default class rocket {
         ];
 
         this.pendingThink = true;
-
+        tf.tidy(() => {
         const xs = tf.tensor2d([inputs]);
         const pred = this.brain.predict(xs);
         const y = Array.isArray(pred) ? pred[0] : pred;
@@ -112,6 +112,7 @@ export default class rocket {
                 y.dispose();
                 this.pendingThink = false;
             });
+        });
     }
     show(p: p5) {
         p.fill(255, 0, 0, 150); 

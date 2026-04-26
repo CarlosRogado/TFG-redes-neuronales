@@ -1,5 +1,5 @@
-import React from 'react';
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, Legend, CartesianGrid } from 'recharts';
+import { memo } from 'react';
 
 interface EvolutionData {
     generacion: number;
@@ -11,9 +11,9 @@ interface LineChartProps {
     data: EvolutionData[];
 }
 
-export default function EvolutionLineChart({ data }: LineChartProps) {
+ function EvolutionLineChart({ data }: LineChartProps) {
     return (
-        <ResponsiveContainer width="100%" height="100%">
+        <ResponsiveContainer width="100%" height={250} minHeight={250}>
             <LineChart data={data} margin={{ top: 10, right: 10, left: -20, bottom: 0}}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#334155" vertical={false}/>
                 <XAxis
@@ -50,4 +50,4 @@ export default function EvolutionLineChart({ data }: LineChartProps) {
             </LineChart>
         </ResponsiveContainer>
     );
-}
+} export default memo(EvolutionLineChart);

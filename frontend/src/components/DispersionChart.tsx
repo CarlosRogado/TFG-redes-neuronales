@@ -1,4 +1,5 @@
 import { ScatterChart, Scatter, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import {memo} from 'react';
 
 export type DispersionData = {
   id: string;
@@ -10,9 +11,9 @@ interface DispersionChartProps {
   data: DispersionData[];
 }
 
-export default function DispersionChart({ data }: DispersionChartProps) {
+function DispersionChart({ data }: DispersionChartProps) {
   return (
-    <ResponsiveContainer width="100%" height="100%">
+    <ResponsiveContainer width="100%" height={250} minHeight={250}>
       <ScatterChart margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
         <CartesianGrid strokeDasharray="3 3" stroke="#334155" />
         
@@ -29,4 +30,4 @@ export default function DispersionChart({ data }: DispersionChartProps) {
       </ScatterChart>
     </ResponsiveContainer>
   );
-}
+} export default memo(DispersionChart);

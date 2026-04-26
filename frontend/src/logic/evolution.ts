@@ -29,6 +29,7 @@ interface NextGenerationParams { // Tipo de parámetros que recibe la función n
     cohetesMuertos: rocket[];
     totalCohetes: number;
     tasaMutacion: number;
+    tasaElitismo: number;
     frames: number;
     generacion: number;
 }
@@ -39,6 +40,7 @@ export default function nextGeneration({ // Desestructuramos los parámetros de 
     cohetesMuertos,
     totalCohetes,
     tasaMutacion,
+    tasaElitismo,
     frames,
     generacion
 }: NextGenerationParams): EvolutionResult { // La función recibe un objeto con los parámetros necesarios para generar la siguiente generación y devuelve un objeto con los resultados de la evolución, incluyendo los nuevos cohetes, obstáculos, cohetes muertos, frames, generación y una entrada para el historial.
@@ -51,29 +53,49 @@ export default function nextGeneration({ // Desestructuramos los parámetros de 
 
     const nuevosCohetes: rocket[] = [];
 
-    for (let i = 0; i < totalCohetes; i++) {
-        const cerebroCopiado = elMejor.copy();
-        const nuevoHijo = new rocket(200, p.height / 2, i, cerebroCopiado);
+    // Ordenar cohetes muertos del mejor al peor
+    const rankingCohetes = cohetesMuertos.slice().sort((a,b) => b.score - a.score);
 
-        if (i > 0) {
-            nuevoHijo.mutate(tasaMutacion, p);
+    // Calcular cuantos clones puros se van a pasar
+    const numClones = Math.floor(totalCohetes * (tasaElitismo / 100));
+
+    for (let i = 0; i < totalCohetes; i++){
+        // Clonacion pura
+        if(i < numClones) {
+            const indiceElite = i%rankingCohetes.length;
+            const cerebroParaCopiar = rankingCohetes[indiceElite].copy();
+            
+            const nuevoHijo = new rocket(200, p.height / 2, i, cerebroParaCopiar);
+            nuevosCohetes.push(nuevoHijo);
         }
-
-        nuevosCohetes.push(nuevoHijo);
+        // Mutantes
+        else{
+            const poolSize = numClones > 0 ? numClones : Math.min(5, rankingCohetes.length);
+            const randomEliteindex = Math.floor(Math.random() * poolSize);
+            const cerebroParaCopiar = rankingCohetes[randomEliteindex].copy();
+            const nuevoHijo = new rocket(200, p.height / 2, i, cerebroParaCopiar);
+            nuevoHijo.mutate(tasaMutacion, p);
+            nuevosCohetes.push(nuevoHijo);
+        }
     }
 
     const datosDispersion: DatosDispersion[] = nuevosCohetes.map((cohete, index) => {
         const pesos = cohete.brain.getWeights();
-        const peso1= Array.from(pesos[0].dataSync()); // Peso de la primera conexión de la primera capa
-        const peso2 = Array.from(pesos[0].dataSync()); // Peso de la segunda conexión de la primera capa
+        const pesoCapa1= Array.from(pesos[0].dataSync()); // Pesos capa 1 (conexiones de entrada a la primera capa oculta)
+        const sesgoCapa1 = Array.from(pesos[1].dataSync()); // Sesgo capa 1 (sesgos de la primera capa oculta)
+        const pesoCapa2 = Array.from(pesos[2].dataSync()); // Pesos capa 2 (conexiones de la primera capa oculta a la capa de salida)
+        const sesgoCapa2 = Array.from(pesos[3].dataSync()); // Sesgo capa 2 (sesgos de la capa de salida)
+        
+        const todosLosPesos = [...pesoCapa1, ...pesoCapa2]; // Unimos todos los pesos en un solo array para calcular la media
+        const todosLosSesgos = [...sesgoCapa1, ...sesgoCapa2]; // Unimos todos los sesgos en un solo array para calcular la media
 
-        const mediaPeso1 = peso1.reduce((a,b) => a + b, 0) / peso1.length; // Media de los pesos de la primera conexión
-        const mediaPeso2 = peso2.reduce((a,b) => a + b, 0) / peso2.length; // Media de los pesos de la segunda conexión
+        const mediaPesos = todosLosPesos.reduce((a, b) => a + b, 0) / todosLosPesos.length; // Calculamos la media de los pesos
+        const mediaSesgos = todosLosSesgos.reduce((a, b) => a + b, 0) / todosLosSesgos.length; // Calculamos la media de los sesgos
 
         return {
             id: `Cohete ${index + 1}`,
-            pesoX: Number(mediaPeso1.toFixed(3)), // Redondeamos a 3 decimales para una mejor visualización
-            pesoY: Number(mediaPeso2.toFixed(3))  // Redondeamos a 3 decimales para una mejor visualización
+            pesoX: Number(mediaPesos.toFixed(3)), 
+            pesoY: Number(mediaSesgos.toFixed(3)) 
         };
     });
 

@@ -1,4 +1,5 @@
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, Cell } from 'recharts';
+import { memo } from 'react';
 
 interface SurvivalData {
     id: string;
@@ -9,9 +10,9 @@ interface BarcharProps {
     data: SurvivalData[];
 }
 
-export default function Barchar({ data }: BarcharProps) {
+function Barchar({ data }: BarcharProps) {
     return (
-        <ResponsiveContainer width="100%" height="100%">
+        <ResponsiveContainer width="100%" height={250} minHeight={250}>
             <BarChart data={data} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#334155" vertical={false} />
                 <XAxis
@@ -31,7 +32,7 @@ export default function Barchar({ data }: BarcharProps) {
                 <Bar dataKey="segundos" radius={[4,4,0,0]}>
                     {data.map((entry, index) => (
                         <Cell
-                        key={`cell-${index}`}
+                        key={`cell-`+index}
                         fill={entry.segundos > 0 ? '#3b82f6' : '#ef4444'}
                         />
                     ))}
@@ -40,3 +41,4 @@ export default function Barchar({ data }: BarcharProps) {
         </ResponsiveContainer>
     );
 }
+export default memo(Barchar);

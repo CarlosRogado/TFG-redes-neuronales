@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { AuthService }  from '../services/AuthService';
 import { Link, useNavigate } from 'react-router-dom';
+import { toast } from 'sonner';
 
 export default function Login() {
     const [email, setEmail] = useState('');
@@ -30,17 +31,19 @@ export default function Login() {
         try {
             await AuthService.loginUser(email, password);
             setMessage('¡Iniciaste sesión exitosamente!');
-            
+            toast.success('¡Iniciaste sesión exitosamente!');
+
             // Limpiar formulario
             setEmail('');
             setPassword('');
 
             // Redirigir a la página de simulación después de 1.5 segundos
             setTimeout(() => {
-                navigate('/simulation');
-            }, 1000);
+                window.location.href = '/';
+            }, 500);
         } catch (err: any) {
             setError(err.message || 'Error al iniciar sesión');
+            toast.error('Error al iniciar sesión');
         } finally {
             setLoading(false);
         }
@@ -50,7 +53,7 @@ export default function Login() {
     <div className="min-h-screen bg-gray-900 text-white font-sans">
       <main className="flex items-center justify-center min-h-screen px-4 py-10">
         <section className="w-full max-w-md rounded-2xl border border-gray-700 bg-gray-800/80 p-8 shadow-2xl backdrop-blur-sm">
-          <h1 className="mb-2 text-center text-3xl font-extrabold text-transparent bg-clip-text bg-linear-to-r from-blue-400 to-purple-600">
+          <h1 className="mb-2 text-center text-3xl font-extrabold text-transparent bg-clip-text bg-linear-to-r from-green-300 to-blue-300">
             Iniciar sesión
           </h1>
 
@@ -132,14 +135,14 @@ export default function Login() {
             </p>
             <Link
               to="/register"
-              className="block w-full rounded-lg border border-blue-500 bg-transparent px-4 py-3 text-center font-semibold text-blue-400 transition hover:bg-blue-500/10 focus:outline-none focus:ring-2 focus:ring-blue-500/40"
+              className="block w-full rounded-lg border border-green-500 bg-transparent px-4 py-3 text-center font-semibold text-green-400 transition hover:bg-green-500/10 focus:outline-none focus:ring-2 focus:ring-green-500/40"
             >
               Registrarse aquí
             </Link>
           </div>
 
           <p className="mt-4 text-center text-sm text-gray-400">
-            <Link to="/" className="font-semibold text-blue-400 transition hover:text-blue-300">
+            <Link to="/" className="font-semibold text-green-400 transition hover:text-green-300">
               Volver al inicio
             </Link>
           </p>

@@ -1,49 +1,50 @@
 import { Link, useNavigate } from 'react-router-dom';
+import { useEffect, useState } from 'react';
 import LogoRedNeuronal from '../components/Logo';
 import { AuthService } from '../services/AuthService';
 
 export default function Home() {
     const navigate = useNavigate();
+    const [isLogged, setIsLogged] = useState(false);
+    useEffect(() => {
+        setIsLogged(AuthService.hasActiveSession());
+    }, []);
 
     const handleStartSimulation = () => {
-        if (AuthService.hasActiveSession()) {
-            navigate('/simulation');
-            return;
-        }
-
-        navigate('/login');
+        navigate('/simulation');
     };
 
     return (
         <div className="h-[95.6vh] bg-gray-900 text-white font-sans">
             <main className="flex flex-col items-center justify-center min-h-[60vh] px-4 text-center">
                 <LogoRedNeuronal className="w-50 h-50" />
-                <h1 className="text-5xl md:text-7xl font-extrabold text-transparent bg-clip-text bg-linear-to-r from-blue-400 to-purple-600 mb-6">
+                <h1 className="text-5xl md:text-7xl font-extrabold text-transparent bg-clip-text bg-linear-to-r from-green-300 to-blue-300 mb-6">
                     Redes Neuronales en JS
                 </h1>
             <p className="text-xl md:text-2xl text-gray-300 max-w-2xl mb-10">
                 Un simulador interactivo de Algoritmos Genéticos. Observa cómo una red neuronal aprende a esquivar obstáculos en tiempo real usando Neuroevolución en tu navegador.
             </p>
             
-            {/* Botones de acción (El Link a /simulacion arranca el juego) */}
+            {/* Botones de acción */}
             <div className="flex gap-4">
-            <button
-                type="button"
-                onClick={handleStartSimulation}
-                className="px-8 py-3 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-lg shadow-lg transition-transform transform hover:scale-105"
-            >
-                Iniciar Simulación 🚀
-            </button>
-            <Link 
-                to="/register" 
-                className="px-8 py-3 bg-gray-700 hover:bg-gray-600 text-white font-bold rounded-lg shadow-lg transition-colors"
-            >
-                Crear Cuenta
-            </Link>
+                {isLogged ? (
+                    <button type="button" onClick={handleStartSimulation} className="px-8 py-3 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-lg shadow-lg transition-transform transform hover:scale-105">
+                        Iniciar Simulación 🚀
+                    </button>
+                ):(
+                    <>
+                        <Link to="/login" className="px-8 py-3 bg-green-600 hover:bg-green-500 text-white font-bold rounded-lg shadow-lg transition-transform transform hover:scale-105">
+                            Iniciar Sesión
+                        </Link>
+                        <Link to="/register" className="px-8 py-3 bg-gray-700 hover:bg-gray-600 text-white font-bold rounded-lg shadow-lg transition-colors">
+                            Crear Cuenta
+                        </Link>
+                    </>
+                )}
             </div>
         </main>
 
-        {/* 2. FEATURES SECTION (Para darle empaque al proyecto) */}
+        {/* 2. Descripción de Características */}
         <section className="py-16 px-8 bg-gray-800">
             <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
             

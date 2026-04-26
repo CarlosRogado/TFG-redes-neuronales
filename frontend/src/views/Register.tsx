@@ -41,7 +41,7 @@ export default function Register() {
     <div className="min-h-screen bg-gray-900 text-white font-sans">
       <main className="flex items-center justify-center min-h-screen px-4 py-10">
         <section className="w-full max-w-md rounded-2xl border border-gray-700 bg-gray-800/80 p-8 shadow-2xl backdrop-blur-sm">
-          <h1 className="mb-2 text-center text-3xl font-extrabold text-transparent bg-clip-text bg-linear-to-r from-blue-400 to-purple-600">
+          <h1 className="mb-2 text-center text-3xl font-extrabold text-transparent bg-clip-text bg-linear-to-r from-green-300 to-blue-300">
             Crear cuenta
           </h1>
 
@@ -127,7 +127,7 @@ export default function Register() {
             ¿Ya tienes cuenta?{" "}
             <Link
               to="/login"
-              className="font-semibold text-blue-400 transition hover:text-blue-300"
+              className="font-semibold text-green-400 transition hover:text-green-300"
             >
               Inicia sesión
             </Link>
@@ -136,7 +136,7 @@ export default function Register() {
           <p className="mt-4 text-center text-sm text-gray-400">
             <Link
               to="/"
-              className="font-semibold text-blue-400 transition hover:text-blue-300"
+              className="font-semibold text-green-400 transition hover:text-green-300"
             >
               Volver al inicio
             </Link>

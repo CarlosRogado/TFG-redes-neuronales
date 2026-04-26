@@ -1,1 +1,0 @@
-// Agrupar la generación, los vivos y el historial

@@ -1,1 +1,0 @@
-// Mostrar generación, cohetes vivos y otros datos

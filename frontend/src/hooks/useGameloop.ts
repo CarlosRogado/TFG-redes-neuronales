@@ -1,1 +1,0 @@
-// Crear y destruir el p5 y ejecutar setup y draw
