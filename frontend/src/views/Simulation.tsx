@@ -9,6 +9,8 @@ import PieChart from "../components/PieChart";
 import DispersionChart from "../components/DispersionChart";
 import type { DatosDispersion } from "../components/GameCanvas";
 import "../style.css";
+import { toast } from "sonner";
+import { DatabaseService } from "../services/DatabaseService";
 
 export type HistorialEntry = {
   generacion: number;
@@ -38,15 +40,17 @@ export default function Simulation() {
   >([]); // Estado para almacenar los datos del DispersionChart
 
   // Estados persistentes
-  const [totalCohetes, setTotalCohetes] = usePersistentState("totalCohetes",50,); // Estado para el total de cohetes, con persistencia en localStorage
+  const [totalCohetes, setTotalCohetes] = usePersistentState("totalCohetes",100,); // Estado para el total de cohetes, con persistencia en localStorage
   const [tasaMutacion, setTasaMutacion] = usePersistentState(
     "tasaMutacion",
-    0.1,
+    0.3,
   ); // Estado para la tasa de mutación, con persistencia en localStorage
   const [tasaElitismo, setTasaElitismo] = usePersistentState(
     "tasaElitismo",
     10,
   ); // Estado para la tasa de elitismo, con persistencia en localStorage
+
+  const [guardando, setGuardando] = React.useState(false);
 
   // Funciones de cambio
   const handleTotalChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -56,6 +60,19 @@ export default function Simulation() {
     window.location.reload(); // Recargar la página para reiniciar el juego con el nuevo total de cohetes
   };
 
+  const guardarGraficaIndividual = async (tipoGrafica: string, datos: any) => {
+    try{
+      const datosSim = {
+        tipo: tipoGrafica,
+        contenido: datos
+      };
+
+      await DatabaseService.saveSimulation(`Simulación - ${tipoGrafica} - Generación ${generacion}`, datosSim);
+      toast.success(`Datos de ${tipoGrafica} guardados en la base de datos`);
+    } catch (error) {
+      toast.error(`Error al guardar datos de ${tipoGrafica}: ${(error as Error).message}`);
+    }
+  };
   return (
     <div className="min-h-screen bg-gray-900 text-slate-200 font-sans p-6">
       <header className="max-w-6xl mx-auto flex justify-between items-center mb-8">
@@ -129,7 +146,7 @@ export default function Simulation() {
             <div className="flex flex-col justify-center">
               <p className="text-3xl font-bold text-white">{segundos}</p>
               <p className="text-sm font-semibold text-slate-400 uppercase tracking-widest">
-                Segundos actuales
+                Segundos
               </p>
             </div>
             <div className="flex flex-col justify-center">
@@ -142,9 +159,17 @@ export default function Simulation() {
             </div>
           </div>
           <div className="bg-[#282f44] rounded-xl p-6 shadow-lg">
-            <h2 className="text-lg font-bold text-white pb-3 mb-6">
-              Estadísticas
-            </h2>
+            <div className="flex justify-between items-center mb-6">
+              <h2 className="text-lg font-bold text-white pb-3 mb-6">
+                Estadísticas de las Redes
+              </h2>
+              <button
+                onClick={() => guardarGraficaIndividual("estadisticas", {generacion, segundos, vivos, totalCohetes})}
+                disabled={guardando}
+                className="bg-yellow-600 hover:bg-yellow-500 disabled:bg-slate-600 text-white font-bold py-2 px-6 rounded-lg transition-colors flex intems-center gap-2">
+                  {guardando ? "Guardando..." : "Guardar Datos"}
+                </button>
+            </div>
             <span className="flex items-center mb-8">
               <span className="h-px flex-1 bg-linear-to-r from-transparent to-gray-300 dark:to-gray-600"></span>
 
@@ -158,17 +183,13 @@ export default function Simulation() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10">
               {/* Gráfica Izquierda */}
               <div className="flex flex-col">
-                <div className="relative group mt-auto w-fit">
+                <div className="mt-auto w-fit">
                   <button
-                    disabled
+                    onClick={() => guardarGraficaIndividual("lineal", historial)}
                     className="bg-yellow-500 text-black font-bold px-6 py-1.5 rounded-full w-fit text-sm shadow mb-8 cursor-not-allowed"
                   >
                     Guardar
                   </button>
-                  <span className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-max px-3 py-1.5 bg-gray-800 text-white text-xs font-semibold rounded-md shadow-lg opacity-0 transition-opacity duration-300 pointer-events-none group-hover:opacity-100 z-50">
-                    🚧 En Construccion
-                    <div className="absolute top-full left-1/2 -translate-x-1/2 -mt-1 w-2 h-2 rotate-45 bg-gray-800"></div>
-                  </span>
                 </div>
                 <div className="h-70 bg-[#1c2135] rounded-lg  mb-3 flex items-center justify-center text-slate-500 border border-slate-600">
                   <LineChart data={historial} />
@@ -207,8 +228,10 @@ export default function Simulation() {
                       </p>
                     </div>
                   }
+                  tipoGrafica="Lineal"
                 >
                   <LineChart data={historial} />
+                  
                 </CardGrafica>
               </div>
             </div>
@@ -225,17 +248,13 @@ export default function Simulation() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10">
               {/* Gráfica Izquierda */}
               <div className="flex flex-col">
-                <div className="relative group mt-auto w-fit">
+                <div className="mt-auto w-fit">
                   <button
-                    disabled
+                    onClick={() => guardarGraficaIndividual('BarChar', barcharData)}
                     className="bg-yellow-500 text-black font-bold px-6 py-1.5 rounded-full w-fit text-sm shadow mb-8 cursor-not-allowed"
                   >
                     Guardar
                   </button>
-                  <span className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-max px-3 py-1.5 bg-gray-800 text-white text-xs font-semibold rounded-md shadow-lg opacity-0 transition-opacity duration-300 pointer-events-none group-hover:opacity-100 z-50">
-                    🚧 En Construccion
-                    <div className="absolute top-full left-1/2 -translate-x-1/2 -mt-1 w-2 h-2 rotate-45 bg-gray-800"></div>
-                  </span>
                 </div>
                 <div className="h-70 bg-[#1c2135] rounded-lg  mb-3 flex items-center justify-center text-slate-500 border border-slate-600">
                   <Barchar data={barcharData} />
@@ -266,6 +285,7 @@ export default function Simulation() {
                       </p>
                     </div>
                   }
+                  tipoGrafica="Barras"
                 >
                   <Barchar data={barcharData} />
                 </CardGrafica>
@@ -284,17 +304,13 @@ export default function Simulation() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10">
               {/* Gráfica Izquierda */}
               <div className="flex flex-col">
-                <div className="relative group mt-auto w-fit">
+                <div className="mt-auto w-fit">
                   <button
-                    disabled
+                    onClick={() => guardarGraficaIndividual("causaMuerte", causaMuerteData)}
                     className="bg-yellow-500 text-black font-bold px-6 py-1.5 rounded-full w-fit text-sm shadow mb-8 cursor-not-allowed"
                   >
                     Guardar
                   </button>
-                  <span className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-max px-3 py-1.5 bg-gray-800 text-white text-xs font-semibold rounded-md shadow-lg opacity-0 transition-opacity duration-300 pointer-events-none group-hover:opacity-100 z-50">
-                    🚧 En Construccion
-                    <div className="absolute top-full left-1/2 -translate-x-1/2 -mt-1 w-2 h-2 rotate-45 bg-gray-800"></div>
-                  </span>
                 </div>
                 <div className="h-70 bg-[#1c2135] rounded-lg  mb-3 flex items-center justify-center text-slate-500 border border-slate-600">
                   <PieChart data={causaMuerteData} />
@@ -328,6 +344,7 @@ export default function Simulation() {
                       </p>
                     </div>
                   }
+                  tipoGrafica="CausaMuerte"
                 >
                   <PieChart data={causaMuerteData} />
                 </CardGrafica>
@@ -346,17 +363,13 @@ export default function Simulation() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10">
               {/* Gráfica Izquierda */}
               <div className="flex flex-col">
-                <div className="relative group mt-auto w-fit">
+                <div className="mt-auto w-fit">
                   <button
-                    disabled
+                    onClick={() => guardarGraficaIndividual("Dispersion", datosDispersion)}
                     className="bg-yellow-500 text-black font-bold px-6 py-1.5 rounded-full w-fit text-sm shadow mb-8 cursor-not-allowed"
                   >
                     Guardar
                   </button>
-                  <span className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-max px-3 py-1.5 bg-gray-800 text-white text-xs font-semibold rounded-md shadow-lg opacity-0 transition-opacity duration-300 pointer-events-none group-hover:opacity-100 z-50">
-                    🚧 En Construccion
-                    <div className="absolute top-full left-1/2 -translate-x-1/2 -mt-1 w-2 h-2 rotate-45 bg-gray-800"></div>
-                  </span>
                 </div>
                 <div className="h-70 bg-[#1c2135] rounded-lg  mb-3 flex items-center justify-center text-slate-500 border border-slate-600">
                   <DispersionChart data={datosDispersion} />
@@ -386,6 +399,9 @@ export default function Simulation() {
                           que vean sus sensores.
                         </li>
                       </ul>
+                      <p>
+                        La gráfica identifica entre <span className="text-green-400 font-bold">cohetes clonados</span> y <span className="text-purple-400 font-bold">cohetes mutados</span>.
+                      </p>
                       <p className="text-xs mt-2 italic text-slate-200">
                         * Una nube de puntos dispersa significa que la Tasa de
                         Mutación está generando individuos con estrategias de
@@ -394,6 +410,7 @@ export default function Simulation() {
                       </p>
                     </div>
                   }
+                  tipoGrafica="Dispersion"
                 >
                   <DispersionChart data={datosDispersion} />
                 </CardGrafica>

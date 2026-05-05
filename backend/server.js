@@ -145,6 +145,7 @@ app.post('/save-simulation', async (req, res) => {
       data: {
         userId: Number(data.userId),
         name: data.name,
+        datos: data.datos,
       }
     });
     res.json(simulation);
@@ -154,6 +155,19 @@ app.post('/save-simulation', async (req, res) => {
   }
 });
 
+app.get('/simulations/:userId', async (req, res) => {
+  try{
+    const userIdNum = Number(req.params.userId);
+    const simulations = await prisma.simulationData.findMany({
+      where: { userId: userIdNum },
+      orderBy: { id: 'desc' }
+    });
+    res.json(simulations);
+  } catch (e) {
+    console.error(e);
+    res.status(500).json({ error: "Error al obtener simulaciones" });
+  }
+});
 
 async function startServer() {
   try {

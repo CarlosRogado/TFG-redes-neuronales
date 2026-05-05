@@ -122,7 +122,6 @@ function App() {
         {/*<Route path="/docs" element={<Docs />} /> */}
         <Route path="/simulation" element={<ProtectedSimulationRoute />} />
         <Route path="*" element={<Home />} />{" "}
-        {/* Ruta comodín para redirigir a Home si no se encuentra la ruta */}
       </Routes>
     </BrowserRouter>
   );

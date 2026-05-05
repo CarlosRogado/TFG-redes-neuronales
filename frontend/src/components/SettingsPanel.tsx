@@ -83,8 +83,8 @@ export default function SettingsPanel({
           onChange={onTotalChange}
           className="w-full cursor-pointer accent-blue-400"
         />
-        <p className="text-xs text-slate-400 mt-1 italic">
-          *Modificar la población reiniciará la simulación al instante.
+        <p className="text-xs text-red-400 mt-1 bg-amber-400/20 p-2 rounded">
+          ⚠️ Modificar la población reiniciará la simulación al instante.
         </p>
       </div>
       {/* SLIDER TASA DE MUTACIÓN */}

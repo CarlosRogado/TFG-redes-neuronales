@@ -1,12 +1,41 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import { DatabaseService } from '../services/DatabaseService';
 
 interface CardGraficaProps {
     infoTexto: React.ReactNode;
     children: React.ReactNode;
+    tipoGrafica: string;
 }
 
-export default function CardGrafica({ infoTexto, children }: CardGraficaProps) {
+export default function CardGrafica({ infoTexto, children, tipoGrafica }: CardGraficaProps) {
     const [activeTab, setActiveTab] = useState<'info' | 'comparar'>('info');
+    const [saveData, setSavedData] = useState<any[]>([]);
+    const [selectedId, setSelectedId] = useState<string>('');
+    const [isLoading, setIsLoading] = useState(false);
+
+    useEffect(() => {
+      if (activeTab === 'comparar') {
+          setIsLoading(true);
+          DatabaseService.getSimulation().then((data) => {
+            const filtrada = data.filter((d: any) => d.datos?.tipo === tipoGrafica);
+            setSavedData(filtrada);
+            setIsLoading(false);
+        });
+      }
+    }, [activeTab, tipoGrafica]);
+
+    const renderHistorico = () => {
+      if(!selectedId) {
+        return <div className="text-slate-400">Selecciona un elemento guardado para comparar.</div>;
+      }
+      const item = saveData.find(d => d.id.toString() === selectedId);
+      if(item && React.isValidElement(children)) {
+        const child = children as React.ReactElement<any, any>;
+        return React.cloneElement(child, { data: item.datos.contenido } as any);
+      }
+      return null;
+    };
+
   return (
     <div>
         {/* DERECHA: La lógica de pestañas que hicisteis antes */}
@@ -35,15 +64,21 @@ export default function CardGrafica({ infoTexto, children }: CardGraficaProps) {
             )}
             {activeTab === 'comparar' && (
               <div className="flex flex-col h-full relative min-h-[275px]">
-                <div className="absolute top-2 right-2 bg-yellow-500/90 text-black text-xs font-bold px-3 py-2 rounded-lg shadow-lg max-w-50 z-10 animate-fade-in border border-yellow-400">
-                  <span className="flex items-center gap-1 mb-1">
-                    🚧 En construcción
-                  </span>
-                  Esta gráfica es un clon de la actual. Proximamente permitirá importar gráficas de anteriores generaciones desde la base de datos.
-                </div>
-                <div className="flex-1 w-full border-2 border-dashed border-slate-500 rounded-lg flex items-center justify-center opacity-70 pointer-events-none p-2">
-                  {children}
-                </div>
+                <select
+                  value={selectedId}
+                  onChange={(e) => setSelectedId(e.target.value)}
+                  className="mb-4 bg-[#1c2135] text-white px-4 py-2 rounded-lg w-max self-start focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  >
+                    <option value="">Seleccionar...</option>
+                    {saveData.map((item) => (
+                      <option key={item.id} value={item.id}>
+                        {item.name}
+                      </option>
+                    ))}
+                  </select>
+                  <div className="flex-1 w-full border border-slate-500 bg-[#1c2135] rounded-lg flex items-center justify-center text-slate-500">
+                    {isLoading ? 'Cargando...' : renderHistorico()}
+                  </div>
               </div>
             )}
           </div>

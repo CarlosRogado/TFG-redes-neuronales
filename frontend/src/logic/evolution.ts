@@ -7,6 +7,7 @@ export type DatosDispersion = {
     id: string;
     pesoX: number;
     pesoY: number;
+    isCloned: boolean;
 };
 
 export interface EvolutionResult { // Tipo de resultado que devuelve la función nextGeneration
@@ -91,7 +92,8 @@ export default function nextGeneration({ // Desestructuramos los parámetros de 
         return {
             id: `Cohete ${index + 1}`,
             pesoX: Number(mediaPesos.toFixed(3)), 
-            pesoY: Number(mediaSesgos.toFixed(3)) 
+            pesoY: Number(mediaSesgos.toFixed(3)),
+            isCloned: index < numClones
         };
     });
 

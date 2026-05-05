@@ -1,10 +1,11 @@
-import { ScatterChart, Scatter, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import { ScatterChart, Scatter, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell } from 'recharts';
 import {memo} from 'react';
 
 export type DispersionData = {
   id: string;
   pesoX: number;
   pesoY: number;
+  isCloned?: boolean;
 };
 
 interface DispersionChartProps {
@@ -26,7 +27,11 @@ function DispersionChart({ data }: DispersionChartProps) {
           contentStyle={{ backgroundColor: '#1e293b', borderColor: '#475569', color: '#f8fafc' }}
         />
         
-        <Scatter name="Cohetes" data={data} fill="#8b5cf6" />
+        <Scatter name="Cohetes" data={data}>
+          {data.map((entry, index) => (
+            <Cell key={`cell-${index}`} fill={entry.isCloned ? '#10b981' : '#8b5cf6'} />
+          ))}
+        </Scatter>
       </ScatterChart>
     </ResponsiveContainer>
   );
