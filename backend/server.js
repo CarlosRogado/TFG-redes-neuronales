@@ -26,7 +26,8 @@ async function ensureAdminUser() {
 }
 
 app.use(cors()); // Permite solicitudes desde el frontend
-app.use(express.json()); // Permite recibir JSON en el body de las solicitudes
+app.use(express.json({limit:'50mb'})); // Permite recibir JSON en el body de las solicitudes
+app.use(express.urlencoded({limit:'50mb',extended:true}));
 
 // Validación de email
 function isValidEmail(email) {

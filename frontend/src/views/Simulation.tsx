@@ -39,6 +39,16 @@ export default function Simulation() {
     DatosDispersion[]
   >([]); // Estado para almacenar los datos del DispersionChart
 
+  // Referencia de la generacion para el p5
+  const generacionref = React.useRef(generacion);
+  React.useEffect(()=>{
+    generacionref.current = generacion;
+  }, [generacion]);
+  // Diccionarios historicos para guardar todas las generaciones
+  const [historicoBarchar, setHistoricoBarchar] = React.useState<Record<number, BarcharData[]>>({});
+  const [historicoCausaMuerte, setHistoricoCausaMuerte] = React.useState<Record<number, { name: string; value: number }[]>>({});
+  const [historicoDispersion, setHistoricoDispersion] = React.useState<Record<number, DatosDispersion[]>>({});
+
   // Estados persistentes
   const [totalCohetes, setTotalCohetes] = usePersistentState("totalCohetes",100,); // Estado para el total de cohetes, con persistencia en localStorage
   const [tasaMutacion, setTasaMutacion] = usePersistentState(
@@ -108,13 +118,22 @@ export default function Simulation() {
                 isPausa={esPausa}
                 onGeneracionChange={setGeneracion}
                 onVivosChange={setVivos}
-                onHistorialEntry={(entry) => {
-                  setHistorial([...historial, entry]);
-                }}
-                onBarcharDataChange={setBarcharData}
-                onCausaMuerteChange={setCausaMuerteData}
-                onDatosDispersionChange={setDatosDispersion}
                 onSegundosChange={setSegundosActuales}
+                onHistorialEntry={(entry) => {
+                  setHistorial(prev=> [...prev, entry]);;
+                }}
+                onBarcharDataChange={(data) => {
+                  setBarcharData(data);
+                  setHistoricoBarchar(prev => ({...prev, [generacionref.current]: data}));
+                }}
+                onCausaMuerteChange={(data) => {
+                  setCausaMuerteData(data);
+                  setHistoricoCausaMuerte(prev => ({...prev, [generacionref.current]: data}));
+                }}
+                onDatosDispersionChange={(data) => {
+                  setDatosDispersion(data);
+                  setHistoricoDispersion(prev => ({...prev, [generacionref.current]: data}));
+                }}
               />
             </div>
           </div>
@@ -185,7 +204,7 @@ export default function Simulation() {
               <div className="flex flex-col">
                 <div className="mt-auto w-fit">
                   <button
-                    onClick={() => guardarGraficaIndividual("lineal", historial)}
+                    onClick={() => guardarGraficaIndividual("Lineal", historial)}
                     className="bg-yellow-500 text-black font-bold px-6 py-1.5 rounded-full w-fit text-sm shadow mb-8 cursor-not-allowed"
                   >
                     Guardar
@@ -229,6 +248,7 @@ export default function Simulation() {
                     </div>
                   }
                   tipoGrafica="Lineal"
+                  generacionActual={generacion}
                 >
                   <LineChart data={historial} />
                   
@@ -250,7 +270,7 @@ export default function Simulation() {
               <div className="flex flex-col">
                 <div className="mt-auto w-fit">
                   <button
-                    onClick={() => guardarGraficaIndividual('BarChar', barcharData)}
+                    onClick={() => guardarGraficaIndividual('Barras', historicoBarchar)}
                     className="bg-yellow-500 text-black font-bold px-6 py-1.5 rounded-full w-fit text-sm shadow mb-8 cursor-not-allowed"
                   >
                     Guardar
@@ -286,6 +306,7 @@ export default function Simulation() {
                     </div>
                   }
                   tipoGrafica="Barras"
+                  generacionActual={generacion}
                 >
                   <Barchar data={barcharData} />
                 </CardGrafica>
@@ -306,7 +327,7 @@ export default function Simulation() {
               <div className="flex flex-col">
                 <div className="mt-auto w-fit">
                   <button
-                    onClick={() => guardarGraficaIndividual("causaMuerte", causaMuerteData)}
+                    onClick={() => guardarGraficaIndividual("CausaMuerte", historicoCausaMuerte)}
                     className="bg-yellow-500 text-black font-bold px-6 py-1.5 rounded-full w-fit text-sm shadow mb-8 cursor-not-allowed"
                   >
                     Guardar
@@ -345,6 +366,7 @@ export default function Simulation() {
                     </div>
                   }
                   tipoGrafica="CausaMuerte"
+                  generacionActual={generacion}
                 >
                   <PieChart data={causaMuerteData} />
                 </CardGrafica>
@@ -365,7 +387,7 @@ export default function Simulation() {
               <div className="flex flex-col">
                 <div className="mt-auto w-fit">
                   <button
-                    onClick={() => guardarGraficaIndividual("Dispersion", datosDispersion)}
+                    onClick={() => guardarGraficaIndividual("Dispersion", historicoDispersion)}
                     className="bg-yellow-500 text-black font-bold px-6 py-1.5 rounded-full w-fit text-sm shadow mb-8 cursor-not-allowed"
                   >
                     Guardar
@@ -411,6 +433,7 @@ export default function Simulation() {
                     </div>
                   }
                   tipoGrafica="Dispersion"
+                  generacionActual={generacion}
                 >
                   <DispersionChart data={datosDispersion} />
                 </CardGrafica>
