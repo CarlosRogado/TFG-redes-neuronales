@@ -5,13 +5,7 @@ import p5 from "p5";
 import rocket from "../logic/rocket";
 import obstacle from "../logic/obstacle";
 import nextGeneration from "../logic/evolution";
-import type { BarcharData } from "../views/Simulation";
-
-type HistorialEntry = {
-  generacion: number;
-  maxSegundos: number;
-  mediaSegundos: number;
-};
+import type { HistorialEntry, BarcharData } from "../logic/types";
 
 export type CausaMuerte = {
   name: string;
