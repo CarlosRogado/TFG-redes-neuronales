@@ -16,6 +16,7 @@ import Login from "./views/Login";
 import Simulation from "./views/Simulation";
 import LogoRedNeuronal from "./components/Logo.tsx";
 import { AuthService } from "./services/AuthService";
+import Profile from "./views/Profile.tsx";
 
 function ProtectedSimulationRoute() {
   if (!AuthService.hasActiveSession()) {
@@ -38,7 +39,7 @@ function NavigationBar() {
     window.location.href = "/";
   };
   return (
-    <div className="bg-gray-900 mx-auto flex items-center gap-8 px-4 sm:px-6 lg: px-8 w-full">
+    <div className="bg-gray-900 mx-auto flex items-center gap-8 px-4 sm:px-6 lg:px-8 w-full">
       <Link to="/" className="block text-teal-300">
         <span className="sr-only">Home</span>
         <LogoRedNeuronal className="w-12 h-12" />
@@ -69,7 +70,7 @@ function NavigationBar() {
           <div className="sm:flex sm:gap-4">
             {isLogged ? (
               <>
-                <div className="relative group w-fit">
+                <div className="relative w-fit">
                   <Link
                     to="/profile"
                     className="flex items-center gap-2 rounded-md border border-gray-700 bg-gray-800 px-5 py-2.5 text-sm font-medium text-teal-400 transition hover:bg-gray-700 hover:text-teal-300"
@@ -90,10 +91,6 @@ function NavigationBar() {
                     </svg>
                     Mi Perfil
                   </Link>
-                  <span className="absolute top-full left-1/2 -translate-x-1/2 mt-2 w-max px-3 py-1.5 bg-gray-800 text-white text-xs font-semibold rounded-md shadow-lg opacity-0 transition-opacity duration-300 pointer-events-none group-hover:opacity-100 z-50">
-                    🚧 En Construccion
-                    <div className="absolute bottom-full left-1/2 -translate-x-1/2 -mb-1 w-2 h-2 rotate-45 bg-gray-800"></div>
-                  </span>
                 </div>
                 <button
                   onClick={handleLogout}
@@ -121,6 +118,7 @@ function App() {
         <Route path="/login" element={<Login />} />
         {/*<Route path="/docs" element={<Docs />} /> */}
         <Route path="/simulation" element={<ProtectedSimulationRoute />} />
+        <Route path="/profile" element={<Profile />} />
         <Route path="*" element={<Home />} />{" "}
       </Routes>
     </BrowserRouter>

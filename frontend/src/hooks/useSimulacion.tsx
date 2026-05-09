@@ -93,7 +93,7 @@ export function useSimulacion() {
             const pLineal = DatabaseService.saveSimulation("Lineal" + nombre, { tipo: "Lineal", contenido: historial });
             const pBarchar = DatabaseService.saveSimulation("Barras" + nombre, { tipo: "Barras", contenido: historicoBarchar });
             const pCausaMuerte = DatabaseService.saveSimulation("Forense" + nombre, { tipo: "Forense", contenido: historicoCausaMuerte });
-            const pDispersion = DatabaseService.saveSimulation("Dispersion" + nombre, { tipo: "Dispersion", contenido: historicoDispersion });
+            const pDispersion = DatabaseService.saveSimulation("Dispersión" + nombre, { tipo: "Dispersion", contenido: historicoDispersion });
 
             await Promise.all([pLineal, pBarchar, pCausaMuerte, pDispersion]);
             toast.success("Todas las gráficas guardadas exitosamente.");

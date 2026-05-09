@@ -170,6 +170,136 @@ app.get('/simulations/:userId', async (req, res) => {
   }
 });
 
+// Verificacion de roles de usuario y CRUD
+const isAdmin = async (req, res, next) => {
+  const adminUid = req.headers['x-user-uid'];
+  if (!adminUid) return res.status(401).json({ error: "Usuario no autorizado" });
+
+  const user = await prisma.user.findUnique({ where: { uid: Number(adminUid) }});
+  if (user && user.role === 'Admin') {
+    next();
+  } else {
+    res.status(403).json({ error: "Acceso denegado" });
+  }
+};
+// Endpoint para obtener perfil de usuario
+app.get('/user-profile/:uid', async (req, res) => {
+  try {
+    const user = await prisma.user.findUnique({
+      where: { uid: Number(req.params.uid)},
+      select: { uid: true, email: true, role: true }
+    });
+    if (!user) return res.status(404).json({ error: "Usuario no encontrado" });
+    res.json(user);
+  } catch (e) {
+    res.status(500).json({ error: "Error al obtener perfil de usuario" });
+  }
+});
+// Endpoints para administración de usuarios (solo para Admin)
+app.get('/admin/users', isAdmin, async (req, res) => {
+  try {
+    const users = await prisma.user.findMany({
+      select: { uid: true, email: true, role: true }
+    });
+    res.json(users);
+  } catch (e) {
+    res.status(500).json({ error: "Error al obtener usuarios" });
+    }
+});
+// Endpoint para eliminar usuario (solo para Admin)
+app.delete('/admin/users/:uid', isAdmin, async (req, res) => {
+  try {
+    await prisma.user.delete({ where: { uid: Number(req.params.uid) }});
+    res.json({ message: "Usuario eliminado correctamente" });
+  } catch (e) {
+    res.status(500).json({ error: "Error al eliminar usuario" });
+  }
+});
+// Endpoint para actualizar nombre de simulación (solo para el propietario)
+app.put('/simulations/:id', async (req, res) => {
+  const { id } = req.params;
+  const { name } = req.body;
+  const userUid = req.headers['x-user-uid'];
+
+  try{
+    const sim = await prisma.simulationData.findUnique({ where: { id: Number(id) }});
+    if (!sim) return res.status(404).json({ error: "Simulación no encontrada" });
+
+    if (sim.userId !== Number(userUid)) return res.status(403).json({ error: "Acceso denegado" });
+
+    const updated = await prisma.simulationData.update({
+      where: { id: Number(id) },
+      data: { name }
+    });
+    res.json(updated);
+  } catch (e) {
+    res.status(500).json({ error: "Error al actualizar simulación" });
+  }
+});
+// Endpoint para eliminar simulación (solo para el propietario)
+app.delete('/simulations/:id', async (req, res) => {
+  const { id } = req.params;
+  const userUid = req.headers['x-user-uid'];
+
+  try{
+    const sim = await prisma.simulationData.findUnique({ where: { id: Number(id) }});
+    if (sim.userId !== Number(userUid)) return res.status(403).json({ error: "Acceso denegado" });
+
+    await prisma.simulationData.delete({ where: {id: Number(id) }});
+    res.json({ message: "Simulación eliminada correctamente" });
+  } catch (e) {
+    res.status(500).json({ error: "Error al eliminar simulación" });
+  }
+});
+// Endpoint para cambiar la contraseña (solo para el propietario)
+app.put('/change-password', async (req, res) => {
+  const { currentPassword, newPassword } = req.body;
+  const userUid = req.headers['x-user-uid'];
+
+  try {
+    if (!isValidPassword(newPassword)) {
+      return res.status(400).json({ error: "La nueva contraseña debe tener mínimo 8 caracteres" });
+    }
+
+    const user = await prisma.user.findUnique({ where: { uid: Number(userUid) }});
+    if (!user) return res.status(404).json({ error: "Usuario no encontrado" });
+
+    const isCurrentPasswordValid = await bcrypt.compare(currentPassword, user.password);
+    if (!isCurrentPasswordValid) {
+      return res.status(401).json({ error: "Contraseña actual incorrecta" });
+    }
+
+    const hashedNewPassword = await bcrypt.hash(newPassword, 10);
+    await prisma.user.update({
+      where: { uid: Number(userUid) },
+      data: { password: hashedNewPassword }
+    });
+    res.json({ message: "Contraseña actualizada correctamente" });
+  } catch (e) {
+    res.status(500).json({ error: "Error al cambiar contraseña" });
+  }
+});
+// Endpoint para borrar cuenta de usuario (solo para el propietario)
+app.delete('/delete-account', async (req, res) => {
+  const { currentPassword } = req.body;
+  const userUid = req.headers['x-user-uid'];
+
+  try {
+    const user = await prisma.user.findUnique({ where: { uid: Number(userUid) }});
+    if (!user) return res.status(404).json({ error: "Usuario no encontrado" });
+
+    const isCurrentPasswordValid = await bcrypt.compare(currentPassword, user.password);
+    if (!isCurrentPasswordValid) {
+      return res.status(401).json({ error: "Contraseña incorrecta" });
+    }
+
+    await prisma.user.delete({ where: { uid: Number(userUid) }});
+    res.json({ message: "Cuenta eliminada correctamente" });
+  } catch (e) {
+    res.status(500).json({ error: "Error al borrar cuenta" });
+  }
+});
+
 async function startServer() {
   try {
     await ensureAdminUser();
