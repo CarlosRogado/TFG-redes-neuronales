@@ -83,6 +83,22 @@ export default function Simulation() {
       toast.error(`Error al guardar datos de ${tipoGrafica}: ${(error as Error).message}`);
     }
   };
+  const handleGuardarTodos = async () => {
+    setGuardando(true);
+    try{
+      const pLineal = DatabaseService.saveSimulation(`Simulación - Lineal - Generación ${generacion}`, {tipo: "Lineal", contenido: historial});
+      const pBarras = DatabaseService.saveSimulation(`Simulación - Barras - Generación ${generacion}`, {tipo: "Barras", contenido: historicoBarchar});
+      const pCausaMuerte = DatabaseService.saveSimulation(`Simulación - CausaMuerte - Generación ${generacion}`, {tipo: "CausaMuerte", contenido: historicoCausaMuerte});
+      const pDispersion = DatabaseService.saveSimulation(`Simulación - Dispersion - Generación ${generacion}`, {tipo: "Dispersion", contenido: historicoDispersion});
+
+      await Promise.all([pLineal, pBarras, pCausaMuerte, pDispersion]);
+      toast.success("Todos los datos de la simulación guardados correctamente");
+    } catch (error) {
+      toast.error(`Error al guardar los datos de la simulación: ${(error as Error).message}`);
+    } finally {
+      setGuardando(false);
+    }
+  };
   return (
     <div className="min-h-screen bg-gray-900 text-slate-200 font-sans p-6">
       <header className="max-w-6xl mx-auto flex justify-between items-center mb-8">
@@ -183,10 +199,10 @@ export default function Simulation() {
                 Estadísticas de las Redes
               </h2>
               <button
-                onClick={() => guardarGraficaIndividual("estadisticas", {generacion, segundos, vivos, totalCohetes})}
+                onClick={() => handleGuardarTodos()}
                 disabled={guardando}
                 className="bg-yellow-600 hover:bg-yellow-500 disabled:bg-slate-600 text-white font-bold py-2 px-6 rounded-lg transition-colors flex intems-center gap-2">
-                  {guardando ? "Guardando..." : "Guardar Datos"}
+                  {guardando ? "Guardando..." : "Guardar Gráficas"}
                 </button>
             </div>
             <span className="flex items-center mb-8">
@@ -199,23 +215,39 @@ export default function Simulation() {
               <span className="h-px flex-1 bg-linear-to-l from-transparent to-gray-300 dark:to-gray-600"></span>
             </span>
             {/* Fila Gráfica 1 (Líneas) */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10">
-              {/* Gráfica Izquierda */}
-              <div className="flex flex-col">
-                <div className="mt-auto w-fit">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-10 items-stretch">
+              {/* Gráfica Izquierda (En vivo)*/}
+              <div className="flex flex-col bg-[#1c2135] rounded-xl boder border-slate-700 shadow-xl overflow-hidden h-full">
+                {/* Cabecera gráfica */}
+                <div className="flex justify-between items-center px-5 py-3 bg-[#282f44] border-b border-slate-700">
+                  <div className="flex items-center gap-3">
+                    <span className="relative flex h-2.5 w-2.5">
+                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                      <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
+                    </span>
+                    <h3 className="text-sm font-bold text-white uppercase tracking-wider">Evolución del Aprendizaje</h3>
+                  </div>
+                  {/* Botón guardar gráfica */}
                   <button
                     onClick={() => guardarGraficaIndividual("Lineal", historial)}
-                    className="bg-yellow-500 text-black font-bold px-6 py-1.5 rounded-full w-fit text-sm shadow mb-8 cursor-not-allowed"
+                    className="group flex items-center gap-2 px-3 py-1.5 bg-slate-700/50 hover:bg-emerald-600 text-slate-300 hover:text-white text-xs font-bold rounded-md transition-all duration-300 border border-slate-500 hover:border-emerald-500 shadow-sm"
+                    title="Guardar datos de esta gráfica"
                   >
-                    Guardar
+                    <svg className="w-4 h-4 transition-transform group-hover:scale-110" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"></path>
+                    </svg>
+                    GUARDAR
                   </button>
                 </div>
-                <div className="h-70 bg-[#1c2135] rounded-lg  mb-3 flex items-center justify-center text-slate-500 border border-slate-600">
-                  <LineChart data={historial} />
+                {/* Contenido de la gráfica */}
+                <div className="flex-1 p-5 flex flex-col bg-[#1c2135]">
+                  <div className="flex-1 w-full bg-[#0f1423] rounded-xl border border-slate-700/50 shadow-inner flex items-center justify-center p-2 min-h-[300px]">
+                    <LineChart data={historial} />
+                  </div>
                 </div>
               </div>
               {/* Caja de Texto Derecha */}
-              <div className="bg-white text-black rounded-lg overflow-hidden flex flex-col shadow">
+              <div className="h-full">
                 <CardGrafica
                   infoTexto={
                     <div className="space-y-3">
@@ -264,20 +296,36 @@ export default function Simulation() {
 
               <span className="h-px flex-1 bg-linear-to-l from-transparent to-gray-300 dark:to-gray-600"></span>
             </span>
-            {/* Fila Gráfica 1 (Líneas) */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10">
-              {/* Gráfica Izquierda */}
-              <div className="flex flex-col">
-                <div className="mt-auto w-fit">
+            {/* Fila Gráfica 2 (Barras) */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-10 items-stretch">
+              {/* Gráfica Izquierda (En vivo)*/}
+              <div className="flex flex-col bg-[#1c2135] rounded-xl boder border-slate-700 shadow-xl overflow-hidden h-full">
+                {/* Cabecera gráfica */}
+                <div className="flex justify-between items-center px-5 py-3 bg-[#282f44] border-b border-slate-700">
+                  <div className="flex items-center gap-3">
+                    <span className="relative flex h-2.5 w-2.5">
+                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                      <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
+                    </span>
+                    <h3 className="text-sm font-bold text-white uppercase tracking-wider">Evolución del Aprendizaje</h3>
+                  </div>
+                  {/* Botón guardar gráfica */}
                   <button
-                    onClick={() => guardarGraficaIndividual('Barras', historicoBarchar)}
-                    className="bg-yellow-500 text-black font-bold px-6 py-1.5 rounded-full w-fit text-sm shadow mb-8 cursor-not-allowed"
+                    onClick={() => guardarGraficaIndividual("Barras", barcharData)}
+                    className="group flex items-center gap-2 px-3 py-1.5 bg-slate-700/50 hover:bg-emerald-600 text-slate-300 hover:text-white text-xs font-bold rounded-md transition-all duration-300 border border-slate-500 hover:border-emerald-500 shadow-sm"
+                    title="Guardar datos de esta gráfica"
                   >
-                    Guardar
+                    <svg className="w-4 h-4 transition-transform group-hover:scale-110" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"></path>
+                    </svg>
+                    GUARDAR
                   </button>
                 </div>
-                <div className="h-70 bg-[#1c2135] rounded-lg  mb-3 flex items-center justify-center text-slate-500 border border-slate-600">
-                  <Barchar data={barcharData} />
+                {/* Contenido de la gráfica */}
+                <div className="flex-1 p-5 flex flex-col bg-[#1c2135]">
+                  <div className="flex-1 w-full bg-[#0f1423] rounded-xl border border-slate-700/50 shadow-inner flex items-center justify-center p-2 min-h-[300px]">
+                    <Barchar data={barcharData} />
+                  </div>
                 </div>
               </div>
               {/* Caja de Texto Derecha */}
@@ -321,7 +369,7 @@ export default function Simulation() {
 
               <span className="h-px flex-1 bg-linear-to-l from-transparent to-gray-300 dark:to-gray-600"></span>
             </span>
-            {/* Fila Gráfica 1 (Líneas) */}
+            {/* Fila Gráfica 3 (Causa de Muerte) */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10">
               {/* Gráfica Izquierda */}
               <div className="flex flex-col">
@@ -381,7 +429,7 @@ export default function Simulation() {
 
               <span className="h-px flex-1 bg-linear-to-l from-transparent to-gray-300 dark:to-gray-600"></span>
             </span>
-            {/* Fila Gráfica 1 (Líneas) */}
+            {/* Fila Gráfica 4 (Dispersión) */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10">
               {/* Gráfica Izquierda */}
               <div className="flex flex-col">

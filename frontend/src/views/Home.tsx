@@ -15,7 +15,7 @@ export default function Home() {
     };
 
     return (
-        <div className="h-[95.6vh] bg-gray-900 text-white font-sans">
+        <div className="h-full bg-gray-900 text-white font-sans">
             <main className="flex flex-col items-center justify-center min-h-[60vh] px-4 text-center">
                 <LogoRedNeuronal className="w-50 h-50" />
                 <h1 className="text-5xl md:text-7xl font-extrabold text-transparent bg-clip-text bg-linear-to-r from-green-300 to-blue-300 mb-6">
@@ -72,7 +72,7 @@ export default function Home() {
         {/* 3. FOOTER */}
         <footer className="text-center py-6 text-gray-500 border-t border-gray-800">
             <p>Trabajo de Fin de Grado - Desarrollo de Aplicaciones Web</p>
-            <p className="text-sm mt-1">© 2026 Víctor y Carlos</p>
+            <p className="text-sm mt-1">© 2026 Víctor Vicente Díaz y Carlos Rogado Caamaño</p>
         </footer>
         </div>
     );

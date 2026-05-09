@@ -66,10 +66,9 @@ export default function CardGrafica({ infoTexto, children, tipoGrafica, generaci
     };
 
   return (
-    <div>
-        {/* DERECHA: La lógica de pestañas que hicisteis antes */}
+    <div>   
+      {/*  Botones para cambiar entre pestañas */}   
         <div className="bg-[#5f6881] text-black rounded-lg overflow-hidden flex flex-col shadow h-full">
-          
           <div className="flex bg-[#4e5569]">
             <button 
               onClick={() => setActiveTab('info')}
@@ -84,15 +83,17 @@ export default function CardGrafica({ infoTexto, children, tipoGrafica, generaci
               Comparar
             </button>
           </div>
-
-          <div className="p-5 flex-1 flex flex-col">
-            {activeTab === 'info' && (
-              <div className="h-70 text-sm text-slate-300 ovverflow-y-auto pr-2 custom-scrollbar">
+          {/* Contenedor de las pestañas */}
+          <div className="p-5 flex-1 flex flex-col ">
+            {/* Pestaña de información */ }
+            {activeTab === 'info' && ( 
+              <div className="h-100 text-sm text-slate-300 ovverflow-y-auto pr-2 custom-scrollbar">
                 {infoTexto}
               </div>
             )}
+            {/* Pestaña de gráficas con selector y botón para sincronizar con la simulación actual */ }
             {activeTab === 'comparar' && (
-              <div className="flex flex-col h-full relative min-h-75">
+              <div className="flex flex-col relative h-100">
                 <div className="relative mb-4">
                   <select
                     value={selectedId}
