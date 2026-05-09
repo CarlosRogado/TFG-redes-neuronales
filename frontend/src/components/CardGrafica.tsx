@@ -29,7 +29,8 @@ export default function CardGrafica({ infoTexto, children, tipoGrafica, generaci
 
     useEffect(() => {
       if(isSyncEnabled){
-        setSelectedGen(generacionActual.toString());
+        const genCompletada = Math.max(1, generacionActual - 1);
+        setSelectedGen(genCompletada.toString());
       }
     }, [isSyncEnabled, generacionActual]);
 
@@ -44,10 +45,10 @@ export default function CardGrafica({ infoTexto, children, tipoGrafica, generaci
       if(item && React.isValidElement(children)) {
         
         const contenido = item.datos.contenido;
-        const genDestino = isSyncEnabled ? generacionActual : Number(selectedGen);
+        const genDestino = isSyncEnabled ? Math.max(1, generacionActual -1) : Number(selectedGen);
 
         if(Array.isArray(contenido)){
-          const datosRecortados = contenido.slice(0, genDestino);
+          const datosRecortados = contenido.filter((d: any)=> d.generacion <= genDestino);
           return React.cloneElement(children as React.ReactElement, { data: datosRecortados } as any);
         }
 
@@ -119,19 +120,35 @@ export default function CardGrafica({ infoTexto, children, tipoGrafica, generaci
                         <div className="w-9 h-5 bg-slate-600 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-0.5 after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-emerald-500 group-hover:after:shadow-md"></div>
                         <span className="text-[11px] font-bold text-slate-300 uppercase tracking-widest select-none group-hover:text-white transition-colors">Sync</span>
                       </label>
-                    {!isSyncEnabled && !Array.isArray(saveData.find(d=> d.id.toString() === selectedId)!.datos.contenido) ? (
+                    {!isSyncEnabled ? (
                       <div className="relative">
                         <select
                           value={selectedGen}
                           onChange={(e)=> setSelectedGen(e.target.value)}
                           className="appearance-none bg-[#1c2135] border border-slate-600 text-slate-200 text-xs font-bold py-1.5 pl-3 pr-8 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 transition-colors cursor-pointer shadow-sm"
                         >
-                          {Object.keys(saveData.find(d=> d.id.toString() === selectedId)!.datos.contenido)
-                            .sort((a,b)=> Number(a) - Number(b))
-                            .map(gen=> (
-                              <option key={gen} value={gen}>Generacion {gen}</option>
-                            ))
-                          }
+                          {/* Lo que me ha costado sacar esto y que funcione para diferenciar entre la gráfica lineal y el resto por como se guardan los datos */}
+                          {(() => {
+                            const item = saveData.find(d => d.id.toString() === selectedId);
+                            if(!item) return null;
+                            const contenido = item.datos.contenido;
+
+                            if(Array.isArray(contenido)){
+                              return contenido.map((d: any) => (
+                                <option key= {d.generacion} value= {d.generacion}>
+                                  Generación {d.generacion}
+                                </option>
+                              ));
+                            } else {
+                              return Object.keys(contenido)
+                                .sort((a,b) => Number(a) - Number(b))
+                                .map((gen) => (
+                                  <option key={gen} value={gen}>
+                                    Generación {gen}
+                                  </option>
+                                ));
+                            }
+                          })()}
                         </select>
                         <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-slate-400">
                           <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path></svg>
@@ -143,7 +160,7 @@ export default function CardGrafica({ infoTexto, children, tipoGrafica, generaci
                               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
                               <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
                           </span>
-                          <span className="text-[10px] text-emerald-400 font-bold tracking-widest uppercase">LIVE: GEN {generacionActual}</span>
+                          <span className="text-[10px] text-emerald-400 font-bold tracking-widest uppercase">LIVE: GEN {Math.max(1, generacionActual -1)}</span>
                       </div>
                     ) : null}
                     </div>

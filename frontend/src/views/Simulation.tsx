@@ -2,6 +2,7 @@ import GameCanvas from "../components/GameCanvas";
 import SettingsPanel from "../components/SettingsPanel";
 import Stats from "../components/stats";
 import DashboardGraficas from "../components/DashboardGraficas";
+import ModalGuardar from "../components/ModalGuardar";
 import { useSimulacion } from "../hooks/useSimulacion";
 import "../style.css";
 
@@ -85,10 +86,18 @@ export default function Simulation() {
               barcharData={graficas.barcharData}
               causaMuerteData={graficas.causaMuerteData}
               datosDispersion={graficas.datosDispersion}
+              historicos={historicos}
               guardando={guardado.guardando}
-              onGuardarIndividual={guardado.guardarGraficaIndividual}
+              onGuardarIndividual={guardado.iniciarGuardadoIndividual}
               onGuardarTodas={guardado.handleGuardarTodos}
             />
+            <ModalGuardar
+              isOpen={guardado.modalGuardar !== null}
+              tipo={guardado.modalGuardar?.tipo || ""}
+              guardando={guardado.guardando}
+              onConfirmar={guardado.confirmarGuardadoIndividual}
+              onCerrar={guardado.cancelarGuardado}
+              />
           </div>
         </div>
       </main>

@@ -19,6 +19,7 @@ export function useSimulacion() {
     const [barcharData, setBarcharData] = useState<BarcharData[]>([]);
     const [causaMuerteData, setCausaMuerteData] = useState<CausaMuerte[]>([]);
     const [datosDispersion, setDatosDispersion] = useState<DatosDispersion[]>([]);
+    const [modalGuardar, setModalGuardar] = useState<{isOpen: boolean, tipo: string, contenido: any} | null>(null);
     const [guardando, setGuardando] = useState(false);
 
     const generacionref = useRef(generacion);
@@ -40,33 +41,64 @@ export function useSimulacion() {
         toast.info("Población modificada. Simulación reiniciada.");
     }
 
-    const guardarGraficaIndividual = async (tipoGrafica: string, dataObjeto: any[]) => {
+    const iniciarGuardadoIndividual = (tipoGrafica: string, dataObjeto: any) => {
+        setEsPausa(true);
+        setModalGuardar({ isOpen: true, tipo: tipoGrafica, contenido: dataObjeto});
+    };
+
+    const confirmarGuardadoIndividual = async (nombre: string) => {
+        if(!modalGuardar) return;
         setGuardando(true);
-        try {
-            await DatabaseService.saveSimulation(`Simulación - ${tipoGrafica} - Generación ${generacion}`, {
-                tipo: tipoGrafica,
-                contenido: dataObjeto
+        try{
+            let nombreFinal = nombre.trim();
+            if(!nombreFinal) {
+                const fecha = new Date().toLocaleString();
+                nombreFinal = `Simulacion - ${modalGuardar.tipo} - Gen ${generacionref.current} - ${fecha}`;
+            }
+
+            const simulacionesPrevias = await DatabaseService.getSimulation();
+            const existe = simulacionesPrevias.some((s: any) => s.name.toLowerCase() === nombreFinal.toLowerCase());
+
+            if(existe){
+                toast.error("Ya existe una simulación con ese nombre. Por favor elige otro.");
+                setGuardando(false);
+                return;
+            }
+
+            await DatabaseService.saveSimulation(nombreFinal, {
+                tipo: modalGuardar.tipo,
+                contenido: modalGuardar.contenido
             });
-            toast.success(`Gráfica ${tipoGrafica} guardada en la base de datos`);
+            toast.success("Gráfica guardada exitosamente.");
+            setModalGuardar(null);
         } catch (error: any) {
-            toast.error(`Error: ${error.message}`);
+            toast.error("Error al guardar la gráfica: " + error.message);
         } finally {
             setGuardando(false);
         }
     };
 
+    const cancelarGuardado = () => {
+        setModalGuardar(null);
+        setEsPausa(false);
+    }
+
     const handleGuardarTodos = async () => {
+        setEsPausa(true);
         setGuardando(true);
         try {
-            const pLineal = DatabaseService.saveSimulation(`Simulación - Lineal - Generación ${generacion}`, { tipo: "Lineal", contenido: historial });
-            const pBarras = DatabaseService.saveSimulation(`Simulación - Barchar - Generación ${generacion}`, { tipo: "Barchar", contenido: barcharData });
-            const pForense = DatabaseService.saveSimulation(`Simulación - CausaMuerte - Generación ${generacion}`, { tipo: "CausaMuerte", contenido: causaMuerteData });
-            const pDispersion = DatabaseService.saveSimulation(`Simulación - Dispersion - Generación ${generacion}`, { tipo: "Dispersion", contenido: datosDispersion });
+            const fecha = new Date().toLocaleString();
+            const nombre = ` - Gen ${generacionref.current} - ${fecha}`;
 
-            await Promise.all([pLineal, pBarras, pForense, pDispersion]);
-            toast.success("Todas las gráficas guardadas en la base de datos");
+            const pLineal = DatabaseService.saveSimulation("Lineal" + nombre, { tipo: "Lineal", contenido: historial });
+            const pBarchar = DatabaseService.saveSimulation("Barras" + nombre, { tipo: "Barras", contenido: historicoBarchar });
+            const pCausaMuerte = DatabaseService.saveSimulation("Forense" + nombre, { tipo: "Forense", contenido: historicoCausaMuerte });
+            const pDispersion = DatabaseService.saveSimulation("Dispersion" + nombre, { tipo: "Dispersion", contenido: historicoDispersion });
+
+            await Promise.all([pLineal, pBarchar, pCausaMuerte, pDispersion]);
+            toast.success("Todas las gráficas guardadas exitosamente.");
         } catch (error: any) {
-            toast.error(`Error al guardar: ${error.message}`);
+            toast.error("Error al guardar las gráficas: " + error.message);
         } finally {
             setGuardando(false);
         }
@@ -77,7 +109,7 @@ export function useSimulacion() {
         datosEnVivo: { esPausa, setEsPausa, generacion, setGeneracion, vivos, setVivos, segundos, setSegundosActuales },
         graficas: { historial, setHistorial, barcharData, setBarcharData, causaMuerteData, setCausaMuerteData, datosDispersion, setDatosDispersion },
         historicos: { historicoBarchar, setHistoricoBarchar, historicoCausaMuerte, setHistoricoCausaMuerte, historicoDispersion, setHistoricoDispersion },
-        guardado: { guardando, guardarGraficaIndividual, handleGuardarTodos },
+        guardado: { guardando, modalGuardar, iniciarGuardadoIndividual, confirmarGuardadoIndividual, cancelarGuardado, handleGuardarTodos },
         ref: { generacionref }
     };
 }

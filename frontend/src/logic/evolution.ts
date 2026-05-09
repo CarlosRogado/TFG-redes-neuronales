@@ -112,7 +112,7 @@ export default function nextGeneration({ // Desestructuramos los parámetros de 
         frames: 0,
         generacion: nuevaGeneracion,
         historialEntry: {
-            generacion: nuevaGeneracion,
+            generacion: generacion,
             maxSegundos: segundos,
             mediaSegundos: mediaSegundos
         },

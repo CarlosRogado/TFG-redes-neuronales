@@ -10,6 +10,7 @@ interface DashboardGraficasProps {
   barcharData: any[];
   causaMuerteData: any[];
   datosDispersion: any[];
+  historicos: any;
   guardando: boolean;
   onGuardarTodas: () => void;
   onGuardarIndividual: (tipo: string, datos: any[]) => void;
@@ -21,6 +22,7 @@ export default function DashboardGraficas({
   barcharData,
   causaMuerteData,
   datosDispersion,
+  historicos,
   guardando,
   onGuardarTodas,
   onGuardarIndividual,
@@ -51,7 +53,7 @@ export default function DashboardGraficas({
         <span className="h-px flex-1 bg-linear-to-l from-transparent to-gray-300 dark:to-gray-600"></span>
       </span>
       {/* Fila Gráfica 1 (Líneas) */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-10 items-stretch">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10">
         {/* Gráfica Izquierda (En vivo)*/}
         <div className="flex flex-col bg-[#1c2135] rounded-xl boder border-slate-700 shadow-xl overflow-hidden h-full">
           {/* Cabecera gráfica */}
@@ -143,7 +145,7 @@ export default function DashboardGraficas({
         <span className="h-px flex-1 bg-linear-to-l from-transparent to-gray-300 dark:to-gray-600"></span>
       </span>
       {/* Fila Gráfica 2 (Barras) */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-10 items-stretch">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10">
         {/* Gráfica Izquierda (En vivo)*/}
         <div className="flex flex-col bg-[#1c2135] rounded-xl boder border-slate-700 shadow-xl overflow-hidden h-full">
           {/* Cabecera gráfica */}
@@ -154,12 +156,12 @@ export default function DashboardGraficas({
                 <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
               </span>
               <h3 className="text-sm font-bold text-white uppercase tracking-wider">
-                Evolución del Aprendizaje
+                Supervivencia por cohete
               </h3>
             </div>
             {/* Botón guardar gráfica */}
             <button
-              onClick={() => onGuardarIndividual("Barras", barcharData)}
+              onClick={() => onGuardarIndividual("Barras", historicos.historicoBarchar)}
               className="group flex items-center gap-2 px-3 py-1.5 bg-slate-700/50 hover:bg-emerald-600 text-slate-300 hover:text-white text-xs font-bold rounded-md transition-all duration-300 border border-slate-500 hover:border-emerald-500 shadow-sm"
               title="Guardar datos de esta gráfica"
             >
@@ -229,20 +231,47 @@ export default function DashboardGraficas({
       </span>
       {/* Fila Gráfica 3 (Causa de Muerte) */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10">
-        {/* Gráfica Izquierda */}
-        <div className="flex flex-col">
-          <div className="mt-auto w-fit">
+        {/* Gráfica Izquierda (En vivo)*/}
+        <div className="flex flex-col bg-[#1c2135] rounded-xl boder border-slate-700 shadow-xl overflow-hidden h-full">
+          {/* Cabecera gráfica */}
+          <div className="flex justify-between items-center px-5 py-3 bg-[#282f44] border-b border-slate-700">
+            <div className="flex items-center gap-3">
+              <span className="relative flex h-2.5 w-2.5">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
+              </span>
+              <h3 className="text-sm font-bold text-white uppercase tracking-wider">
+                Tipos de muerte
+              </h3>
+            </div>
+            {/* Botón guardar gráfica */}
             <button
-              onClick={() =>
-                onGuardarIndividual("CausaMuerte", causaMuerteData)
-              }
-              className="bg-yellow-500 text-black font-bold px-6 py-1.5 rounded-full w-fit text-sm shadow mb-8 cursor-not-allowed"
+              onClick={() => onGuardarIndividual("CausaMuerte", historicos.historicoCausaMuerte)}
+              className="group flex items-center gap-2 px-3 py-1.5 bg-slate-700/50 hover:bg-emerald-600 text-slate-300 hover:text-white text-xs font-bold rounded-md transition-all duration-300 border border-slate-500 hover:border-emerald-500 shadow-sm"
+              title="Guardar datos de esta gráfica"
             >
-              Guardar
+              <svg
+                className="w-4 h-4 transition-transform group-hover:scale-110"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"
+                ></path>
+              </svg>
+              GUARDAR
             </button>
           </div>
-          <div className="h-70 bg-[#1c2135] rounded-lg  mb-3 flex items-center justify-center text-slate-500 border border-slate-600">
-            <PieChart data={causaMuerteData} />
+          {/* Contenido de la gráfica */}
+          <div className="flex-1 p-5 flex flex-col bg-[#1c2135]">
+            <div className="flex-1 w-full bg-[#0f1423] rounded-xl border border-slate-700/50 shadow-inner flex items-center justify-center p-2 min-h-75">
+              <PieChart data={causaMuerteData} />
+            </div>
           </div>
         </div>
         {/* Caja de Texto Derecha */}
@@ -286,20 +315,47 @@ export default function DashboardGraficas({
       </span>
       {/* Fila Gráfica 4 (Dispersión) */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10">
-        {/* Gráfica Izquierda */}
-        <div className="flex flex-col">
-          <div className="mt-auto w-fit">
+        {/* Gráfica Izquierda (En vivo)*/}
+        <div className="flex flex-col bg-[#1c2135] rounded-xl boder border-slate-700 shadow-xl overflow-hidden h-full">
+          {/* Cabecera gráfica */}
+          <div className="flex justify-between items-center px-5 py-3 bg-[#282f44] border-b border-slate-700">
+            <div className="flex items-center gap-3">
+              <span className="relative flex h-2.5 w-2.5">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
+              </span>
+              <h3 className="text-sm font-bold text-white uppercase tracking-wider">
+                Estructura Cerebral de la Población
+              </h3>
+            </div>
+            {/* Botón guardar gráfica */}
             <button
-              onClick={() =>
-                onGuardarIndividual("Dispersion", datosDispersion)
-              }
-              className="bg-yellow-500 text-black font-bold px-6 py-1.5 rounded-full w-fit text-sm shadow mb-8 cursor-not-allowed"
+              onClick={() => onGuardarIndividual("Dispersion", historicos.historicoDispersion)}
+              className="group flex items-center gap-2 px-3 py-1.5 bg-slate-700/50 hover:bg-emerald-600 text-slate-300 hover:text-white text-xs font-bold rounded-md transition-all duration-300 border border-slate-500 hover:border-emerald-500 shadow-sm"
+              title="Guardar datos de esta gráfica"
             >
-              Guardar
+              <svg
+                className="w-4 h-4 transition-transform group-hover:scale-110"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"
+                ></path>
+              </svg>
+              GUARDAR
             </button>
           </div>
-          <div className="h-70 bg-[#1c2135] rounded-lg  mb-3 flex items-center justify-center text-slate-500 border border-slate-600">
-            <DispersionChart data={datosDispersion} />
+          {/* Contenido de la gráfica */}
+          <div className="flex-1 p-5 flex flex-col bg-[#1c2135]">
+            <div className="flex-1 w-full bg-[#0f1423] rounded-xl border border-slate-700/50 shadow-inner flex items-center justify-center p-2 min-h-75">
+              <DispersionChart data={datosDispersion} />
+            </div>
           </div>
         </div>
         {/* Caja de Texto Derecha */}
