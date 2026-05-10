@@ -209,7 +209,11 @@ app.get('/admin/users', isAdmin, async (req, res) => {
 // Endpoint para eliminar usuario (solo para Admin)
 app.delete('/admin/users/:uid', isAdmin, async (req, res) => {
   try {
-    await prisma.user.delete({ where: { uid: Number(req.params.uid) }});
+    const targetUid = Number(req.params.uid);
+    
+    await prisma.simulationData.delete({ where: { userId: targetUid }});
+    await prisma.user.delete({ where: { uid: targetUid }});
+
     res.json({ message: "Usuario eliminado correctamente" });
   } catch (e) {
     res.status(500).json({ error: "Error al eliminar usuario" });
@@ -293,7 +297,9 @@ app.delete('/delete-account', async (req, res) => {
       return res.status(401).json({ error: "Contraseña incorrecta" });
     }
 
+    await prisma.simulationData.deleteMany({ where: { userId: Number(userUid) }});
     await prisma.user.delete({ where: { uid: Number(userUid) }});
+
     res.json({ message: "Cuenta eliminada correctamente" });
   } catch (e) {
     res.status(500).json({ error: "Error al borrar cuenta" });

@@ -116,7 +116,7 @@ function App() {
         <Route path="/" element={<Home />} />
         <Route path="/register" element={<Register />} />
         <Route path="/login" element={<Login />} />
-        {/*<Route path="/docs" element={<Docs />} /> */}
+        {/* <Route path="/docs" element={<Docs />} /> */}
         <Route path="/simulation" element={<ProtectedSimulationRoute />} />
         <Route path="/profile" element={<Profile />} />
         <Route path="*" element={<Home />} />{" "}

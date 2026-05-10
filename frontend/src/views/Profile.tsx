@@ -237,7 +237,7 @@ function UserPanel({ uid }: { uid: Number }) {
         e.preventDefault();
         try {
             const response = await fetch(`http://localhost:4000/change-password`, {
-                method: 'POST',
+                method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
                     'x-user-uid' : uid.toString()
@@ -257,10 +257,16 @@ function UserPanel({ uid }: { uid: Number }) {
     };
     const handleDeleteAccount = async () => {
         if (window.confirm("¿Seguro que quieres eliminar tu cuenta? Esta acción no se puede deshacer y eliminará todas tus simulaciones.")) {
+            const psw = window.prompt("Introduce tu contraseña para poder borrar tu cuenta:");
+            if (!psw || psw.trim() === "") {
+                toast.error("La contraseña es necesaria para eliminar la cuenta.");
+                return;
+            }
             try {
                 const response = await fetch(`http://localhost:4000/delete-account`, {
                     method: 'DELETE',
-                    headers: { 'x-user-uid' : uid.toString() }
+                    headers: { 'x-user-uid' : uid.toString() },
+                    body: JSON.stringify({ currentPassword: psw })
                 });
                 if (response.ok) {
                     toast.success("Cuenta eliminada correctamente.");

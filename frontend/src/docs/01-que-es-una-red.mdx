@@ -1,0 +1,30 @@
+## ¿Qué es una red neuronal?
+Es un modelo de la inteligencia artificial que enseña a los computadoras a procesar datos de una manera similar a como lo hace el cerebro humano. Estos aprenden a base de prueba y error, logrando una mejora continua.
+
+Consiste en un tipo de proceso de ["Machine learning"](#qué-es-el-machine-learnign-y-que-tipos-existen) llamado [Deep learning](#qué-es-el-aprendizaje-profundo-o-deep-learning), que utiliza neuronas interconectadas entre sí en una estructura de capas parecidas al cerebro humano, las cuales procesan información de forma no lineal mediante el uso de [funciones de activación](#funciones-de-activación). Estas funciones permiten que la red transforme números simples en decisiones, permitiendo aprender patrones.
+
+En esta aplicación cada "cohete" es una red neuronal independiente, capaz de decidir si saltar o no. Los datos que recibe (inputs) son la distancia al objetivo, la velocidad actual, el ángulo de inclinación y la distancia a obstáculos, y como resultado proporciona un número entre 0 y 1, si este número es más grande que 0.5 el "cohete" realiza un salto, si no lo es el cohete se queda parado.
+
+## Funcionamiento de las redes neuronales.
+Está inspirado en el cerebro humano, una red neuronal esta formada por un conjunto de neuronas artificiales (llamadas nodos) que trabajan juntas para resolver un problema.
+
+### Su arquitectura esta formada por tres capas:
+#### 1. Capa de entrada
+La información entra a la red neuronal artificial desde esta capa, las neuronas que se encuentran en ella procesan los datos, los analizan y los pasan a la siguiente capa.
+
+#### 2. Capa oculta 
+Las redes pueden tener infinitas capas de este tipo, cada capa oculta analiza la salida de la capa anterior, la procesa aun más y pasa los datos a la siguiente capa.
+
+#### 3. Capa de salida 
+Proporciona el resultado final de todo el procesamiento de datos realizado. Puede estar compuesta por una o varias neuronas dependiendo del tipo de problema que este intentando resolver.
+
+## Tipos de redes neuronales
+Los tipos de redes neuronales dependen de cómo fluyen los datos desde la capa de entrada hasta la capa de salida. Se pueden distinguir los siguientes tipos:
+
+### Redes neuronales prealimentadas o perceptrón multicapa (Feedforward)
+Procesan datos en una dirección, desde la capa de entrada hasta la capa de salida. Todos los nodos de una capa están conectados a todos los nodos de la siguiente capa. Utiliza un proceso de retroalimentación para mejorar las predicciones a lo largo del tiempo.
+
+(Utilizado en la simulación)
+
+### Redes neuronales convolucionales
+Las capas ocultas de estas redes realizan funciones matemáticas específicas, utilizadas para clasificación de imágenes ya que pueden obtener características de estas útiles para su reconocimiento y clasificación.
