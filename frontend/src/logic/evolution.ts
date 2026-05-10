@@ -24,8 +24,7 @@ export interface EvolutionResult { // Tipo de resultado que devuelve la función
     };
 }
 
-// Parametros de entrada para la función nextGeneration
-interface NextGenerationParams { // Tipo de parámetros que recibe la función nextGeneration
+interface NextGenerationParams { 
     p: p5;
     cohetesMuertos: rocket[];
     totalCohetes: number;
@@ -35,8 +34,8 @@ interface NextGenerationParams { // Tipo de parámetros que recibe la función n
     generacion: number;
 }
 
-// Función para generar la siguiente generación de cohetes
-export default function nextGeneration({ // Desestructuramos los parámetros de entrada para facilitar su uso dentro de la función
+
+export default function nextGeneration({ 
     p,
     cohetesMuertos,
     totalCohetes,
@@ -44,20 +43,16 @@ export default function nextGeneration({ // Desestructuramos los parámetros de 
     tasaElitismo,
     frames,
     generacion
-}: NextGenerationParams): EvolutionResult { // La función recibe un objeto con los parámetros necesarios para generar la siguiente generación y devuelve un objeto con los resultados de la evolución, incluyendo los nuevos cohetes, obstáculos, cohetes muertos, frames, generación y una entrada para el historial.
-
+}: NextGenerationParams): EvolutionResult {
     const nuevaGeneracion = generacion + 1;
 
     const nuevosCohetes: rocket[] = [];
 
-    // Ordenar cohetes muertos del mejor al peor
     const rankingCohetes = cohetesMuertos.slice().sort((a,b) => b.score - a.score);
 
-    // Calcular cuantos clones puros se van a pasar
     const numClones = Math.floor(totalCohetes * (tasaElitismo / 100));
 
     for (let i = 0; i < totalCohetes; i++){
-        // Clonacion pura
         if(i < numClones) {
             const indiceElite = i%rankingCohetes.length;
             const cerebroParaCopiar = rankingCohetes[indiceElite].copy();
@@ -65,7 +60,6 @@ export default function nextGeneration({ // Desestructuramos los parámetros de 
             const nuevoHijo = new rocket(200, p.height / 2, i, cerebroParaCopiar);
             nuevosCohetes.push(nuevoHijo);
         }
-        // Mutantes
         else{
             const poolSize = numClones > 0 ? numClones : Math.min(5, rankingCohetes.length);
             const randomEliteindex = Math.floor(Math.random() * poolSize);
@@ -78,16 +72,16 @@ export default function nextGeneration({ // Desestructuramos los parámetros de 
 
     const datosDispersion: DatosDispersion[] = nuevosCohetes.map((cohete, index) => {
         const pesos = cohete.brain.getWeights();
-        const pesoCapa1= Array.from(pesos[0].dataSync()); // Pesos capa 1 (conexiones de entrada a la primera capa oculta)
-        const sesgoCapa1 = Array.from(pesos[1].dataSync()); // Sesgo capa 1 (sesgos de la primera capa oculta)
-        const pesoCapa2 = Array.from(pesos[2].dataSync()); // Pesos capa 2 (conexiones de la primera capa oculta a la capa de salida)
-        const sesgoCapa2 = Array.from(pesos[3].dataSync()); // Sesgo capa 2 (sesgos de la capa de salida)
+        const pesoCapa1= Array.from(pesos[0].dataSync()); 
+        const sesgoCapa1 = Array.from(pesos[1].dataSync()); 
+        const pesoCapa2 = Array.from(pesos[2].dataSync());
+        const sesgoCapa2 = Array.from(pesos[3].dataSync()); 
         
-        const todosLosPesos = [...pesoCapa1, ...pesoCapa2]; // Unimos todos los pesos en un solo array para calcular la media
-        const todosLosSesgos = [...sesgoCapa1, ...sesgoCapa2]; // Unimos todos los sesgos en un solo array para calcular la media
+        const todosLosPesos = [...pesoCapa1, ...pesoCapa2];
+        const todosLosSesgos = [...sesgoCapa1, ...sesgoCapa2]; 
 
-        const mediaPesos = todosLosPesos.reduce((a, b) => a + b, 0) / todosLosPesos.length; // Calculamos la media de los pesos
-        const mediaSesgos = todosLosSesgos.reduce((a, b) => a + b, 0) / todosLosSesgos.length; // Calculamos la media de los sesgos
+        const mediaPesos = todosLosPesos.reduce((a, b) => a + b, 0) / todosLosPesos.length;
+        const mediaSesgos = todosLosSesgos.reduce((a, b) => a + b, 0) / todosLosSesgos.length; 
 
         return {
             id: `Cohete ${index + 1}`,

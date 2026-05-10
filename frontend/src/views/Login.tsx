@@ -17,7 +17,6 @@ export default function Login() {
       }
     }, [navigate]);
 
-    // Validaciones en tiempo real
     const isEmailValid = email === '' || AuthService.isValidEmail(email);
     const isPasswordValid = password === '' || AuthService.isValidPassword(password);
     const canSubmit = isEmailValid && isPasswordValid && email !== '' && password !== '';
@@ -33,11 +32,9 @@ export default function Login() {
             setMessage('¡Iniciaste sesión exitosamente!');
             toast.success('¡Iniciaste sesión exitosamente!');
 
-            // Limpiar formulario
             setEmail('');
             setPassword('');
 
-            // Redirigir a la página de simulación después de 1.5 segundos
             setTimeout(() => {
                 window.location.href = '/';
             }, 500);

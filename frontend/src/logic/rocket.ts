@@ -40,11 +40,10 @@ export default class rocket {
                     tf.layers.dense({ units: 1, activation: 'sigmoid' })
                 ]
             });
-            return model as unknown as tf.Tensor; // Aseguramos el tipo correcto
-        }) as unknown as tf.Sequential; // Aseguramos el tipo correcto
+            return model as unknown as tf.Tensor; 
+        }) as unknown as tf.Sequential;
     }
 
-    // --- NUEVO: MÉTODO PARA COPIAR EL CEREBRO ---
     copy(): tf.Sequential {
         return tf.tidy(() => {
             const modelCopy = this.createBrain();
@@ -54,11 +53,10 @@ export default class rocket {
                 weightCopies[i] = weights[i].clone();
             }
             modelCopy.setWeights(weightCopies);
-            return modelCopy as unknown as tf.Tensor; // Aseguramos el tipo correcto
-        }) as unknown as tf.Sequential; // Aseguramos el tipo correcto
+            return modelCopy as unknown as tf.Tensor;
+        }) as unknown as tf.Sequential; 
     }
 
-    // --- NUEVO: MÉTODO PARA MUTAR LOS PESOS ---
     mutate(rate: number, p: p5): void {
         tf.tidy(() => {
             const weights = this.brain.getWeights();
@@ -69,30 +67,27 @@ export default class rocket {
                 let values = tensor.dataSync().slice();
                 for (let j = 0; j < values.length; j++) {
                     if (p.random(1) < rate) {
-                        // randomGaussian() es mejor para evolucionar
                         values[j] += p.randomGaussian() * 0.1; 
                     }
                 }
                 let newTensor = tf.tensor(values, shape);
                 mutatedWeights.push(newTensor);
             }
-            // Aplicamos los nuevos pesos al cerebro de este cohete
             this.brain.setWeights(mutatedWeights);
         });
     }
 
-    think(closest: obstacle, p: p5) { // Asegúrate de que recibe el objeto 'closest' directamente
+    think(closest: obstacle, p: p5) { 
         if (!closest || this.pendingThink) {
             return;
         }
 
-        let oData = closest.getData(p); // Coge los datos del obstaculo mas cercano
-        // NORMALIZACIÓN CRÍTICA
+        let oData = closest.getData(p); 
         let inputs = [
-            this.y / p.height,                // Posición Y del cohete (0 a 1)
-            this.velocity / 10,             // Velocidad (normalizada aprox)
-            oData.x / p.width,   // Distancia horizontal relativa
-            oData.center / p.height            // Altura del hueco
+            this.y / p.height,             
+            this.velocity / 10,        
+            oData.x / p.width,   
+            oData.center / p.height         
         ];
 
         this.pendingThink = true;

@@ -10,7 +10,6 @@ export default function Register() {
     const [error, setError] = useState('');
     const navigate = useNavigate();
 
-    // Validaciones en tiempo real
     const isEmailValid = email === '' || AuthService.isValidEmail(email);
     const isPasswordValid = password === '' || AuthService.isValidPassword(password);
     const canSubmit = isEmailValid && isPasswordValid && email !== '' && password !== '';
