@@ -4,7 +4,7 @@ export const SECTIONS = [
   { id: '01', title: 'Introducción a Redes', icon: 'Rocket' },
   { id: '02', title: 'Machine Learning', icon: 'Brain' },
   { id: '03', title: 'Tipos de Redes', icon: 'Network' },
-  { id: '04', title: 'Anatomía de una Neurona', icon: 'Microscope' },
+  { id: '04', title: 'Anatomía de una Neurona', icon: 'Microscope' }
 ];
 
 export const useDocs = () => {

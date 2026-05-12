@@ -1,6 +1,10 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { useDocs } from '../hooks/useDocs';
-import { Rocket, Brain, Network, Microscope } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { AuthService } from '../services/AuthService';
+import { toast } from 'sonner';
+import LogoRedNeuronal from '../components/Logo';
 
 import Intro from '../docs/sections/01-que-es-una-red.mdx';
 import ML from '../docs/sections/02-tipos-de-aprendizaje.mdx';
@@ -11,95 +15,129 @@ const ContentMap: Record<string, any> = {
   '01': Intro, '02': ML, '03': Tipos, '04': Anatomia
 };
 
-const SectionFromFileLink: Record<string, string> = {
-  '01-que-es-una-red': '01',
-  '02-tipos-de-aprendizaje': '02',
-  '03-que-es-una-neurona': '03',
-  '04-anatomia-neurona': '04'
-};
-
-const resolveSectionFromHref = (href: string) => {
-  const normalizedHref = decodeURIComponent(href).toLowerCase();
-
-  const linkedFile = Object.keys(SectionFromFileLink).find((key) => normalizedHref.includes(key));
-  if (linkedFile) {
-    return SectionFromFileLink[linkedFile];
-  }
-
-  if (!normalizedHref.startsWith('#')) {
-    return undefined;
-  }
-
-  const hash = normalizedHref.slice(1);
-
-  if (hash.includes('machine-learning')) return '02';
-  if (hash.includes('aprendizaje-profundo') || hash.includes('deep-learning')) return '04';
-  if (hash.includes('neurona') || hash.includes('pesos') || hash.includes('sesgos')) return '04';
-  if (hash.includes('tipos-de-redes')) return '03';
-  if (hash.includes('funciones-de-activacion') || hash.includes('funciones-de-activación')) return '04';
-
-  return undefined;
-};
-
-const IconMap: any = { Rocket, Brain, Network, Microscope };
-
 const Docs = () => {
   const { activeId, changeSection, sections } = useDocs();
+  const [isLogged, setIsLogged] = useState(false);
   const ActiveContent = ContentMap[activeId];
+
+  useEffect(() => {
+    setIsLogged(AuthService.hasActiveSession());
+  }, []);
+
+  const handleLogout = () => {
+    sessionStorage.removeItem("authSession");
+    localStorage.removeItem("user_data");
+    setIsLogged(false);
+    toast.success("Sesión cerrada exitosamente");
+    window.location.href = "/";
+  };
+
   const components = {
-    a: ({ href = '', children, ...props }: any) => {
-      const anchorText = String(children).toLowerCase();
-      const linkedSection = resolveSectionFromHref(href)
-        ?? (!href && anchorText.includes('deep learning') ? '04' : undefined);
-
-      const onClick = (event: React.MouseEvent<HTMLAnchorElement>) => {
-        if (!linkedSection) return;
-        event.preventDefault();
-        changeSection(linkedSection);
-      };
-
-      return (
-        <a href={href || '#'} onClick={onClick} {...props}>
-          {children}
-        </a>
-      );
-    }
+    a: ({ href = '', children, ...props }: any) => (
+      <a href={href || '#'} {...props} className="text-blue-600 hover:text-blue-800 hover:underline">
+        {children}
+      </a>
+    )
   };
 
   return (
-    <div className="h-screen flex bg-white overflow-x-hidden">
-      <aside className="w-72 bg-gray-900 border-r border-[#30363d] p-6 hidden lg:block lg:sticky lg:top-0 lg:h-screen lg:self-start max">
-        <nav className="space-y-1">
-          {sections.map((s) => {
-            const Icon = IconMap[s.icon];
-            return (
+    <div className="h-screen flex flex-col bg-white">
+      <header className="bg-gray-900 mx-auto flex items-center gap-8 px-4 sm:px-6 lg:px-8 w-full fixed top-0 left-0 right-0 z-40 h-16 border-b border-gray-700">
+        <Link to="/" className="block text-teal-300">
+          <span className="sr-only">Home</span>
+          <LogoRedNeuronal className="w-12 h-12" />
+        </Link>
+        <div className="flex flex-1 items-center justify-end md:justify-between">
+          <nav className="p-4 bg-gray-900 text-white flex gap-4">
+            <Link to="/" className="hover:text-white/75">
+              Home
+            </Link>
+            <div className="w-fit">
+              <Link to="/docs" className="hover:text-white/75">
+                Documentación
+              </Link>
+            </div>
+            {isLogged ? (
+              <>
+                <Link to="/simulation" className="hover:text-white/75">
+                  Simulación
+                </Link>
+              </>
+            ) : null}
+          </nav>
+          <div className="flex items-center gap-4">
+            <div className="sm:flex sm:gap-4">
+              {isLogged ? (
+                <>
+                  <div className="relative w-fit">
+                    <Link
+                      to="/profile"
+                      className="flex items-center gap-2 rounded-md border border-gray-700 bg-gray-800 px-5 py-2.5 text-sm font-medium text-teal-400 transition hover:bg-gray-700 hover:text-teal-300"
+                    >
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        strokeWidth={1.5}
+                        stroke="currentColor"
+                        className="w-5 h-5"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z"
+                        />
+                      </svg>
+                      Mi Perfil
+                    </Link>
+                  </div>
+                  <button
+                    onClick={handleLogout}
+                    className="hidden rounded-md border border-red-900/50 px-5 py-2.5 text-sm font-medium text-red-400 transition sm:block hover:bg-red-900/20 hover:text-red-300"
+                  >
+                    Cerrar Sesión
+                  </button>
+                </>
+              ) : null}
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <div className="flex flex-1 pt-16">
+        <aside className="w-64 bg-gray-50 border-r border-gray-200 p-6 fixed left-0 top-16 h-[calc(100vh-4rem)] overflow-y-auto hidden lg:block z-30">
+          <nav className="space-y-2">
+            {sections.map((s) => (
               <button
                 key={s.id}
                 onClick={() => changeSection(s.id)}
-                className={`w-full flex items-center gap-3 px-3 py-2 rounded-md text-sm transition-all ${
-                  activeId === s.id ? 'bg-blue-500/10 text-blue-400 border-l-2 border-blue-500' : 'text-[#8b949e] hover:text-white'
+                className={`w-full text-left px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+                  activeId === s.id 
+                    ? 'bg-blue-600 text-white' 
+                    : 'text-gray-700 hover:bg-gray-200'
                 }`}
               >
-                <Icon size={16} /> {s.title}
+                {s.title}
               </button>
-            );
-          })}        </nav>
-      </aside>
+            ))}
+          </nav>
+        </aside>
 
-      <main className="flex-1 min-w-0 w-full max-h-screen bg-white overflow-hidden ">
-        <AnimatePresence mode="wait">
-          <motion.div
-            key={activeId}
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -10 }}
-          >
-            <div className="prose max-w-none p-16 overflow-y-auto h-[calc(100vh-128px)]">
-                  <ActiveContent components={components} />
-            </div>
-          </motion.div>
-        </AnimatePresence>
-      </main>
+        <main className="flex-1 overflow-y-auto lg:ml-64">
+          <AnimatePresence mode="wait">
+            {/* @ts-ignore */}
+            <motion.div
+              key={activeId}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="prose prose-lg max-w-6xl mx-auto px-8 py-12"
+            >
+              <ActiveContent components={components} />
+            </motion.div>
+          </AnimatePresence>
+        </main>
+      </div>
     </div>
   );
 };
