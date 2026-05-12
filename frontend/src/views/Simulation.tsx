@@ -1,6 +1,6 @@
 import GameCanvas from "../components/GameCanvas";
 import SettingsPanel from "../components/SettingsPanel";
-import Stats from "../components/stats";
+import Stats from "../components/Stats";
 import DashboardGraficas from "../components/DashboardGraficas";
 import ModalGuardar from "../components/ModalGuardar";
 import { useSimulacion } from "../hooks/useSimulacion";

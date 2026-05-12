@@ -1,6 +1,7 @@
 @import "tailwindcss";
+@plugin "@tailwindcss/typography";
 
 canvas {
 	display: block;
 	border-radius: 0 0 0.5rem 0.5rem;
-}
+}; 

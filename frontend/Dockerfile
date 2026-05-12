@@ -9,5 +9,4 @@ COPY . .
 
 EXPOSE 5173
 
-# Importante el --host para que Docker permita el acceso externo
-CMD ["npm", "run", "dev", "--", "--host"]
+CMD ["npm", "run", "dev:docker"]

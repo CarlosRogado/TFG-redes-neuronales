@@ -4,15 +4,15 @@ import {
   Route,
   Link,
   Navigate,
-  useNavigate,
 } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { Toaster, toast } from "sonner";
+import 'katex/dist/katex.min.css';
 
 import Home from "./views/Home";
 import Register from "./views/Register";
 import Login from "./views/Login";
-// import Docs from "./views/Docs";
+import Docs from "./views/Docs";
 import Simulation from "./views/Simulation";
 import LogoRedNeuronal from "./components/Logo.tsx";
 import { AuthService } from "./services/AuthService";
@@ -48,15 +48,11 @@ function NavigationBar() {
         <nav className="p-4 bg-gray-900 text-white flex gap-4 ">
           <Link to="/" className="hover:text-white/75">
             Home
-          </Link>
-          <div className="relative group w-fit">
+          </Link> 
+          <div className="w-fit">
             <Link to="/docs" className="hover:text-white/75">
-              Docs
+              Documentación
             </Link>
-            <span className="absolute top-full left-1/2 -translate-x-1/2 mt-2 w-max px-3 py-1.5 bg-gray-800 text-white text-xs font-semibold rounded-md shadow-lg opacity-0 transition-opacity duration-300 pointer-events-none group-hover:opacity-100 z-50">
-              🚧 En Construccion
-              <div className="absolute bottom-full left-1/2 -translate-x-1/2 -mb-1 w-2 h-2 rotate-45 bg-gray-800"></div>
-            </span>
           </div>
           {isLogged ? (
             <>
@@ -116,7 +112,7 @@ function App() {
         <Route path="/" element={<Home />} />
         <Route path="/register" element={<Register />} />
         <Route path="/login" element={<Login />} />
-        {/* <Route path="/docs" element={<Docs />} /> */}
+        <Route path="/docs" element={<Docs />} />
         <Route path="/simulation" element={<ProtectedSimulationRoute />} />
         <Route path="/profile" element={<Profile />} />
         <Route path="*" element={<Home />} />{" "}
