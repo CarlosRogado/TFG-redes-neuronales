@@ -1,7 +1,7 @@
 ## Tipos de redes neuronales
 Los tipos de redes neuronales dependen de cómo fluyen los datos desde la capa de entrada hasta la capa de salida. Se pueden distinguir los siguientes tipos:
 
-### Redes neuronales prealimentadas o perceptrón multicapa (Feedforward)
+### Redes neuronales prealimentadas o perceptrón multicapa (propagación hacia adelante)
 Procesan datos en una dirección, desde la capa de entrada hasta la capa de salida. Todos los nodos de una capa están conectados a todos los nodos de la siguiente capa. Utiliza un proceso de retroalimentación para mejorar las predicciones a lo largo del tiempo.
 
 (Utilizado en la simulación)
@@ -10,11 +10,11 @@ Procesan datos en una dirección, desde la capa de entrada hasta la capa de sali
 Las capas ocultas de estas redes realizan funciones matemáticas específicas, utilizadas para clasificación de imágenes ya que pueden obtener características de estas útiles para su reconocimiento y clasificación.
 
 ## ¿Cómo aprenden realmente los cohetes?
-Se trata de un hibrido entre redes neuronales y algoritmos genéticos llamado Neuroevolución.
+Se trata de un híbrido entre redes neuronales y algoritmos genéticos llamado neuroevolución.
 
-Consiste en una técnica que utiliza algoritmos evolutivos para generar redes neuronales artificales.
+Consiste en una técnica que utiliza algoritmos evolutivos para generar redes neuronales artificiales.
 
 Para aprender se utiliza una selección natural que consta de varias fases:
 1-Evaluación, al final de cada intento se mide qué tan lejos llegó cada cohete (fitness).
 2-Selección, los cohetes con mejor puntuación son elegidos para generar la siguiente generación.
-3-Mutación, los hijos heredan los pesos y sesgos de sus padres, algunos reciben pequeños cambios (mutación) y otros son clonados para que evitar la regresión del aprendizaje.
+3-Mutación, los hijos heredan los pesos y sesgos de sus padres, algunos reciben pequeños cambios (mutación) y otros son clonados para evitar la regresión del aprendizaje.

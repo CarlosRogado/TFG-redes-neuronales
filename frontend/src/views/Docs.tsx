@@ -11,23 +11,23 @@ import ML from '../docs/sections/02-tipos-de-aprendizaje.mdx';
 import Tipos from '../docs/sections/03-que-es-una-neurona.mdx';
 import Anatomia from '../docs/sections/04-anatomia-neurona.mdx';
 
-const ContentMap: Record<string, any> = {
+const MapaContenido: Record<string, any> = {
   '01': Intro, '02': ML, '03': Tipos, '04': Anatomia
 };
 
 const Docs = () => {
-  const { activeId, changeSection, sections } = useDocs();
-  const [isLogged, setIsLogged] = useState(false);
-  const ActiveContent = ContentMap[activeId];
+  const { idActivo, cambiarSeccion, secciones } = useDocs();
+  const [estaAutenticado, setEstaAutenticado] = useState(false);
+  const ContenidoActivo = MapaContenido[idActivo];
 
   useEffect(() => {
-    setIsLogged(AuthService.hasActiveSession());
+    setEstaAutenticado(AuthService.tieneSesionActiva());
   }, []);
 
-  const handleLogout = () => {
+  const manejarCerrarSesion = () => {
     sessionStorage.removeItem("authSession");
     localStorage.removeItem("user_data");
-    setIsLogged(false);
+    setEstaAutenticado(false);
     toast.success("Sesión cerrada exitosamente");
     window.location.href = "/";
   };
@@ -44,20 +44,20 @@ const Docs = () => {
     <div className="h-screen flex flex-col bg-white">
       <header className="bg-gray-900 mx-auto flex items-center gap-8 px-4 sm:px-6 lg:px-8 w-full fixed top-0 left-0 right-0 z-40 h-16 border-b border-gray-700">
         <Link to="/" className="block text-teal-300">
-          <span className="sr-only">Home</span>
+          <span className="sr-only">Inicio</span>
           <LogoRedNeuronal className="w-12 h-12" />
         </Link>
         <div className="flex flex-1 items-center justify-end md:justify-between">
           <nav className="p-4 bg-gray-900 text-white flex gap-4">
             <Link to="/" className="hover:text-white/75">
-              Home
+              Inicio
             </Link>
             <div className="w-fit">
               <Link to="/docs" className="hover:text-white/75">
                 Documentación
               </Link>
             </div>
-            {isLogged ? (
+            {estaAutenticado ? (
               <>
                 <Link to="/simulation" className="hover:text-white/75">
                   Simulación
@@ -67,7 +67,7 @@ const Docs = () => {
           </nav>
           <div className="flex items-center gap-4">
             <div className="sm:flex sm:gap-4">
-              {isLogged ? (
+              {estaAutenticado ? (
                 <>
                   <div className="relative w-fit">
                     <Link
@@ -88,14 +88,14 @@ const Docs = () => {
                           d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z"
                         />
                       </svg>
-                      Mi Perfil
+                      Mi perfil
                     </Link>
                   </div>
                   <button
-                    onClick={handleLogout}
+                    onClick={manejarCerrarSesion}
                     className="hidden rounded-md border border-red-900/50 px-5 py-2.5 text-sm font-medium text-red-400 transition sm:block hover:bg-red-900/20 hover:text-red-300"
                   >
-                    Cerrar Sesión
+                    Cerrar sesión
                   </button>
                 </>
               ) : null}
@@ -107,12 +107,12 @@ const Docs = () => {
       <div className="flex flex-1 pt-16">
         <aside className="w-64 bg-gray-50 border-r border-gray-200 p-6 fixed left-0 top-16 h-[calc(100vh-4rem)] overflow-y-auto hidden lg:block z-30">
           <nav className="space-y-2">
-            {sections.map((s) => (
+            {secciones.map((s) => (
               <button
                 key={s.id}
-                onClick={() => changeSection(s.id)}
+                onClick={() => cambiarSeccion(s.id)}
                 className={`w-full text-left px-4 py-2 rounded-lg text-sm font-medium transition-all ${
-                  activeId === s.id 
+                  idActivo === s.id 
                     ? 'bg-blue-600 text-white' 
                     : 'text-gray-700 hover:bg-gray-200'
                 }`}
@@ -125,15 +125,14 @@ const Docs = () => {
 
         <main className="flex-1 overflow-y-auto lg:ml-64">
           <AnimatePresence mode="wait">
-            {/* @ts-ignore */}
             <motion.div
-              key={activeId}
+              key={idActivo}
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               className="prose prose-lg max-w-6xl mx-auto px-8 py-12"
             >
-              <ActiveContent components={components} />
+              <ContenidoActivo components={components} />
             </motion.div>
           </AnimatePresence>
         </main>

@@ -4,73 +4,66 @@ const cors = require('cors');
 const bcrypt = require('bcryptjs');
 
 const prisma = new PrismaClient();
-const app = express(); // API REST para el backend
 
-const ADMIN_EMAIL = process.env.ADMIN_EMAIL || 'admin@simulation.local';
-const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || '1234';
+const app = express(); 
 
-async function ensureAdminUser() {
-  const hashedPassword = await bcrypt.hash(ADMIN_PASSWORD, 10);
+const EMAIL_ADMIN = process.env.ADMIN_EMAIL || 'admin@simulation.local';
+const CONTRASENA_ADMIN = process.env.ADMIN_PASSWORD || '1234';
+
+async function asegurarUsuarioAdmin() {
+  const hashedPassword = await bcrypt.hash(CONTRASENA_ADMIN, 10);
   await prisma.user.upsert({
-    where: { email: ADMIN_EMAIL },
+    where: { email: EMAIL_ADMIN },
     update: {
       password: hashedPassword,
       role: 'Admin'
     },
     create: {
-      email: ADMIN_EMAIL,
+      email: EMAIL_ADMIN,
       password: hashedPassword,
       role: 'Admin'
     }
   });
 }
 
-app.use(cors()); // Permite solicitudes desde el frontend
-app.use(express.json({limit:'50mb'})); // Permite recibir JSON en el body de las solicitudes
+app.use(cors()); 
+app.use(express.json({limit:'50mb'}));
 app.use(express.urlencoded({limit:'50mb',extended:true}));
 
-// Validación de email
-function isValidEmail(email) {
+function esEmailValido(email) {
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   return emailRegex.test(email);
 }
 
-// Validación de contraseña (mínimo 8 caracteres)
-function isValidPassword(password) {
+function esContrasenaValida(password) {
   return password && password.length >= 8;
 }
 
-// Endpoint para registrar un nuevo usuario
 app.post('/register', async (req, res) => {
   const { email, password } = req.body;
   
   try {
-    // Validaciones
+
     if (!email || !password) {
-      return res.status(400).json({ error: "Email y contraseña son requeridos" });
+      return res.status(400).json({ error: "Correo electrónico y contraseña son requeridos" });
     }
-
-    if (!isValidEmail(email)) {
-      return res.status(400).json({ error: "Email no válido" });
+    if (!esEmailValido(email)) {
+      return res.status(400).json({ error: "Correo electrónico no válido" });
     }
-
-    if (!isValidPassword(password)) {
+    if (!esContrasenaValida(password)) {
       return res.status(400).json({ error: "La contraseña debe tener mínimo 8 caracteres" });
     }
 
-    // Verificar si el usuario ya existe
     const existingUser = await prisma.user.findUnique({
       where: { email }
     });
 
     if (existingUser) {
-      return res.status(400).json({ error: "El email ya está registrado" });
+      return res.status(400).json({ error: "El correo electrónico ya está registrado" });
     }
 
-    // Hash de la contraseña
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    // Crear usuario
     const user = await prisma.user.create({
       data: {
         email,
@@ -91,41 +84,35 @@ app.post('/register', async (req, res) => {
   }
 });
 
-// Endpoint para login
 app.post('/login', async (req, res) => {
   const { email, password } = req.body;
 
   try {
-    // Validaciones
+
     if (!email || !password) {
-      return res.status(400).json({ error: "Email y contraseña son requeridos" });
+      return res.status(400).json({ error: "Correo electrónico y contraseña son requeridos" });
     }
-
-    if (!isValidEmail(email)) {
-      return res.status(400).json({ error: "Email no válido" });
+    if (!esEmailValido(email)) {
+      return res.status(400).json({ error: "Correo electrónico no válido" });
     }
-
-    if (!isValidPassword(password)) {
+    if (!esContrasenaValida(password)) {
       return res.status(400).json({ error: "La contraseña debe tener mínimo 8 caracteres" });
     }
 
-    // Buscar usuario por email
     const user = await prisma.user.findUnique({
       where: { email }
     });
 
     if (!user) {
-      return res.status(401).json({ error: "Email o contraseña incorrectos" });
+      return res.status(401).json({ error: "Correo electrónico o contraseña incorrectos" });
     }
 
-    // Verificar contraseña
     const isPasswordValid = await bcrypt.compare(password, user.password);
 
     if (!isPasswordValid) {
-      return res.status(401).json({ error: "Email o contraseña incorrectos" });
+      return res.status(401).json({ error: "Correo electrónico o contraseña incorrectos" });
     }
 
-    // Login exitoso
     res.json({
       uid: user.uid,
       email: user.email,
@@ -138,7 +125,6 @@ app.post('/login', async (req, res) => {
   }
 });
 
-// Endpoint para el DatabaseService (saveSimulation)
 app.post('/save-simulation', async (req, res) => {
   const data = req.body;
   try {
@@ -170,8 +156,7 @@ app.get('/simulations/:userId', async (req, res) => {
   }
 });
 
-// Verificacion de roles de usuario y CRUD
-const isAdmin = async (req, res, next) => {
+const esAdministrador = async (req, res, next) => {
   const adminUid = req.headers['x-user-uid'];
   if (!adminUid) return res.status(401).json({ error: "Usuario no autorizado" });
 
@@ -182,7 +167,6 @@ const isAdmin = async (req, res, next) => {
     res.status(403).json({ error: "Acceso denegado" });
   }
 };
-// Endpoint para obtener perfil de usuario
 app.get('/user-profile/:uid', async (req, res) => {
   try {
     const user = await prisma.user.findUnique({
@@ -195,8 +179,7 @@ app.get('/user-profile/:uid', async (req, res) => {
     res.status(500).json({ error: "Error al obtener perfil de usuario" });
   }
 });
-// Endpoints para administración de usuarios (solo para Admin)
-app.get('/admin/users', isAdmin, async (req, res) => {
+app.get('/admin/users', esAdministrador, async (req, res) => {
   try {
     const users = await prisma.user.findMany({
       select: { uid: true, email: true, role: true }
@@ -206,8 +189,7 @@ app.get('/admin/users', isAdmin, async (req, res) => {
     res.status(500).json({ error: "Error al obtener usuarios" });
     }
 });
-// Endpoint para eliminar usuario (solo para Admin)
-app.delete('/admin/users/:uid', isAdmin, async (req, res) => {
+app.delete('/admin/users/:uid', esAdministrador, async (req, res) => {
   try {
     const targetUid = Number(req.params.uid);
     
@@ -219,7 +201,6 @@ app.delete('/admin/users/:uid', isAdmin, async (req, res) => {
     res.status(500).json({ error: "Error al eliminar usuario" });
   }
 });
-// Endpoint para actualizar nombre de simulación (solo para el propietario)
 app.put('/simulations/:id', async (req, res) => {
   const { id } = req.params;
   const { name } = req.body;
@@ -240,7 +221,6 @@ app.put('/simulations/:id', async (req, res) => {
     res.status(500).json({ error: "Error al actualizar simulación" });
   }
 });
-// Endpoint para eliminar simulación (solo para el propietario)
 app.delete('/simulations/:id', async (req, res) => {
   const { id } = req.params;
   const userUid = req.headers['x-user-uid'];
@@ -255,13 +235,12 @@ app.delete('/simulations/:id', async (req, res) => {
     res.status(500).json({ error: "Error al eliminar simulación" });
   }
 });
-// Endpoint para cambiar la contraseña (solo para el propietario)
 app.put('/change-password', async (req, res) => {
   const { currentPassword, newPassword } = req.body;
   const userUid = req.headers['x-user-uid'];
 
   try {
-    if (!isValidPassword(newPassword)) {
+    if (!esContrasenaValida(newPassword)) {
       return res.status(400).json({ error: "La nueva contraseña debe tener mínimo 8 caracteres" });
     }
 
@@ -283,7 +262,6 @@ app.put('/change-password', async (req, res) => {
     res.status(500).json({ error: "Error al cambiar contraseña" });
   }
 });
-// Endpoint para borrar cuenta de usuario (solo para el propietario)
 app.delete('/delete-account', async (req, res) => {
   const { currentPassword } = req.body;
   const userUid = req.headers['x-user-uid'];
@@ -308,7 +286,7 @@ app.delete('/delete-account', async (req, res) => {
 
 async function startServer() {
   try {
-    await ensureAdminUser();
+    await asegurarUsuarioAdmin();
     app.listen(4000, () => console.log('Backend listo'));
   } catch (e) {
     console.error('No se pudo inicializar el backend:', e);

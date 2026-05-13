@@ -6,30 +6,30 @@ import { toast } from 'sonner';
 export default function Login() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-    const [loading, setLoading] = useState(false);
-    const [message, setMessage] = useState('');
+    const [cargando, setCargando] = useState(false);
+    const [mensaje, setMensaje] = useState('');
     const [error, setError] = useState('');
     const navigate = useNavigate();
 
     React.useEffect(() => {
-      if (AuthService.hasActiveSession()) {
+      if (AuthService.tieneSesionActiva()) {
         navigate('/simulation', { replace: true });
       }
     }, [navigate]);
 
-    const isEmailValid = email === '' || AuthService.isValidEmail(email);
-    const isPasswordValid = password === '' || AuthService.isValidPassword(password);
-    const canSubmit = isEmailValid && isPasswordValid && email !== '' && password !== '';
+    const esEmailValido = email === '' || AuthService.esEmailValido(email);
+    const esContrasenaValida = password === '' || AuthService.esContrasenaValida(password);
+    const puedeEnviar = esEmailValido && esContrasenaValida && email !== '' && password !== '';
 
-    const handleSubmit = async (e: React.FormEvent) => {
+    const manejarEnvio = async (e: React.FormEvent) => {
         e.preventDefault();
-        setLoading(true);
-        setMessage('');
+        setCargando(true);
+        setMensaje('');
         setError('');
 
         try {
-            await AuthService.loginUser(email, password);
-            setMessage('¡Iniciaste sesión exitosamente!');
+            await AuthService.iniciarSesionUsuario(email, password);
+            setMensaje('¡Iniciaste sesión exitosamente!');
             toast.success('¡Iniciaste sesión exitosamente!');
 
             setEmail('');
@@ -42,7 +42,7 @@ export default function Login() {
             setError(err.message || 'Error al iniciar sesión');
             toast.error('Error al iniciar sesión');
         } finally {
-            setLoading(false);
+          setCargando(false);
         }
     };
 
@@ -54,10 +54,10 @@ export default function Login() {
             Iniciar sesión
           </h1>
 
-          <form className="space-y-5" onSubmit={handleSubmit}>
+          <form className="space-y-5" onSubmit={manejarEnvio}>
             <div>
               <label htmlFor="email" className="mb-2 block text-sm font-semibold text-gray-200">
-                Email
+                Correo electrónico
               </label>
               <input
                 id="email"
@@ -67,14 +67,14 @@ export default function Login() {
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="usuario@demo.com"
                 className={`w-full rounded-lg border px-4 py-3 text-white placeholder:text-gray-500 focus:outline-none focus:ring-2 ${
-                  isEmailValid
+                  esEmailValido
                     ? 'border-gray-600 bg-gray-900/80 focus:border-blue-500 focus:ring-blue-500/40'
                     : 'border-red-500 bg-gray-900/80 focus:border-red-500 focus:ring-red-500/40'
                 }`}
                 required
               />
-              {!isEmailValid && (
-                <p className="mt-1 text-xs text-red-400">Email no válido</p>
+              {!esEmailValido && (
+                <p className="mt-1 text-xs text-red-400">Correo electrónico no válido</p>
               )}
             </div>
             
@@ -90,13 +90,13 @@ export default function Login() {
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="Mínimo 8 caracteres"
                 className={`w-full rounded-lg border px-4 py-3 text-white placeholder:text-gray-500 focus:outline-none focus:ring-2 ${
-                  isPasswordValid
+                  esContrasenaValida
                     ? 'border-gray-600 bg-gray-900/80 focus:border-blue-500 focus:ring-blue-500/40'
                     : 'border-red-500 bg-gray-900/80 focus:border-red-500 focus:ring-red-500/40'
                 }`}
                 required
               />
-              {!isPasswordValid && (
+              {!esContrasenaValida && (
                 <p className="mt-1 text-xs text-red-400">Mínimo 8 caracteres</p>
               )}
               {password !== '' && (
@@ -108,16 +108,16 @@ export default function Login() {
               <p className="text-xs text-slate-400 italic">* prueba con <strong>admin@admin.es</strong> / <strong>password123</strong></p>
             <button
               type="submit"
-              disabled={!canSubmit || loading}
+              disabled={!puedeEnviar || cargando}
               className="w-full rounded-lg bg-blue-600 px-4 py-3 font-bold text-white shadow-lg transition hover:bg-blue-500 disabled:cursor-not-allowed disabled:opacity-60"
             >
-              {loading ? 'Iniciando sesión...' : 'Iniciar sesión'}
+              {cargando ? 'Iniciando sesión...' : 'Iniciar sesión'}
             </button>
           </form>
 
-          {message && (
+          {mensaje && (
             <p className="mt-4 rounded-lg border border-emerald-700/60 bg-emerald-900/40 px-4 py-3 text-sm text-emerald-300">
-              {message}
+              {mensaje}
             </p>
           )}
           {error && (
@@ -134,7 +134,7 @@ export default function Login() {
               to="/register"
               className="block w-full rounded-lg border border-green-500 bg-transparent px-4 py-3 text-center font-semibold text-green-400 transition hover:bg-green-500/10 focus:outline-none focus:ring-2 focus:ring-green-500/40"
             >
-              Registrarse aquí
+              Regístrate aquí
             </Link>
           </div>
 

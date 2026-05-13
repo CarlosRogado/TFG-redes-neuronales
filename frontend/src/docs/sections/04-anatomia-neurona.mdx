@@ -1,31 +1,31 @@
-## ¿Qué es el aprendizaje profundo o Deep learning?
-Es un subconjunto de machine learning impulsado por redes neuronales cuyo diseño se inspira en la estructura del cerebro humano. Estos modelos constan de muchas capas interconectadas de ["neuronas"](#qué-es-una-neurona), que realizan operaciones matemáticas mediante el uso de [Machine learning](#qué-es-el-machine-learning-y-qué-tipos-existen) para ajustar la fuerza de las conexiones entre las neuronas individuales de las capas adyacentes.
+## ¿Qué es el aprendizaje profundo?
+Es un subconjunto del aprendizaje automático impulsado por redes neuronales cuyo diseño se inspira en la estructura del cerebro humano. Estos modelos constan de muchas capas interconectadas de ["neuronas"](#qué-es-una-neurona), que realizan operaciones matemáticas mediante el uso de [aprendizaje automático](#qué-es-el-aprendizaje-automático-y-qué-tipos-existen) para ajustar la fuerza de las conexiones entre las neuronas individuales de las capas adyacentes.
 
 ### ¿Qué es una neurona?
-Una **neurona** es una unidad básica de procesamiento de información en una red neuronal, simula el funcionamiento biológico del cerebro.
+Una **neurona** es una unidad básica de procesamiento de información en una red neuronal. Simula el funcionamiento biológico del cerebro.
 
-Esta recibe unos datos de entrada, les asigna un [peso](#qué-son-los-pesos-y-sesgos-en-redes-neuronales) según su importancia, aplica una suma ponderada y genera una salida mediante una función de activación permitiendo a las máquinas reconocer patrones y tomar decisiones.
+Esta recibe unos datos de entrada, les asigna un [peso](#qué-son-los-pesos-y-sesgos-en-redes-neuronales) según su importancia, aplica una suma ponderada y genera una salida mediante una función de activación, permitiendo a las máquinas reconocer patrones y tomar decisiones.
 
 #### ¿Qué son los pesos y sesgos en redes neuronales?
-Los **pesos** son multiplicadores numéricos que determinan la importancia de la conexión entre las neuronas, un peso alto significa que la señal de esa conexión tiene una gran influencia y un peso bajo implica poca influencia. Cada conexión entre dos neuronas tiene asociado un peso. 
+Los **pesos** son multiplicadores numéricos que determinan la importancia de la conexión entre las neuronas. Un peso alto significa que la señal de esa conexión tiene una gran influencia y un peso bajo implica poca influencia. Cada conexión entre dos neuronas tiene asociado un peso. 
 
-Estos son clave en el aprendizaje de la simulación ya que al principio serán aleatorios, pero a medida que la simulación avance, se clonarán los mejores individuos permitiendo tener su peso de referencia.
+Estos son clave en el aprendizaje de la simulación, ya que al principio serán aleatorios, pero a medida que la simulación avance, se clonarán los mejores individuos, permitiendo tener su peso de referencia.
 
-Los **sesgos** son valores adicionales que se suman a la suma ponderada de las entradas que recibe una neurona, es una entrada constante adicional que permite que la función de activación de la neurona se dispare lo que significa que la neurona se activa.
+Los **sesgos** son valores adicionales que se suman a la suma ponderada de las entradas que recibe una neurona. Son una entrada constante adicional que permite que la función de activación de la neurona se dispare, lo que significa que la neurona se activa.
 
-#### Las funciones de activación.
+#### Las funciones de activación
 Las funciones de activación son el mecanismo de decisión de las redes neuronales. Se encargan de transformar el número resultante de una suma ponderada en un formato específico. Las principales son:
 
-- **Sigmoide**: Transforma números en probabilidades dando resultados entre 0 y 1, usada especialmente en modelos en los que tenemos que predecir la probabilidad de algo.
+- **Sigmoide**: transforma números en probabilidades, dando resultados entre 0 y 1. Se usa especialmente en modelos en los que tenemos que predecir la probabilidad de algo.
 
 $ a= \frac{1}{1+exp(-z)} $
 
-- **Tanh**: Igual que la función Sigmoid pero devuelve valores entre -1 y 1. La ventaja que propociona esta función es que ayuda a la red a separar conceptos que son contrarios.
+- **Tangente hiperbólica**: igual que la función sigmoide, pero devuelve valores entre -1 y 1. La ventaja que proporciona esta función es que ayuda a la red a separar conceptos que son contrarios.
 
 $ a= \frac{e^z - e^{-z}}{e^z + e^{-z}} $
 
-- **Relu**: Filtra los resultados permitiendo pasar los números positivos tal cual están pero los negativos se convierten automáticamente en 0. Se utiliza principalmente en capas ocultas para que el sistema aprenda rápido y no sature, otorgando eficiencia.
+- **ReLU**: filtra los resultados permitiendo pasar los números positivos tal cual están, pero los negativos se convierten automáticamente en 0. Se utiliza principalmente en capas ocultas para que el sistema aprenda rápido y no sature, otorgando eficiencia.
 
 $ f(x) = \max(0,x) = \begin{cases} 0 & \text{si } x < 0 \\ x & \text{si } x \geq 0 \end{cases} $
 
-- **Softmax**, es exclusiva de la capa de salida y necesita al menos 2 opciones para comparar y repartir el porcentaje entre ellas. Toma un grupo de números y los convierte en una distribucción que suman 1 (100%).
+- **Softmax**: es exclusiva de la capa de salida y necesita al menos 2 opciones para comparar y repartir el porcentaje entre ellas. Toma un grupo de números y los convierte en una distribución que suma 1 (100%).

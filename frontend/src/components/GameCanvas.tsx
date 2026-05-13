@@ -1,4 +1,3 @@
-// Todo lo relacionado con p5 y el lienzo
 import { useRef, useEffect } from "react";
 import { useLatestRef } from "../hooks/useLatestRef";
 import p5 from "p5";
@@ -18,7 +17,6 @@ export type DatosDispersion = {
 };
 
 type GameCanvasProps = {
-  // Props que recibe el componente GameCanvas, incluyendo dimensiones del canvas, número total de cohetes, tasa de mutación y funciones para manejar cambios en la generación, cohetes vivos y entradas para el historial.
   totalCohetes: number;
   tasaMutacion: number;
   tasaElitismo: number;
@@ -45,31 +43,31 @@ export default function GameCanvas({
   onDatosDispersionChange,
   onSegundosChange,
 }: GameCanvasProps) {
-  const canvasRef = useRef<HTMLDivElement>(null); // Referencia para el contenedor del canvas de p5
-  const p5InstanceRef = useRef<p5 | null>(null); // Referencia para la instancia de p5, permitiendo acceder a la instancia de p5 en diferentes partes del componente
+  const canvasRef = useRef<HTMLDivElement>(null); 
+  const p5InstanceRef = useRef<p5 | null>(null); 
 
-  const tasaMutacionRef = useLatestRef(tasaMutacion); // Referencia para la tasa de mutación, permitiendo que la lógica de mutación acceda al valor actualizado
-  const tasaElitismoRef = useLatestRef(tasaElitismo); // Referencia para la tasa de elitismo, permitiendo que la lógica de evolución acceda al valor actualizado
-  const onGeneracionChangeRef = useLatestRef(onGeneracionChange); // Referencia para la función de cambio de generación, permitiendo que la lógica de evolución actualice la generación en el estado del componente
-  const onVivosChangeRef = useLatestRef(onVivosChange); // Referencia para la función de cambio de cohetes vivos, permitiendo que la lógica del juego actualice el número de cohetes vivos en el estado del componente
-  const onHistorialEntryRef = useLatestRef(onHistorialEntry); // Referencia para la función de entrada de historial, permitiendo que la lógica del juego agregue entradas al historial en el estado del componente
-  const onCausaMuerteChangeRef = useLatestRef(onCausaMuerteChange); // Referencia para la función de cambio de causas de muerte, permitiendo que la lógica del juego actualice las causas de muerte en el estado del componente
-  const onDatosDispersionChangeRef = useLatestRef(onDatosDispersionChange); // Referencia para la función de cambio de datos de dispersión, permitiendo que la lógica del juego actualice los datos de dispersión en el estado del componente
-  const onSegundosChangeRef = useLatestRef(onSegundosChange); // Referencia para la función de cambio de segundos, permitiendo que la lógica del juego actualice los segundos en el estado del componente
+  const tasaMutacionRef = useLatestRef(tasaMutacion); 
+  const tasaElitismoRef = useLatestRef(tasaElitismo); 
+  const onGeneracionChangeRef = useLatestRef(onGeneracionChange); 
+  const onVivosChangeRef = useLatestRef(onVivosChange); 
+  const onHistorialEntryRef = useLatestRef(onHistorialEntry); 
+  const onCausaMuerteChangeRef = useLatestRef(onCausaMuerteChange);   
+  const onDatosDispersionChangeRef = useLatestRef(onDatosDispersionChange); 
+   const onSegundosChangeRef = useLatestRef(onSegundosChange); 
 
   useEffect(() => {
     if (p5InstanceRef.current) {
       if (isPausa) {
-        p5InstanceRef.current.noLoop(); // Detiene el bucle de dibujo de p5 para pausar el juego
+        p5InstanceRef.current.noLoop(); 
       } else {
-        p5InstanceRef.current.loop(); // Reanuda el bucle de dibujo de p5 para continuar el juego
+        p5InstanceRef.current.loop(); 
       }
     }
   }, [isPausa]);
 
   useEffect(() => {
-    const canvasElement = canvasRef.current; // Obtener el elemento del DOM donde se renderizará el canvas
-    if (!canvasElement) return; // Si no se encuentra el elemento, salir
+    const canvasElement = canvasRef.current; 
+    if (!canvasElement) return;
 
     const juego = (p: p5) => {
       let cohetes: rocket[] = [];
@@ -78,36 +76,36 @@ export default function GameCanvas({
       let frames = 0;
       let generacion = 1;
       p.setup = () => {
-        p.createCanvas(768, 512).parent(canvasElement); // Crear el canvas y asignarlo al contenedor
+        p.createCanvas(768, 512).parent(canvasElement); 
 
         for (let i = 0; i < totalCohetes; i++) {
-          cohetes.push(new rocket(200, p.height / 2, i)); // Inicializar los cohetes en la posición inicial
+          cohetes.push(new rocket(200, p.height / 2, i));
         }
 
-        obstacles.push(new obstacle(p)); // Agregar el primer obstáculo
-        onVivosChangeRef.current(totalCohetes); // Actualizar el número de cohetes vivos en el estado del componente
-        onGeneracionChangeRef.current(generacion); // Actualizar la generación en el estado del componente
+        obstacles.push(new obstacle(p));
+        onVivosChangeRef.current(totalCohetes);
+        onGeneracionChangeRef.current(generacion);
       };
       p.draw = () => {
-        p.background(20); // Establecer el fondo del canvas
+        p.background(20);
         frames++;
 
         if (frames % 150 === 0) {
-          obstacles.push(new obstacle(p)); // Agregar un nuevo obstáculo cada 150 frames
+          obstacles.push(new obstacle(p));
         }
 
         if (frames % 60 === 0) {
           if (cohetes.length > 0) {
-            const currentFrames = cohetes[cohetes.length - 1].score; // Obtener el número de frames que duró el último cohete muerto
-            const currentSegundos = (currentFrames / 60).toFixed(0); // Convertir los frames a segundos y formatearlo a 2 decimales
-            onSegundosChangeRef.current?.(Number(currentSegundos)); // Actualizar los segundos en el estado del componente
+            const currentFrames = cohetes[cohetes.length - 1].score;
+            const currentSegundos = (currentFrames / 60).toFixed(0);
+            onSegundosChangeRef.current?.(Number(currentSegundos));
           } else {
-            onSegundosChangeRef.current?.(0); // Si no hay cohetes vivos, establecer los segundos en 0
+            onSegundosChangeRef.current?.(0);
           }
 
           const currentBarcharData = [...cohetesMuertos, ...cohetes].map((currentRocket) => ({
               id: `Cohete ${currentRocket.id + 1}`,
-              segundos: Number((currentRocket.score / 60).toFixed(2)), // Convertir el score del cohete a segundos y formatearlo a 2 decimales
+              segundos: Number((currentRocket.score / 60).toFixed(2)),
             }),
           );
           if (onBarcharDataChange) {
@@ -119,7 +117,7 @@ export default function GameCanvas({
           obstacles[i].show(p);
           obstacles[i].update();
           if (obstacles[i].offscreen()) {
-            obstacles.splice(i, 1); // Eliminar obstáculos que han salido de la pantalla
+            obstacles.splice(i, 1);
           }
         }
 
@@ -127,10 +125,10 @@ export default function GameCanvas({
         let record = Infinity;
 
         for (const obs of obstacles) {
-          const distance = obs.x + obs.width - 200; // Calcular la distancia horizontal desde el cohete hasta el obstáculo
+          const distance = obs.x + obs.width - 200;
           if (distance > 0 && distance < record) {
             record = distance;
-            closest = obs; // Encontrar el obstáculo más cercano al cohete
+            closest = obs;
           }
         }
 
@@ -138,34 +136,32 @@ export default function GameCanvas({
           const cohete = cohetes[i];
 
           if (closest && frames % 8 === 0) {
-            cohete.think(closest, p); // Hacer que el cohete piense y tome decisiones basadas en el obstáculo más cercano
+            cohete.think(closest, p);
           }
 
           cohete.update();
           cohete.show(p);
 
-          //Lógica de colisiones
           let hit = false;
           if (closest && closest.hits(cohete, p)) {
-            hit = true; // Verificar si el cohete ha chocado con el obstáculo
+            hit = true;
           } else if (cohete.y + cohete.height > p.height) {
             cohete.causaMuerte = "Suelo";
-            hit = true; // Verificar si el cohete ha salido de la pantalla
+            hit = true;
           } else if (cohete.y < 0) {
             cohete.causaMuerte = "Techo";
-            hit = true; // Verificar si el cohete ha salido de la pantalla
+            hit = true;
           }
           if (hit) {
-            cohetesMuertos.push(cohete); // Mover el cohete al array de cohetes muertos
-            cohetes.splice(i, 1); // Eliminar el cohete del array de cohetes vivos
+            cohetesMuertos.push(cohete);
+            cohetes.splice(i, 1);
           }
         }
 
         if (frames % 8 === 0) {
-          onVivosChangeRef.current(cohetes.length); // Actualizar el número de cohetes vivos en el estado del componente
+          onVivosChangeRef.current(cohetes.length);
         }
 
-        // Cambio de generación
         if (cohetes.length === 0 && cohetesMuertos.length > 0) {
           const causasCount: Record<string, number> = {
             "Tubo Superior": 0,
@@ -193,28 +189,28 @@ export default function GameCanvas({
           });
           onCausaMuerteChangeRef.current?.(causas);
           onDatosDispersionChangeRef.current?.(result.datosDispersion);
-          cohetes = result.cohetes; // Actualizar el array de cohetes vivos con la nueva generación
-          obstacles = result.obstacles; // Actualizar el array de obstáculos con los nuevos obstáculos generados
-          cohetesMuertos = result.cohetesMuertos; // Actualizar el array de cohetes muertos con los cohetes muertos de la nueva generación
-          frames = result.frames; // Reiniciar el contador de frames para la nueva generación
-          generacion = Number(result.generacion); // Actualizar la generación actual con la nueva generación
+          cohetes = result.cohetes;
+          obstacles = result.obstacles;
+          cohetesMuertos = result.cohetesMuertos;
+          frames = result.frames;
+          generacion = Number(result.generacion);
 
-          onGeneracionChangeRef.current(generacion); // Actualizar la generación en el estado del componente
-          onVivosChangeRef.current(totalCohetes); // Reiniciar el número de cohetes vivos en el estado del componente
+          onGeneracionChangeRef.current(generacion);
+          onVivosChangeRef.current(totalCohetes);
           onHistorialEntryRef.current({
             maxSegundos: Number(result.historialEntry.maxSegundos),
             mediaSegundos: Number(result.historialEntry.mediaSegundos),
             generacion: Number(result.historialEntry.generacion),
-          }); // Agregar una entrada al historial con el tiempo que duró la generación y el número de generación
-          onSegundosChangeRef.current?.(0); // Reiniciar los segundos en el estado del componente para la nueva generación
+          });
+          onSegundosChangeRef.current?.(0);
         }
       };
     };
-    const p5Instance = new p5(juego); // Crear una nueva instancia de p5 con la función del juego
-    p5InstanceRef.current = p5Instance; // Guardar la instancia de p5 en la referencia para poder acceder a ella en otros efectos
+    const p5Instance = new p5(juego);
+    p5InstanceRef.current = p5Instance;
 
     return () => {
-      p5Instance.remove(); // Limpiar la instancia de p5 cuando el componente se desmonte para evitar fugas de memoria
+      p5Instance.remove();
     };
   }, [totalCohetes]);
   return (

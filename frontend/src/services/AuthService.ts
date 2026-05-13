@@ -1,31 +1,27 @@
 export const AuthService = {
-    USER_STORAGE_KEY: 'user',
-    SESSION_STORAGE_KEY: 'authSession',
+    CLAVE_USUARIO: 'user',
+    CLAVE_SESION: 'authSession',
 
-    // Validar email
-    isValidEmail: (email: string): boolean => {
+    esEmailValido: (email: string): boolean => {
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         return emailRegex.test(email);
     },
 
-    // Validar contraseña (mínimo 8 caracteres)
-    isValidPassword: (password: string): boolean => {
+    esContrasenaValida: (password: string): boolean => {
         return !!password && password.length >= 8;
     },
 
-    // Registrar usuario
-    registerUser: async (email: string, password: string) => {
+    registrarUsuario: async (email: string, password: string) => {
         try {
-            // Validaciones locales
             if (!email || !password) {
-                throw new Error("Email y contraseña son requeridos");
+                throw new Error("Correo electrónico y contraseña son requeridos");
             }
 
-            if (!AuthService.isValidEmail(email)) {
-                throw new Error("Email no válido");
+            if (!AuthService.esEmailValido(email)) {
+                throw new Error("Correo electrónico no válido");
             }
 
-            if (!AuthService.isValidPassword(password)) {
+            if (!AuthService.esContrasenaValida(password)) {
                 throw new Error("La contraseña debe tener mínimo 8 caracteres");
             }
 
@@ -49,19 +45,17 @@ export const AuthService = {
         }
     },
 
-    // Login de usuario
-    loginUser: async (email: string, password: string) => {
+    iniciarSesionUsuario: async (email: string, password: string) => {
         try {
-            // Validaciones locales
             if (!email || !password) {
-                throw new Error("Email y contraseña son requeridos");
+                throw new Error("Correo electrónico y contraseña son requeridos");
             }
 
-            if (!AuthService.isValidEmail(email)) {
-                throw new Error("Email no válido");
+            if (!AuthService.esEmailValido(email)) {
+                throw new Error("Correo electrónico no válido");
             }
 
-            if (!AuthService.isValidPassword(password)) {
+            if (!AuthService.esContrasenaValida(password)) {
                 throw new Error("La contraseña debe tener mínimo 8 caracteres");
             }
 
@@ -79,14 +73,13 @@ export const AuthService = {
                 throw new Error(payload.error || 'Error al iniciar sesión');
             }
 
-            // Guardar datos del usuario persistentes y marcar sesión activa en esta pestaña
-            localStorage.setItem(AuthService.USER_STORAGE_KEY, JSON.stringify({
+            localStorage.setItem(AuthService.CLAVE_USUARIO, JSON.stringify({
                 uid: payload.uid,
                 email: payload.email,
                 role: payload.role
             }));
 
-            sessionStorage.setItem(AuthService.SESSION_STORAGE_KEY, JSON.stringify({
+            sessionStorage.setItem(AuthService.CLAVE_SESION, JSON.stringify({
                 uid: payload.uid,
                 loggedAt: Date.now()
             }));
@@ -97,22 +90,19 @@ export const AuthService = {
         }
     },
 
-    // Cerrar sesión
-    logoutUser: () => {
-        localStorage.removeItem(AuthService.USER_STORAGE_KEY);
-        sessionStorage.removeItem(AuthService.SESSION_STORAGE_KEY);
+    cerrarSesionUsuario: () => {
+        localStorage.removeItem(AuthService.CLAVE_USUARIO);
+        sessionStorage.removeItem(AuthService.CLAVE_SESION);
     },
 
-    // Obtener usuario actual
-    getCurrentUser: () => {
-        const user = localStorage.getItem(AuthService.USER_STORAGE_KEY);
+    obtenerUsuarioActual: () => {
+        const user = localStorage.getItem(AuthService.CLAVE_USUARIO);
         return user ? JSON.parse(user) : null;
     },
 
-    // Validar si hay sesión activa en la pestaña actual
-    hasActiveSession: (): boolean => {
-        const session = sessionStorage.getItem(AuthService.SESSION_STORAGE_KEY);
-        const user = localStorage.getItem(AuthService.USER_STORAGE_KEY);
+    tieneSesionActiva: (): boolean => {
+        const session = sessionStorage.getItem(AuthService.CLAVE_SESION);
+        const user = localStorage.getItem(AuthService.CLAVE_USUARIO);
         return !!session && !!user;
     }
 }

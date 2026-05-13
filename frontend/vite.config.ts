@@ -6,7 +6,6 @@ import mdx from '@mdx-js/rollup'
 import remarkMath from 'remark-math'
 import rehypeKatex from 'rehype-katex'
 
-// https://vite.dev/config/
 export default defineConfig({
   plugins: [
     mdx({

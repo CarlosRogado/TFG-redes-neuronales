@@ -16,7 +16,6 @@ export default function LogoRedNeuronal({ className = "w-10 h-10" }: { className
           <stop offset="100%" stopColor="#10B981" />
         </linearGradient>
         
-        {/* CORRECCIÓN: Usamos <filter> en lugar de <glow> */}
         <filter id="neonGlow" x="-20%" y="-20%" width="140%" height="140%">
           <feGaussianBlur stdDeviation="2" result="blur" />
           <feMerge>
@@ -45,7 +44,6 @@ export default function LogoRedNeuronal({ className = "w-10 h-10" }: { className
       <circle cx="20" cy="50" r="6" fill="#1E293B" stroke="#94A3B8" strokeWidth="2" />
       <circle cx="20" cy="80" r="6" fill="#1E293B" stroke="#94A3B8" strokeWidth="2" />
 
-      {/* CORRECCIÓN: Llamamos al filtro correcto */}
       <circle cx="50" cy="15" r="7" fill="url(#gradBlue)" style={{ filter: 'url(#neonGlow)' }} />
       <circle cx="50" cy="50" r="7" fill="url(#gradEmerald)" style={{ filter: 'url(#neonGlow)' }} />
       <circle cx="50" cy="85" r="7" fill="#1E293B" stroke="#94A3B8" strokeWidth="2" />

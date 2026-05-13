@@ -29,7 +29,6 @@ export default function DashboardGraficas({
 }: DashboardGraficasProps) {
   return (
     <div className="mt-8">
-      {/* Titulo y boton global */}
       <div className="flex justify-between items-center mb-6">
         <h2 className="text-lg font-bold text-white pb-3 mb-6">
           Estadísticas de las Redes
@@ -39,7 +38,7 @@ export default function DashboardGraficas({
           disabled={guardando}
           className="bg-yellow-600 hover:bg-yellow-500 disabled:bg-slate-600 text-white font-bold py-2 px-6 rounded-lg transition-colors flex intems-center gap-2"
         >
-          {guardando ? "Guardando..." : "Guardar Gráficas"}
+          {guardando ? "Guardando..." : "Guardar gráficas"}
         </button>
       </div>
 
@@ -52,11 +51,8 @@ export default function DashboardGraficas({
 
         <span className="h-px flex-1 bg-linear-to-l from-transparent to-gray-300 dark:to-gray-600"></span>
       </span>
-      {/* Fila Gráfica 1 (Líneas) */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10">
-        {/* Gráfica Izquierda (En vivo)*/}
         <div className="flex flex-col bg-[#1c2135] rounded-xl boder border-slate-700 shadow-xl overflow-hidden h-full">
-          {/* Cabecera gráfica */}
           <div className="flex justify-between items-center px-5 py-3 bg-[#282f44] border-b border-slate-700">
             <div className="flex items-center gap-3">
               <span className="relative flex h-2.5 w-2.5">
@@ -67,7 +63,6 @@ export default function DashboardGraficas({
                 Evolución del Aprendizaje
               </h3>
             </div>
-            {/* Botón guardar gráfica */}
             <button
               onClick={() => onGuardarIndividual("Lineal", historial)}
               className="group flex items-center gap-2 px-3 py-1.5 bg-slate-700/50 hover:bg-emerald-600 text-slate-300 hover:text-white text-xs font-bold rounded-md transition-all duration-300 border border-slate-500 hover:border-emerald-500 shadow-sm"
@@ -90,14 +85,12 @@ export default function DashboardGraficas({
               GUARDAR
             </button>
           </div>
-          {/* Contenido de la gráfica */}
           <div className="flex-1 p-5 flex flex-col bg-[#1c2135]">
             <div className="flex-1 w-full bg-[#0f1423] rounded-xl border border-slate-700/50 shadow-inner flex items-center justify-center p-2 min-h-75">
               <LineChart data={historial} />
             </div>
           </div>
         </div>
-        {/* Caja de Texto Derecha */}
         <div className="h-full">
           <CardGrafica
             infoTexto={
@@ -111,7 +104,7 @@ export default function DashboardGraficas({
                   <span className="text-[#10b981] font-bold">
                     principal (verde)
                   </span>{" "}
-                  representa el <strong>Fitness Máximo</strong> (el tiempo
+                  representa el <strong>Fitness máximo</strong> (el tiempo
                   récord alcanzado por el mejor individuo de cada generación).
                 </p>
                 <p>
@@ -119,7 +112,7 @@ export default function DashboardGraficas({
                   <span className="text-blue-400 font-bold">
                     secundaria (azul)
                   </span>{" "}
-                  muestra el <strong>Fitness Medio</strong> de toda la
+                  muestra el <strong>Fitness medio</strong> de toda la
                   población.
                 </p>
                 <p className="text-xs text-slate-200 mt-2 italic">
@@ -139,16 +132,13 @@ export default function DashboardGraficas({
         <span className="h-px flex-1 bg-linear-to-r from-transparent to-gray-300 dark:to-gray-600"></span>
 
         <span className="shrink-0 px-4 text-gray-900 dark:text-white">
-          Gráfico Barras
+          Gráfico de barras
         </span>
 
         <span className="h-px flex-1 bg-linear-to-l from-transparent to-gray-300 dark:to-gray-600"></span>
       </span>
-      {/* Fila Gráfica 2 (Barras) */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10">
-        {/* Gráfica Izquierda (En vivo)*/}
         <div className="flex flex-col bg-[#1c2135] rounded-xl boder border-slate-700 shadow-xl overflow-hidden h-full">
-          {/* Cabecera gráfica */}
           <div className="flex justify-between items-center px-5 py-3 bg-[#282f44] border-b border-slate-700">
             <div className="flex items-center gap-3">
               <span className="relative flex h-2.5 w-2.5">
@@ -159,7 +149,6 @@ export default function DashboardGraficas({
                 Supervivencia por cohete
               </h3>
             </div>
-            {/* Botón guardar gráfica */}
             <button
               onClick={() => onGuardarIndividual("Barras", historicos.historicoBarchar)}
               className="group flex items-center gap-2 px-3 py-1.5 bg-slate-700/50 hover:bg-emerald-600 text-slate-300 hover:text-white text-xs font-bold rounded-md transition-all duration-300 border border-slate-500 hover:border-emerald-500 shadow-sm"
@@ -182,14 +171,12 @@ export default function DashboardGraficas({
               GUARDAR
             </button>
           </div>
-          {/* Contenido de la gráfica */}
           <div className="flex-1 p-5 flex flex-col bg-[#1c2135]">
             <div className="flex-1 w-full bg-[#0f1423] rounded-xl border border-slate-700/50 shadow-inner flex items-center justify-center p-2 min-h-75">
               <Barchar data={barcharData} />
             </div>
           </div>
         </div>
-        {/* Caja de Texto Derecha */}
         <div className="bg-white text-black rounded-lg overflow-hidden flex flex-col shadow">
           <CardGrafica
             infoTexto={
@@ -229,11 +216,8 @@ export default function DashboardGraficas({
 
         <span className="h-px flex-1 bg-linear-to-l from-transparent to-gray-300 dark:to-gray-600"></span>
       </span>
-      {/* Fila Gráfica 3 (Causa de Muerte) */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10">
-        {/* Gráfica Izquierda (En vivo)*/}
         <div className="flex flex-col bg-[#1c2135] rounded-xl boder border-slate-700 shadow-xl overflow-hidden h-full">
-          {/* Cabecera gráfica */}
           <div className="flex justify-between items-center px-5 py-3 bg-[#282f44] border-b border-slate-700">
             <div className="flex items-center gap-3">
               <span className="relative flex h-2.5 w-2.5">
@@ -244,7 +228,6 @@ export default function DashboardGraficas({
                 Tipos de muerte
               </h3>
             </div>
-            {/* Botón guardar gráfica */}
             <button
               onClick={() => onGuardarIndividual("CausaMuerte", historicos.historicoCausaMuerte)}
               className="group flex items-center gap-2 px-3 py-1.5 bg-slate-700/50 hover:bg-emerald-600 text-slate-300 hover:text-white text-xs font-bold rounded-md transition-all duration-300 border border-slate-500 hover:border-emerald-500 shadow-sm"
@@ -267,14 +250,12 @@ export default function DashboardGraficas({
               GUARDAR
             </button>
           </div>
-          {/* Contenido de la gráfica */}
           <div className="flex-1 p-5 flex flex-col bg-[#1c2135]">
             <div className="flex-1 w-full bg-[#0f1423] rounded-xl border border-slate-700/50 shadow-inner flex items-center justify-center p-2 min-h-75">
               <PieChart data={causaMuerteData} />
             </div>
           </div>
         </div>
-        {/* Caja de Texto Derecha */}
         <div className="bg-white text-black rounded-lg overflow-hidden flex flex-col shadow">
           <CardGrafica
             infoTexto={
@@ -286,13 +267,13 @@ export default function DashboardGraficas({
                 </p>
                 <p>
                   Monitorizar si los cohetes mueren contra obstáculos
-                  especificos (
+                    específicos (
                   <span className="text-red-300 font-bold">Tubo Superior</span>{" "}
                   vs <span className="text-orange-300 font-bold">Inferior</span>
-                  ) o limites del mapa (
+                    ) o límites del mapa (
                   <span className="text-blue-300 font-bold">Suelo</span> /{" "}
                   <span className="text-green-300 font-bold">Techo</span>)
-                  permite detectar si la red nueronal ha desarrollado un{" "}
+                    permite detectar si la red neuronal ha desarrollado un{" "}
                   <strong>sesgo evolutivo</strong>
                 </p>
               </div>
@@ -313,11 +294,8 @@ export default function DashboardGraficas({
 
         <span className="h-px flex-1 bg-linear-to-l from-transparent to-gray-300 dark:to-gray-600"></span>
       </span>
-      {/* Fila Gráfica 4 (Dispersión) */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10">
-        {/* Gráfica Izquierda (En vivo)*/}
         <div className="flex flex-col bg-[#1c2135] rounded-xl boder border-slate-700 shadow-xl overflow-hidden h-full">
-          {/* Cabecera gráfica */}
           <div className="flex justify-between items-center px-5 py-3 bg-[#282f44] border-b border-slate-700">
             <div className="flex items-center gap-3">
               <span className="relative flex h-2.5 w-2.5">
@@ -328,7 +306,6 @@ export default function DashboardGraficas({
                 Estructura Cerebral de la Población
               </h3>
             </div>
-            {/* Botón guardar gráfica */}
             <button
               onClick={() => onGuardarIndividual("Dispersion", historicos.historicoDispersion)}
               className="group flex items-center gap-2 px-3 py-1.5 bg-slate-700/50 hover:bg-emerald-600 text-slate-300 hover:text-white text-xs font-bold rounded-md transition-all duration-300 border border-slate-500 hover:border-emerald-500 shadow-sm"
@@ -351,14 +328,12 @@ export default function DashboardGraficas({
               GUARDAR
             </button>
           </div>
-          {/* Contenido de la gráfica */}
           <div className="flex-1 p-5 flex flex-col bg-[#1c2135]">
             <div className="flex-1 w-full bg-[#0f1423] rounded-xl border border-slate-700/50 shadow-inner flex items-center justify-center p-2 min-h-75">
               <DispersionChart data={datosDispersion} />
             </div>
           </div>
         </div>
-        {/* Caja de Texto Derecha */}
         <div className="bg-white text-black rounded-lg overflow-hidden flex flex-col shadow">
           <CardGrafica
             infoTexto={
@@ -371,13 +346,13 @@ export default function DashboardGraficas({
                 <ul className="list-disc pl-5 space-y-1 text-sm text-slate-300">
                   <li>
                     <strong>Eje X (Pesos):</strong> Representa la media de los{" "}
-                    <em>Weights</em> de las sinapsis. Determina la "importancia"
+                    <em>Pesos</em> de las sinapsis. Determina la "importancia"
                     que la red neuronal le da a los sensores (distnacia,
                     altura).
                   </li>
                   <li>
                     <strong>Eje Y (Sesgos):</strong> Representa la media de los{" "}
-                    <em>Biases</em>. Indica la "predisposición" innata del
+                    <em>Sesgos</em>. Indica la "predisposición" innata del
                     cohete a saltar, independientemente de lo que vean sus
                     sensores.
                   </li>

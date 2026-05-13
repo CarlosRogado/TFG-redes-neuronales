@@ -1,19 +1,19 @@
 import { useState, useCallback } from 'react';
 
-export const SECTIONS = [
+export const SECCIONES = [
   { id: '01', title: 'Introducción a Redes', icon: 'Rocket' },
-  { id: '02', title: 'Machine Learning', icon: 'Brain' },
+  { id: '02', title: 'Aprendizaje automático', icon: 'Brain' },
   { id: '03', title: 'Tipos de Redes', icon: 'Network' },
   { id: '04', title: 'Anatomía de una Neurona', icon: 'Microscope' }
 ];
 
 export const useDocs = () => {
-  const [activeId, setActiveId] = useState('01');
+  const [idActivo, setIdActivo] = useState('01');
 
-  const changeSection = useCallback((id: string) => {
-    setActiveId(id);
+  const cambiarSeccion = useCallback((id: string) => {
+    setIdActivo(id);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }, []);
 
-  return { activeId, changeSection, sections: SECTIONS };
+  return { idActivo, cambiarSeccion, secciones: SECCIONES };
 };

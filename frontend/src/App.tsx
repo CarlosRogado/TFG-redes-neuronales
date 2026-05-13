@@ -18,43 +18,42 @@ import LogoRedNeuronal from "./components/Logo.tsx";
 import { AuthService } from "./services/AuthService";
 import Profile from "./views/Profile.tsx";
 
-function ProtectedSimulationRoute() {
-  if (!AuthService.hasActiveSession()) {
+function RutaProtegidaSimulacion() {
+  if (!AuthService.tieneSesionActiva()) {
     return <Navigate to="/login" replace />;
   }
   return <Simulation />;
 }
 
-function NavigationBar() {
-  // const navigate = useNavigate(); // Comentado hasta solucionar problemilla de redirección post-login
-  const [isLogged, setIsLogged] = useState(false);
+function BarraNavegacion() {
+  const [estaAutenticado, setEstaAutenticado] = useState(false);
   useEffect(() => {
-    setIsLogged(AuthService.hasActiveSession());
+    setEstaAutenticado(AuthService.tieneSesionActiva());
   }, []);
-  const handleLogout = () => {
+  const manejarCerrarSesion = () => {
     sessionStorage.removeItem("authSession");
     localStorage.removeItem("user_data");
-    setIsLogged(false);
+    setEstaAutenticado(false);
     toast.success("Sesión cerrada exitosamente");
     window.location.href = "/";
   };
   return (
     <div className="bg-gray-900 mx-auto flex items-center gap-8 px-4 sm:px-6 lg:px-8 w-full">
       <Link to="/" className="block text-teal-300">
-        <span className="sr-only">Home</span>
+        <span className="sr-only">Inicio</span>
         <LogoRedNeuronal className="w-12 h-12" />
       </Link>
       <div className="flex flex-1 items-center justify-end md:justify-between">
         <nav className="p-4 bg-gray-900 text-white flex gap-4 ">
           <Link to="/" className="hover:text-white/75">
-            Home
+            Inicio
           </Link> 
           <div className="w-fit">
             <Link to="/docs" className="hover:text-white/75">
               Documentación
             </Link>
           </div>
-          {isLogged ? (
+          {estaAutenticado ? (
             <>
               <Link to="/simulation" className="hover:text-white/75">
                 Simulación
@@ -64,7 +63,7 @@ function NavigationBar() {
         </nav>
         <div className="flex items-center gap-4">
           <div className="sm:flex sm:gap-4">
-            {isLogged ? (
+            {estaAutenticado ? (
               <>
                 <div className="relative w-fit">
                   <Link
@@ -89,7 +88,7 @@ function NavigationBar() {
                   </Link>
                 </div>
                 <button
-                  onClick={handleLogout}
+                  onClick={manejarCerrarSesion}
                   className="hidden rounded-md border border-red-900/50 px-5 py-2.5 text-sm font-medium text-red-400 transition sm:block hover:bg-red-900/20 hover:text-red-300"
                 >
                   Cerrar Sesión
@@ -107,15 +106,15 @@ function App() {
   return (
     <BrowserRouter>
       <Toaster richColors position="bottom-right" />
-      <NavigationBar />
+      <BarraNavegacion />
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/register" element={<Register />} />
         <Route path="/login" element={<Login />} />
         <Route path="/docs" element={<Docs />} />
-        <Route path="/simulation" element={<ProtectedSimulationRoute />} />
+        <Route path="/simulation" element={<RutaProtegidaSimulacion />} />
         <Route path="/profile" element={<Profile />} />
-        <Route path="*" element={<Home />} />{" "}
+        <Route path="*" element={<Home />} />
       </Routes>
     </BrowserRouter>
   );

@@ -1,7 +1,6 @@
 import p5 from 'p5';
 import obstacle from "../logic/obstacle";
 import rocket from "../logic/rocket";
-// Función para generar la siguiente generación de cohetes basada en la selección del mejor cohete de la generación anterior y aplicando mutaciones a su cerebro para crear nuevos cohetes.
 
 export type DatosDispersion = {
     id: string;
@@ -10,7 +9,7 @@ export type DatosDispersion = {
     isCloned: boolean;
 };
 
-export interface EvolutionResult { // Tipo de resultado que devuelve la función nextGeneration
+export interface EvolutionResult {
     cohetes: rocket[];
     obstacles: obstacle[];
     cohetesMuertos: rocket[];

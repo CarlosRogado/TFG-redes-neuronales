@@ -56,7 +56,7 @@ export function useSimulacion() {
                 nombreFinal = `Simulacion - ${modalGuardar.tipo} - Gen ${generacionref.current} - ${fecha}`;
             }
 
-            const simulacionesPrevias = await DatabaseService.getSimulation();
+            const simulacionesPrevias = await DatabaseService.obtenerSimulaciones();
             const existe = simulacionesPrevias.some((s: any) => s.name.toLowerCase() === nombreFinal.toLowerCase());
 
             if(existe){
@@ -65,7 +65,7 @@ export function useSimulacion() {
                 return;
             }
 
-            await DatabaseService.saveSimulation(nombreFinal, {
+            await DatabaseService.guardarSimulacion(nombreFinal, {
                 tipo: modalGuardar.tipo,
                 contenido: modalGuardar.contenido
             });
@@ -90,10 +90,10 @@ export function useSimulacion() {
             const fecha = new Date().toLocaleString();
             const nombre = ` - Gen ${generacionref.current} - ${fecha}`;
 
-            const pLineal = DatabaseService.saveSimulation("Lineal" + nombre, { tipo: "Lineal", contenido: historial });
-            const pBarchar = DatabaseService.saveSimulation("Barras" + nombre, { tipo: "Barras", contenido: historicoBarchar });
-            const pCausaMuerte = DatabaseService.saveSimulation("Forense" + nombre, { tipo: "Forense", contenido: historicoCausaMuerte });
-            const pDispersion = DatabaseService.saveSimulation("Dispersión" + nombre, { tipo: "Dispersion", contenido: historicoDispersion });
+            const pLineal = DatabaseService.guardarSimulacion("Lineal" + nombre, { tipo: "Lineal", contenido: historial });
+            const pBarchar = DatabaseService.guardarSimulacion("Barras" + nombre, { tipo: "Barras", contenido: historicoBarchar });
+            const pCausaMuerte = DatabaseService.guardarSimulacion("Forense" + nombre, { tipo: "Forense", contenido: historicoCausaMuerte });
+            const pDispersion = DatabaseService.guardarSimulacion("Dispersión" + nombre, { tipo: "Dispersion", contenido: historicoDispersion });
 
             await Promise.all([pLineal, pBarchar, pCausaMuerte, pDispersion]);
             toast.success("Todas las gráficas guardadas exitosamente.");

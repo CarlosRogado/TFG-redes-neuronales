@@ -28,11 +28,8 @@ export default function Simulation() {
                   <span className="relative inline-flex rounded-full h-3 w-3 bg-emerald-500"></span>
                 </span>
                 <h2 className="text-white font-bold tracking-wider">
-                  ENTORNO DE SIMULACIÓN
+                  SIMULACIÓN
                 </h2>
-              </div>
-              <div className="text-xs text-slate-400 font-mono">
-                MOTOR: P5.JS | IA: TENSORFLOW.JS
               </div>
             </div>
             <div className="flex-1 bg-black flex items-center justify-center relative">

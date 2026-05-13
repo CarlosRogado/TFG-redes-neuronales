@@ -70,7 +70,6 @@ export default function SettingsPanel({
           )}
         </button>
       </div>
-      {/* SLIDER COHETES TOTALES */}
       <div className="mb-6">
         <label className="block text-white font-semibold mb-2">
           Población Total: <span className="text-blue-400">{totalCohetes}</span>
@@ -87,7 +86,6 @@ export default function SettingsPanel({
           ⚠️ Modificar la población reiniciará la simulación al instante.
         </p>
       </div>
-      {/* SLIDER TASA DE MUTACIÓN */}
       <div className="mb-10">
         <label className="block text-white font-semibold mb-2">
           Tasa de mutación:{" "}
