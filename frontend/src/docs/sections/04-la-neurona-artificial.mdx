@@ -1,0 +1,76 @@
+## La neurona artificial
+
+Una **neurona artificial** es la unidad básica de procesamiento en una red neuronal. Está inspirada en las neuronas biológicas del cerebro humano.
+
+### Anatomía de una neurona artificial
+
+Cada neurona realiza una operación muy simple:
+
+1. Recibe **entradas** ($x_1, x_2, ..., x_n$)
+2. Multiplica cada entrada por un **peso** ($w_1, w_2, ..., w_n$)
+3. Suma todo más un **sesgo** ($b$)
+4. Aplica una **función de activación** ($f$)
+
+```
+Entradas    Pesos
+  x₁ ────── w₁ ──┐
+  x₂ ────── w₂ ──┤      ┌──────────────┐
+  x₃ ────── w₃ ──┼──→ Σ ──→ f(Σ) ──→ Salida
+  ...            │      └──────────────┘
+  xₙ ────── wₙ ──┘         Sesgo b
+```
+
+Matemáticamente:
+
+$z = \sum_{i=1}^{n} w_i \cdot x_i + b$
+
+$salida = f(z)$
+
+### Pesos y sesgos
+
+**Los pesos** determinan la importancia de cada entrada. Un peso alto significa que esa entrada influye mucho en la decisión final. Un peso cercano a cero significa que esa entrada es irrelevante.
+
+**Los sesgos** permiten que la neurona se active incluso si todas las entradas son cero. Son como el "nivel base" de sensibilidad de la neurona.
+
+Al principio, los pesos y sesgos son **aleatorios**. Durante el aprendizaje, se ajustan gradualmente para que la red produzca las salidas correctas. En nuestra simulación, los mejores cohetes pasan sus pesos a la siguiente generación con pequeñas mutaciones.
+
+### Funciones de activación
+
+La función de activación decide si una neurona debe "dispararse" o no. Introduce **no linealidad** en la red, permitiendo que aprenda patrones complejos.
+
+**Sigmoide:**
+
+Transforma cualquier número en un valor entre 0 y 1. Ideal para decisiones binarias o probabilidades.
+
+$a = \frac{1}{1 + e^{-z}}$
+
+Es la que usamos en la capa de salida de nuestra simulación. Si la salida es > 0.5, el cohete salta.
+
+**ReLU (Rectified Linear Unit):**
+
+Pasa los valores positivos tal cual y convierte los negativos en cero.
+
+$f(x) = \max(0, x) = \begin{cases} 0 & \text{si } x < 0 \\ x & \text{si } x \geq 0 \end{cases}$
+
+Es la función más usada en capas ocultas porque es eficiente y evita el problema de saturación. Es la que usamos en la capa oculta de nuestra red.
+
+**Tangente hiperbólica (tanh):**
+
+Similar a la sigmoide pero con salida entre -1 y 1. Ayuda a la red a separar conceptos contrarios.
+
+$a = \frac{e^z - e^{-z}}{e^z + e^{-z}}$
+
+**Softmax:**
+
+Convierte un vector de números en una distribución de probabilidad que suma 1. Se usa en la capa de salida para clasificación múltiple.
+
+$P(y_i) = \frac{e^{z_i}}{\sum_{j} e^{z_j}}$
+
+### Resumen
+
+| Componente | Papel | Ejemplo en la simulación |
+|-----------|-------|-------------------------|
+| Entradas ($x$) | Datos del entorno | 4 valores: posición, velocidad, distancia obstáculo, centro hueco |
+| Pesos ($w$) | Importancia de cada entrada | Valores iniciales aleatorios que evolucionan |
+| Sesgo ($b$) | Umbral de activación | Se ajusta junto a los pesos |
+| Activación ($f$) | Decisión final | ReLU en capa oculta, sigmoide en salida |

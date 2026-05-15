@@ -60,20 +60,27 @@ export default class rocket {
     mutate(rate: number, p: p5): void {
         tf.tidy(() => {
             const weights = this.brain.getWeights();
-            const mutatedWeights = [];
+            const pesosMutados = [];
+
             for (let i = 0; i < weights.length; i++) {
-                let tensor = weights[i];
-                let shape = weights[i].shape;
-                let values = tensor.dataSync().slice();
-                for (let j = 0; j < values.length; j++) {
-                    if (p.random(1) < rate) {
-                        values[j] += p.randomGaussian() * 0.1; 
-                    }
-                }
-                let newTensor = tf.tensor(values, shape);
-                mutatedWeights.push(newTensor);
+                const shape = weights[i].shape;
+                const size = shape.reduce((a: number, b: number) => a * b, 1);
+
+                const mask = tf.tensor(
+                    Array.from({ length: size }, () => p.random(1) < rate ? 1 : 0),
+                    shape
+                );
+                const ruido = tf.randomNormal(shape, 0, 0.1);
+                const mutacion = tf.mul(mask, ruido);
+                const nuevoPeso = tf.add(weights[i], mutacion);
+
+                pesosMutados.push(nuevoPeso);
+
+                mask.dispose();
+                ruido.dispose();
+                mutacion.dispose();
             }
-            this.brain.setWeights(mutatedWeights);
+            this.brain.setWeights(pesosMutados);
         });
     }
 
@@ -91,7 +98,6 @@ export default class rocket {
         ];
 
         this.pendingThink = true;
-        tf.tidy(() => {
         const xs = tf.tensor2d([inputs]);
         const pred = this.brain.predict(xs);
         const y = Array.isArray(pred) ? pred[0] : pred;
@@ -107,7 +113,6 @@ export default class rocket {
                 y.dispose();
                 this.pendingThink = false;
             });
-        });
     }
     show(p: p5) {
         p.fill(255, 0, 0, 150); 

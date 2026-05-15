@@ -1,0 +1,84 @@
+## Algoritmos genéticos y neuroevolución
+
+Los **algoritmos genéticos** están inspirados en la evolución biológica de Darwin. La idea es simple: los individuos mejor adaptados a su entorno tienen más probabilidades de sobrevivir y reproducirse.
+
+### Conceptos clave
+
+**Población:** conjunto de individuos (en nuestro caso, cohetes con sus redes neuronales).
+
+**Genoma:** la información genética del individuo (los pesos y sesgos de la red neuronal).
+
+**Fitness:** una medida de lo bien que se desempeña un individuo (en nuestro caso, cuántos frames sobrevive).
+
+### El ciclo evolutivo
+
+```
+                  ┌──────────────────┐
+                  │  Población       │
+                  │  inicial         │
+                  │  (aleatoria)     │
+                  └────────┬─────────┘
+                           ↓
+                  ┌──────────────────┐
+                  │  Evaluación      │
+                  │  (calcular       │
+                  │   fitness)       │
+                  └────────┬─────────┘
+                           ↓
+                  ┌──────────────────┐
+          ┌──────→│  Selección       │
+          │       │  (los mejores)   │──────┐
+          │       └────────┬─────────┘      │
+          │                ↓                │
+          │       ┌──────────────────┐      │
+          │       │  Reproducción    │      │
+          │       │  (clonación +    │      │
+          │       │   mutación)      │      │
+          │       └────────┬─────────┘      │
+          │                ↓                │
+          │       ┌──────────────────┐      │
+          │       │  Nueva           │      │
+          │       │  generación      │      │
+          │       └──────────────────┘      │
+          └─────────────────────────────────┘
+```
+
+### 1. Evaluación
+
+Cada cohete se enfrenta al mismo entorno. Su **fitness** es el número de frames que logra sobrevivir. Un cohete que esquiva 10 obstáculos tiene mejor fitness que uno que choca en el primero.
+
+### 2. Selección (elitismo)
+
+Los cohetes con mejor fitness se convierten en **élite**. Una parte de la siguiente generación se clona directamente de estos individuos, sin cambios. Esto asegura que el progreso no se pierda.
+
+En nuestra simulación, podemos ajustar el **porcentaje de elitismo** (por defecto 10%). Un 10% de elitismo significa que el 10% de la nueva generación son clones directos de los mejores.
+
+### 3. Reproducción y mutación
+
+El resto de la nueva generación se crea a partir de los individuos élite, pero con pequeñas **mutaciones**:
+
+- Seleccionamos un padre al azar entre la élite
+- Copiamos sus pesos y sesgos
+- A cada peso le aplicamos una pequeña probabilidad de mutar
+- Si muta, se le añade un valor aleatorio (distribución gaussiana)
+
+La **tasa de mutación** controla la probabilidad de que un peso mute. Una tasa baja (0.3 = 30%) permite refinamiento. Una tasa alta permite explorar más pero puede perder lo aprendido.
+
+### 4. Nueva generación
+
+Con la nueva población, repetimos el ciclo. Generación tras generación, los cohetes mejoran.
+
+### Neuroevolución: lo mejor de dos mundos
+
+La **neuroevolución** es la combinación de redes neuronales y algoritmos genéticos:
+
+| Componente | Rol |
+|-----------|-----|
+| Red neuronal | Toma decisiones basadas en el entorno |
+| Algoritmo genético | Mejora la red generación tras generación |
+
+La ventaja principal es que no necesitamos datos etiquetados ni una función de error diferenciable. El entorno se encarga de todo: los que toman buenas decisiones sobreviven, los que no, desaparecen.
+
+### ¿Qué esperar de la simulación?
+
+Al principio (generación 1), los cohetes apenas se mueven y chocan rápido. Hacia la generación 20, empiezan a esquivar un obstáculo. En la generación 50-100, son capaces de volar durante largos periodos. Todo esto sin haber programado ninguna estrategia explícita — solo evolución.

@@ -6,13 +6,20 @@ import { AuthService } from '../services/AuthService';
 import { toast } from 'sonner';
 import LogoRedNeuronal from '../components/Logo';
 
-import Intro from '../docs/sections/01-que-es-una-red.mdx';
-import ML from '../docs/sections/02-tipos-de-aprendizaje.mdx';
-import Tipos from '../docs/sections/03-que-es-una-neurona.mdx';
-import Anatomia from '../docs/sections/04-anatomia-neurona.mdx';
+import Seccion01 from '../docs/sections/01-que-es-una-red.mdx';
+import Seccion02 from '../docs/sections/02-tipos-de-aprendizaje.mdx';
+import Seccion03 from '../docs/sections/03-arquitectura-red.mdx';
+import Seccion04 from '../docs/sections/04-la-neurona-artificial.mdx';
+import Seccion05 from '../docs/sections/05-como-aprende-una-red.mdx';
+import Seccion06 from '../docs/sections/06-algoritmos-geneticos.mdx';
+import Seccion07 from '../docs/sections/07-arquitectura-app.mdx';
+import Seccion08 from '../docs/sections/08-red-proyecto.mdx';
+import Seccion09 from '../docs/sections/09-algoritmo-genetico-implementado.mdx';
+import Seccion10 from '../docs/sections/10-dashboard-graficas.mdx';
+import Seccion11 from '../docs/sections/11-guia-uso.mdx';
 
 const MapaContenido: Record<string, any> = {
-  '01': Intro, '02': ML, '03': Tipos, '04': Anatomia
+  '01': Seccion01, '02': Seccion02, '03': Seccion03, '04': Seccion04, '05': Seccion05, '06': Seccion06, '07': Seccion07, '08': Seccion08, '09': Seccion09, '10': Seccion10, '11': Seccion11
 };
 
 const Docs = () => {
@@ -106,21 +113,38 @@ const Docs = () => {
 
       <div className="flex flex-1 pt-16">
         <aside className="w-64 bg-gray-50 border-r border-gray-200 p-6 fixed left-0 top-16 h-[calc(100vh-4rem)] overflow-y-auto hidden lg:block z-30">
-          <nav className="space-y-2">
-            {secciones.map((s) => (
-              <button
-                key={s.id}
-                onClick={() => cambiarSeccion(s.id)}
-                className={`w-full text-left px-4 py-2 rounded-lg text-sm font-medium transition-all ${
-                  idActivo === s.id 
-                    ? 'bg-blue-600 text-white' 
-                    : 'text-gray-700 hover:bg-gray-200'
-                }`}
-              >
-                {s.title}
-              </button>
-            ))}
-          </nav>
+          <h3 className="text-xs font-semibold uppercase tracking-wider text-gray-400 px-4 pt-6 pb-2">
+            📚 Teoría
+          </h3>
+          {secciones.teoria.map((seccion) => (
+            <button
+              key={seccion.id}
+              onClick={() => cambiarSeccion(seccion.id)}
+              className={`w-full text-left px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+                idActivo === seccion.id 
+                  ? 'bg-blue-600 text-white' 
+                  : 'text-gray-700 hover:bg-gray-200'
+              }`}
+            >
+              {seccion.title}
+            </button>
+          ))}
+          <h3 className="text-xs font-semibold uppercase tracking-wider text-gray-400 px-4 pt-6 pb-2">
+            🛠️ Implementación
+          </h3>
+          {secciones.implementacion.map((seccion) => (
+            <button
+              key={seccion.id}
+              onClick={() => cambiarSeccion(seccion.id)}
+              className={`w-full text-left px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+                idActivo === seccion.id 
+                  ? 'bg-blue-600 text-white' 
+                  : 'text-gray-700 hover:bg-gray-200'
+              }`}
+            >
+              {seccion.title}
+            </button>
+          ))}
         </aside>
 
         <main className="flex-1 overflow-y-auto lg:ml-64">

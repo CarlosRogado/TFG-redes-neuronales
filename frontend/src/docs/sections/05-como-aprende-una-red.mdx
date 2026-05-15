@@ -1,0 +1,52 @@
+## ¿Cómo aprende una red neuronal?
+
+Hasta ahora hemos visto la estructura de una red, pero ¿cómo pasa de ser un montón de pesos aleatorios a tomar decisiones inteligentes?
+
+El proceso de aprendizaje se llama **entrenamiento** y sigue estos pasos:
+
+### 1. Propagación hacia adelante (*forward propagation*)
+
+Los datos de entrada viajan a través de la red, capa por capa, hasta producir una **predicción**.
+
+En nuestro cohete: dados los 4 valores del entorno, la red calcula si debe saltar o no.
+
+### 2. Cálculo del error (*loss function*)
+
+Comparamos la predicción con el resultado esperado mediante una **función de pérdida**. Cuanto mayor es el error, peor lo ha hecho la red.
+
+En el aprendizaje supervisado típico, el error se calcula comparando con la respuesta correcta. En nuestra simulación, como no hay una respuesta correcta conocida, el "error" se mide como la **distancia recorrida** — a más distancia, mejor ha funcionado.
+
+### 3. Propagación hacia atrás (*backpropagation*)
+
+Este es el paso clave. El error se **propaga hacia atrás** desde la salida hasta la entrada, calculando cómo cada peso contribuyó al error.
+
+Para cada peso, calculamos su **gradiente**: un valor que indica si ese peso debería aumentar o disminuir para reducir el error.
+
+### 4. Descenso de gradiente (*gradient descent*)
+
+Actualizamos los pesos en la **dirección opuesta al gradiente**. Si un peso contribuye al error, lo ajustamos ligeramente:
+
+$w_{\text{nuevo}} = w_{\text{viejo}} - \eta \cdot \frac{\partial E}{\partial w}$
+
+Donde $\eta$ (eta) es la **tasa de aprendizaje**, que controla qué tan grandes son los ajustes.
+
+### En nuestra simulación: un enfoque diferente
+
+Nuestra simulación **no usa backpropagation**. En lugar de eso, utiliza **algoritmos genéticos** para el aprendizaje:
+
+1. **Generación 0**: 100 cohetes con pesos aleatorios
+2. Cada cohete intenta volar. Los que mejor lo hacen (más lejos llegan) tienen mayor **fitness**
+3. Los mejores cohetes **pasan sus pesos** a la siguiente generación
+4. Sus "hijos" heredan los pesos con pequeñas **mutaciones** aleatorias
+5. Repetir durante cientos de generaciones
+
+Este enfoque tiene una ventaja importante: no necesitamos saber cuál es la respuesta correcta para cada situación. El entorno se encarga de recompensar a los que mejor se desempeñan.
+
+### ¿Por qué combinamos ambos enfoques?
+
+En problemas complejos, se pueden combinar:
+
+- Las **redes neuronales** proporcionan la capacidad de tomar decisiones complejas
+- Los **algoritmos genéticos** proporcionan el mecanismo de aprendizaje cuando no hay una respuesta correcta conocida
+
+Esta combinación se llama **neuroevolución** y es especialmente útil en robótica, videojuegos y simulación de entornos.

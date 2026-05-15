@@ -1,0 +1,87 @@
+## El algoritmo genético implementado
+
+En el apartado teórico vimos cómo funcionan los algoritmos genéticos en general. Aquí veremos **exactamente** cómo están implementados en nuestra simulación.
+
+### El bucle principal
+
+La simulación ejecuta este ciclo continuamente:
+
+1. **Inicialización**: crear N cohetes con pesos aleatorios
+2. **Simulación**: todos los cohetes vuelan simultáneamente
+3. **Muerte**: cuando un cohete choca, se registra su fitness
+4. **Nueva generación**: cuando todos han muerto, se ejecuta el algoritmo genético
+
+### Fitness: la medida del éxito
+
+El fitness de un cohete es simplemente el número de **frames** que ha sobrevivido:
+
+```typescript
+this.score++;  // Se incrementa cada frame
+```
+
+Más frames = mejor fitness. Simple y efectivo.
+
+### Elitismo
+
+El **elitismo** asegura que los mejores individuos no se pierdan. En cada generación:
+
+```typescript
+const numClones = Math.floor(totalCohetes * (tasaElitismo / 100));
+```
+
+Si hay 100 cohetes y un 10% de elitismo, los 10 mejores se clonan directamente a la siguiente generación **sin mutación**. Esto preserva el progreso.
+
+### Mutación
+
+El resto de cohetes se crean a partir de un padre élite elegido al azar, pero con **mutaciones**:
+
+```typescript
+// Para cada peso de la red
+if (probabilidad_aleatoria < tasaMutacion) {
+    peso += ruidoGaussiano * 0.1;
+}
+```
+
+La **tasa de mutación** (por defecto 0.3 = 30%) controla cuántos pesos se modifican. El ruido gaussiano con desviación 0.1 asegura que las mutaciones sean pequeñas y graduales.
+
+### Parámetros ajustables
+
+El usuario puede modificar tres parámetros clave:
+
+| Parámetro | Valor por defecto | Rango | Efecto |
+|-----------|-------------------|-------|--------|
+| **Población** | 100 | 10-500 | Más cohetes = más diversidad, pero más lento |
+| **Tasa de mutación** | 0.3 (30%) | 0-1 | Alta → más exploración. Baja → más refinamiento |
+| **Tasa de elitismo** | 10% | 0-100 | Alta → conserva lo aprendido. Baja → más innovación |
+
+### Ciclo completo en código
+
+```
+1. Todos los cohetes intentan volar
+2. Cada cohete: 
+   - Obtiene datos del entorno
+   - Piensa (red neuronal)
+   - Decide si saltar
+   - Actualiza física (gravedad, posición)
+   - Comprueba colisiones
+3. Si un cohete choca → pasa a "cohetesMuertos"
+4. Cuando todos han muerto:
+
+   a. Ordenar cohetes por fitness (score)
+   b. Clonar los mejores (elitismo)
+   c. Del resto, cada uno:
+      - Elegir un padre élite al azar
+      - Copiar sus pesos
+      - Mutar los pesos con probabilidad tasaMutacion
+   d. Crear nuevos obstáculos
+   e. Resetear frames
+   f. Incrementar generación
+
+5. Volver al paso 1
+```
+
+### ¿Qué esperar?
+
+En la práctica, tras 30-50 generaciones los cohetes empiezan a esquivar obstáculos de forma consistente. Hacia la generación 100, muchos cohetes pueden volar durante más de 30 segundos sin chocar.
+
+Puedes acelerar o ralentizar el proceso ajustando los parámetros. Una población más grande y una tasa de mutación más alta exploran más soluciones, pero cada generación tarda más en completarse.

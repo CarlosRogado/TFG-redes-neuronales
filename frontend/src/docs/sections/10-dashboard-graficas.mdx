@@ -1,0 +1,144 @@
+import EvolutionLineChart from '../../components/LineChart'
+import MuertesPieChart from '../../components/PieChart'
+import DispersionChart from '../../components/DispersionChart'
+import Barchar from '../../components/Barchar'
+import Stats from '../../components/Stats'
+
+## Dashboard y gráficas
+
+El dashboard muestra en tiempo real cómo evoluciona la simulación. Cada gráfica representa un aspecto diferente del aprendizaje.
+
+### Barra de estadísticas
+
+Muestra en tiempo real el estado de la simulación: generación actual, segundos transcurridos y cohetes vivos sobre el total.
+
+<Stats generacion={42} segundos={8.5} vivos={37} totalCohetes={100} />
+
+- **Generación**: número de generación actual
+- **Vivos**: cuántos cohetes siguen volando sobre el total
+- **Tiempo**: segundos que lleva la generación actual (el mejor cohete)
+
+### Gráfica lineal: progreso por generación
+
+Muestra dos líneas: el **máximo** y la **media** de segundos sobrevividos por generación. La curva de crecimiento típica empieza muy baja y se dispara cuando la red encuentra una estrategia viable.
+
+**Qué observar**: la línea máxima debería subir con las generaciones. Si se estanca, puede que la red no tenga suficiente capacidad o que la tasa de mutación sea demasiado baja.
+
+<EvolutionLineChart data={[
+  { generacion: 1, maxSegundos: 1.2, mediaSegundos: 0.3 },
+  { generacion: 5, maxSegundos: 2.1, mediaSegundos: 0.8 },
+  { generacion: 10, maxSegundos: 3.5, mediaSegundos: 1.2 },
+  { generacion: 20, maxSegundos: 5.8, mediaSegundos: 2.4 },
+  { generacion: 30, maxSegundos: 8.2, mediaSegundos: 3.1 },
+  { generacion: 45, maxSegundos: 12.5, mediaSegundos: 5.8 },
+  { generacion: 60, maxSegundos: 18.3, mediaSegundos: 9.2 },
+  { generacion: 80, maxSegundos: 25.7, mediaSegundos: 14.5 },
+  { generacion: 100, maxSegundos: 34.2, mediaSegundos: 19.8 },
+]} />
+
+### Gráfica de barras: rendimiento individual
+
+Muestra una barra por cada cohete con su tiempo de vida en segundos, ordenadas de mayor a menor.
+
+**Qué observar**: si ves barras muy desiguales (pocos cohetes muy buenos y muchos muy malos), puede que el elitismo sea demasiado alto y no haya suficiente diversidad.
+
+<Barchar data={[
+  { id: '4', segundos: 15.8 },
+  { id: '12', segundos: 14.1 },
+  { id: '1', segundos: 12.4 },
+  { id: '8', segundos: 11.2 },
+  { id: '7', segundos: 9.5 },
+  { id: '2', segundos: 8.7 },
+  { id: '10', segundos: 7.3 },
+  { id: '5', segundos: 6.1 },
+  { id: '9', segundos: 4.8 },
+  { id: '3', segundos: 3.2 },
+  { id: '11', segundos: 0.5 },
+  { id: '6', segundos: 0 },
+]} />
+
+### Gráfica de sectores: causas de muerte (forense)
+
+Muestra el porcentaje de cohetes que murieron por cada causa:
+
+- **Tubo superior**: chocaron con la parte de arriba del obstáculo
+- **Tubo inferior**: chocaron con la parte de abajo
+- **Suelo**: no saltaron a tiempo y cayeron al suelo
+- **Techo**: saltaron demasiado y chocaron con el techo
+
+**Qué observar**: al principio, "suelo" suele ser la causa principal (los cohetes no saltan). Conforme aprenden, se reparten más entre "tubo superior" e "inferior".
+
+<MuertesPieChart data={[
+  { name: 'Tubo superior', value: 35 },
+  { name: 'Tubo inferior', value: 28 },
+  { name: 'Suelo', value: 22 },
+  { name: 'Techo', value: 15 },
+]} />
+
+### Gráfica de dispersión: pesos de la red
+
+Cada punto representa un cohete. El eje X muestra la **media de los pesos** de su capa oculta, y el eje Y la **media de los sesgos**. Los puntos verdes son clones élite, los morados son mutados.
+
+**Qué observar**: al principio los puntos están dispersos aleatoriamente. Con las generaciones, tienden a agruparse en zonas donde los pesos producen buenos resultados.
+
+<DispersionChart data={[
+  { id: '1', pesoX: 0.41, pesoY: 0.13, isCloned: true },
+  { id: '2', pesoX: 0.39, pesoY: 0.15, isCloned: true },
+  { id: '3', pesoX: 0.42, pesoY: 0.12, isCloned: true },
+  { id: '4', pesoX: 0.40, pesoY: 0.14, isCloned: true },
+  { id: '5', pesoX: 0.38, pesoY: 0.16, isCloned: true },
+  { id: '6', pesoX: 0.43, pesoY: 0.11, isCloned: true },
+  { id: '7', pesoX: 0.41, pesoY: 0.13, isCloned: true },
+  { id: '8', pesoX: 0.39, pesoY: 0.14, isCloned: true },
+  { id: '9', pesoX: 0.40, pesoY: 0.12, isCloned: true },
+  { id: '10', pesoX: 0.42, pesoY: 0.13, isCloned: true },
+  { id: '11', pesoX: -0.15, pesoY: 0.42, isCloned: false },
+  { id: '12', pesoX: 0.55, pesoY: -0.08, isCloned: false },
+  { id: '13', pesoX: -0.38, pesoY: -0.22, isCloned: false },
+  { id: '14', pesoX: 0.12, pesoY: 0.38, isCloned: false },
+  { id: '15', pesoX: -0.44, pesoY: 0.51, isCloned: false },
+  { id: '16', pesoX: 0.28, pesoY: -0.12, isCloned: false },
+  { id: '17', pesoX: -0.08, pesoY: -0.35, isCloned: false },
+  { id: '18', pesoX: 0.62, pesoY: 0.28, isCloned: false },
+  { id: '19', pesoX: -0.55, pesoY: 0.08, isCloned: false },
+  { id: '20', pesoX: 0.18, pesoY: 0.52, isCloned: false },
+  { id: '21', pesoX: -0.25, pesoY: -0.18, isCloned: false },
+  { id: '22', pesoX: 0.48, pesoY: 0.05, isCloned: false },
+  { id: '23', pesoX: -0.62, pesoY: 0.35, isCloned: false },
+  { id: '24', pesoX: 0.05, pesoY: -0.42, isCloned: false },
+  { id: '25', pesoX: -0.10, pesoY: 0.22, isCloned: false },
+  { id: '26', pesoX: 0.35, pesoY: -0.28, isCloned: false },
+  { id: '27', pesoX: -0.48, pesoY: -0.05, isCloned: false },
+  { id: '28', pesoX: 0.22, pesoY: 0.45, isCloned: false },
+  { id: '29', pesoX: -0.30, pesoY: 0.18, isCloned: false },
+  { id: '30', pesoX: 0.52, pesoY: -0.15, isCloned: false },
+  { id: '31', pesoX: -0.18, pesoY: -0.30, isCloned: false },
+  { id: '32', pesoX: 0.08, pesoY: 0.32, isCloned: false },
+  { id: '33', pesoX: -0.42, pesoY: 0.25, isCloned: false },
+  { id: '34', pesoX: 0.32, pesoY: -0.38, isCloned: false },
+  { id: '35', pesoX: -0.05, pesoY: 0.48, isCloned: false },
+  { id: '36', pesoX: 0.35, pesoY: -0.28, isCloned: false },
+  { id: '37', pesoX: -0.20, pesoY: -0.25, isCloned: false },
+  { id: '38', pesoX: 0.15, pesoY: 0.55, isCloned: false },
+  { id: '39', pesoX: -0.58, pesoY: -0.12, isCloned: false },
+  { id: '40', pesoX: 0.25, pesoY: 0.20, isCloned: false },
+  { id: '41', pesoX: -0.35, pesoY: 0.38, isCloned: false },
+  { id: '42', pesoX: 0.50, pesoY: -0.32, isCloned: false },
+  { id: '43', pesoX: -0.12, pesoY: 0.08, isCloned: false },
+  { id: '44', pesoX: 0.38, pesoY: 0.25, isCloned: false },
+  { id: '45', pesoX: -0.28, pesoY: -0.42, isCloned: false },
+  { id: '46', pesoX: 0.58, pesoY: 0.35, isCloned: false },
+  { id: '47', pesoX: -0.04, pesoY: -0.08, isCloned: false },
+  { id: '48', pesoX: 0.20, pesoY: 0.12, isCloned: false },
+  { id: '49', pesoX: -0.50, pesoY: 0.45, isCloned: false },
+  { id: '50', pesoX: 0.44, pesoY: -0.05, isCloned: false },
+]} />
+
+### Guardar resultados
+
+Puedes guardar los datos de la simulación actual desde el botón "Guardar". Se almacenan en la base de datos asociados a tu cuenta. Hay dos opciones:
+
+- **Guardar individual**: guarda una gráfica concreta
+- **Guardar todas**: guarda las 4 gráficas a la vez
+
+Los datos guardados pueden consultarse desde tu perfil de usuario.

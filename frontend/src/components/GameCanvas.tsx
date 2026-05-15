@@ -75,6 +75,7 @@ export default function GameCanvas({
       let cohetesMuertos: rocket[] = [];
       let frames = 0;
       let generacion = 1;
+      let generando = false;
       p.setup = () => {
         p.createCanvas(768, 512).parent(canvasElement); 
 
@@ -162,7 +163,7 @@ export default function GameCanvas({
           onVivosChangeRef.current(cohetes.length);
         }
 
-        if (cohetes.length === 0 && cohetesMuertos.length > 0) {
+        if (cohetes.length === 0 && cohetesMuertos.length > 0 && !generando) {
           const causasCount: Record<string, number> = {
             "Tubo Superior": 0,
             "Tubo Inferior": 0,
@@ -178,7 +179,8 @@ export default function GameCanvas({
             name: key,
             value: causasCount[key],
           }));
-          const result = nextGeneration({
+          generando = true;
+          nextGeneration({
             p,
             cohetesMuertos,
             totalCohetes,
@@ -186,23 +188,25 @@ export default function GameCanvas({
             tasaElitismo: tasaElitismoRef.current,
             frames,
             generacion,
-          });
-          onCausaMuerteChangeRef.current?.(causas);
-          onDatosDispersionChangeRef.current?.(result.datosDispersion);
-          cohetes = result.cohetes;
-          obstacles = result.obstacles;
-          cohetesMuertos = result.cohetesMuertos;
-          frames = result.frames;
-          generacion = Number(result.generacion);
+          }).then((result) => {
+            generando = false;
+            onCausaMuerteChangeRef.current?.(causas);
+            onDatosDispersionChangeRef.current?.(result.datosDispersion);
+            cohetes = result.cohetes;
+            obstacles = result.obstacles;
+            cohetesMuertos = result.cohetesMuertos;
+            frames = result.frames;
+            generacion = Number(result.generacion);
 
-          onGeneracionChangeRef.current(generacion);
-          onVivosChangeRef.current(totalCohetes);
-          onHistorialEntryRef.current({
-            maxSegundos: Number(result.historialEntry.maxSegundos),
-            mediaSegundos: Number(result.historialEntry.mediaSegundos),
-            generacion: Number(result.historialEntry.generacion),
+            onGeneracionChangeRef.current(generacion);
+            onVivosChangeRef.current(totalCohetes);
+            onHistorialEntryRef.current({
+              maxSegundos: Number(result.historialEntry.maxSegundos),
+              mediaSegundos: Number(result.historialEntry.mediaSegundos),
+              generacion: Number(result.historialEntry.generacion),
+            });
+            onSegundosChangeRef.current?.(0);
           });
-          onSegundosChangeRef.current?.(0);
         }
       };
     };

@@ -1,0 +1,55 @@
+## Arquitectura de la aplicación
+
+Este proyecto es una aplicación web completa que combina simulación en tiempo real, visualización de datos y gestión de usuarios.
+
+### Stack tecnológico
+
+```
+Frontend (React + TypeScript + Vite)
+  ├── p5.js        → Simulación visual en canvas
+  ├── TensorFlow.js → Redes neuronales en el navegador
+  ├── Recharts     → Gráficas del dashboard
+  ├── Framer Motion → Animaciones
+  └── Tailwind CSS  → Estilos
+
+Backend (Express + Prisma + Node.js)
+  ├── Express      → API REST
+  ├── Prisma ORM   → Base de datos
+  └── bcryptjs     → Autenticación
+
+Base de datos: PostgreSQL (vía Docker)
+
+Despliegue: Docker Compose (contenedores)
+```
+
+import AppArchitecture from '../../components/docs/AppArchitecture'
+import SimulationFlow from '../../components/docs/SimulationFlow'
+
+### Diagrama de la arquitectura
+
+<AppArchitecture />
+
+## Flujo de la simulación
+
+La simulación se ejecuta **íntegramente en el navegador** del usuario. El backend solo interviene para guardar resultados y gestionar usuarios.
+
+<SimulationFlow />
+
+### Componentes del frontend
+
+| Componente | Función |
+|-----------|---------|
+| `GameCanvas` | Renderiza la simulación con p5.js |
+| `SettingsPanel` | Controles de parámetros genéticos |
+| `Stats` | Barra de estadísticas en vivo |
+| `DashboardGraficas` | Contenedor de las 4 gráficas |
+| `ModalGuardar` | Diálogo para guardar simulaciones |
+| `Docs` | Visualizador de documentación MDX |
+
+### Flujo de autenticación
+
+1. Usuario se registra (POST `/register`)
+2. Inicia sesión (POST `/login`)
+3. La sesión se guarda en `sessionStorage`
+4. Los datos del usuario se guardan en `localStorage`
+5. Cada petición al backend incluye el UID del usuario en header

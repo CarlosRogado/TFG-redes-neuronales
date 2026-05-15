@@ -34,7 +34,7 @@ interface NextGenerationParams {
 }
 
 
-export default function nextGeneration({ 
+export default async function nextGeneration({ 
     p,
     cohetesMuertos,
     totalCohetes,
@@ -42,7 +42,7 @@ export default function nextGeneration({
     tasaElitismo,
     frames,
     generacion
-}: NextGenerationParams): EvolutionResult {
+}: NextGenerationParams): Promise<EvolutionResult> {
     const nuevaGeneracion = generacion + 1;
 
     const nuevosCohetes: rocket[] = [];
@@ -69,26 +69,30 @@ export default function nextGeneration({
         }
     }
 
-    const datosDispersion: DatosDispersion[] = nuevosCohetes.map((cohete, index) => {
-        const pesos = cohete.brain.getWeights();
-        const pesoCapa1= Array.from(pesos[0].dataSync()); 
-        const sesgoCapa1 = Array.from(pesos[1].dataSync()); 
-        const pesoCapa2 = Array.from(pesos[2].dataSync());
-        const sesgoCapa2 = Array.from(pesos[3].dataSync()); 
-        
-        const todosLosPesos = [...pesoCapa1, ...pesoCapa2];
-        const todosLosSesgos = [...sesgoCapa1, ...sesgoCapa2]; 
+    const datosDispersion: DatosDispersion[] = await Promise.all(
+        nuevosCohetes.map(async (cohete, index) => {
+            const pesos = cohete.brain.getWeights();
+            const [pesoCapa1, sesgoCapa1, pesoCapa2, sesgoCapa2] = await Promise.all([
+                pesos[0].data(),
+                pesos[1].data(),
+                pesos[2].data(),
+                pesos[3].data(),
+            ]);
 
-        const mediaPesos = todosLosPesos.reduce((a, b) => a + b, 0) / todosLosPesos.length;
-        const mediaSesgos = todosLosSesgos.reduce((a, b) => a + b, 0) / todosLosSesgos.length; 
+            const todosLosPesos = [...Array.from(pesoCapa1), ...Array.from(pesoCapa2)];
+            const todosLosSesgos = [...Array.from(sesgoCapa1), ...Array.from(sesgoCapa2)];
 
-        return {
-            id: `Cohete ${index + 1}`,
-            pesoX: Number(mediaPesos.toFixed(3)), 
-            pesoY: Number(mediaSesgos.toFixed(3)),
-            isCloned: index < numClones
-        };
-    });
+            const mediaPesos = todosLosPesos.reduce((a, b) => a + b, 0) / todosLosPesos.length;
+            const mediaSesgos = todosLosSesgos.reduce((a, b) => a + b, 0) / todosLosSesgos.length;
+
+            return {
+                id: `Cohete ${index + 1}`,
+                pesoX: Number(mediaPesos.toFixed(3)),
+                pesoY: Number(mediaSesgos.toFixed(3)),
+                isCloned: index < numClones
+            };
+        })
+    );
 
     for (let c of cohetesMuertos) {
         c.brain.dispose();

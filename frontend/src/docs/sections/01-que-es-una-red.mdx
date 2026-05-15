@@ -1,19 +1,26 @@
 ## ¿Qué es una red neuronal?
-Es un modelo de inteligencia artificial que enseña a las computadoras a procesar datos de una manera similar a como lo hace el cerebro humano. Aprende a base de prueba y error, logrando una mejora continua.
 
-Consiste en un tipo de proceso de [aprendizaje automático](../docs/sections/02-tipos-de-aprendizaje.mdx) llamado [aprendizaje profundo](../docs/sections/04-anatomia-neurona.mdx#qué-es-el-aprendizaje-profundo), que utiliza neuronas interconectadas entre sí en una estructura de capas parecida al cerebro humano. Estas procesan información de forma no lineal mediante el uso de [funciones de activación](#las-funciones-de-activación). Estas funciones permiten que la red transforme números simples en decisiones, facilitando el aprendizaje de patrones.
+Imagina que quieres enseñar a un niño a distinguir entre un perro y un gato. No le das una lista de reglas exactas ("si tiene bigotes y maúlla es un gato"), sino que le muestras muchos ejemplos. Con el tiempo, su cerebro aprende los patrones por sí solo.
 
-En esta aplicación cada "cohete" es una red neuronal independiente, capaz de decidir si saltar o no. Los datos que recibe (entradas) son la distancia al objetivo, la velocidad actual, el ángulo de inclinación y la distancia a obstáculos. Como resultado proporciona un número entre 0 y 1; si este número es mayor que 0.5, el "cohete" realiza un salto; si no, se queda parado.
-    
-## Funcionamiento de las redes neuronales
-Está inspirado en el cerebro humano. Una red neuronal está formada por un conjunto de neuronas artificiales (llamadas nodos) que trabajan juntas para resolver un problema.
+Una **red neuronal artificial** funciona de manera parecida. Es un modelo computacional inspirado en el cerebro humano que aprende patrones a partir de datos, sin necesidad de programar reglas explícitas.
 
-### Su arquitectura está formada por tres capas:
-#### 1. Capa de entrada
-La información entra a la red neuronal artificial desde esta capa. Las neuronas que se encuentran en ella procesan los datos, los analizan y los pasan a la siguiente capa.
+### ¿Para qué sirven?
 
-#### 2. Capa oculta 
-Las redes pueden tener infinitas capas de este tipo. Cada capa oculta analiza la salida de la capa anterior, la procesa aún más y pasa los datos a la siguiente capa.
+Las redes neuronales están detrás de muchas tecnologías que usas a diario:
 
-#### 3. Capa de salida 
-Proporciona el resultado final de todo el procesamiento de datos realizado. Puede estar compuesta por una o varias neuronas, dependiendo del tipo de problema que se esté intentando resolver.
+- **Reconocimiento de imágenes** — tu móvil desbloqueándose con la cara
+- **Procesamiento del lenguaje** — asistentes como Siri o Alexa
+- **Juegos y simulación** — la IA que vence en ajedrez o en videojuegos
+- **Conducción autónoma** — coches que detectan peatones y señales
+
+En este proyecto, cada "cohete" de la simulación contiene su propia red neuronal. La red recibe información del entorno y decide si debe saltar o no para esquivar obstáculos. El cohete no sabe nada sobre el mundo al principio — aprende por prueba y error a lo largo de generaciones.
+
+### ¿Cómo se construye?
+
+Una red neuronal se organiza en **capas** de neuronas interconectadas:
+
+- **Entradas**: los datos del problema (posición, velocidad, distancia del obstáculo)
+- **Capas ocultas**: donde ocurre el procesamiento y se extraen patrones
+- **Salida**: la decisión o predicción (¿salto o no salto?)
+
+Lo fascinante es que no programamos las decisiones. La red descubre por sí misma qué patrones son importantes mediante un proceso de entrenamiento. En nuestro caso, ese entrenamiento combina dos técnicas: **redes neuronales** para la toma de decisiones y **algoritmos genéticos** para la evolución.

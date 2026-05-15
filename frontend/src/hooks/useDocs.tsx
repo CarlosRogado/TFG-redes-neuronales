@@ -1,11 +1,23 @@
 import { useState, useCallback } from 'react';
 
-export const SECCIONES = [
-  { id: '01', title: 'Introducción a Redes', icon: 'Rocket' },
-  { id: '02', title: 'Aprendizaje automático', icon: 'Brain' },
-  { id: '03', title: 'Tipos de Redes', icon: 'Network' },
-  { id: '04', title: 'Anatomía de una Neurona', icon: 'Microscope' }
-];
+export const secciones = {
+  teoria: [
+    { id: '01', title: '¿Qué es una red neuronal?' },
+    { id: '02', title: 'Tipos de aprendizaje' },
+    { id: '03', title: 'Arquitectura de una red' },
+    { id: '04', title: 'La neurona artificial' },
+    { id: '05', title: '¿Cómo aprende una red?' },
+    { id: '06', title: 'Algoritmos genéticos' },
+  ],
+  implementacion: [
+    { id: '07', title: 'Arquitectura de la app' },
+    { id: '08', title: 'La red del proyecto' },
+    { id: '09', title: 'El algoritmo genético' },
+    { id: '10', title: 'Dashboard y gráficas' },
+    { id: '11', title: 'Guía de uso' },
+  ]
+};
+
 
 export const useDocs = () => {
   const [idActivo, setIdActivo] = useState('01');
@@ -15,5 +27,5 @@ export const useDocs = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }, []);
 
-  return { idActivo, cambiarSeccion, secciones: SECCIONES };
+  return { idActivo, cambiarSeccion, secciones: secciones };
 };

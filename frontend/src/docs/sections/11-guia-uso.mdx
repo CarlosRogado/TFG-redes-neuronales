@@ -1,0 +1,70 @@
+## Guía de uso de la aplicación
+
+### 1. Registro e inicio de sesión
+
+Para acceder a la simulación, primero necesitas una cuenta:
+
+1. Ve a **Registrarse** desde el menú superior
+2. Introduce un correo electrónico válido y una contraseña de al menos 8 caracteres
+3. Una vez registrado, inicia sesión desde **Iniciar sesión**
+4. La sesión permanece activa durante la navegación
+
+### 2. La simulación
+
+Una vez autenticado, accede a **Simulación** desde el menú.
+
+#### El panel de configuración
+
+A la derecha del canvas tienes los controles:
+
+| Control | Descripción |
+|---------|------------|
+| **Población** | Número de cohetes por generación (10-500). Más cohetes = más diversidad pero más lento |
+| **Tasa de mutación** | Probabilidad de que un peso mute (0-100%). Alta → exploración. Baja → refinamiento |
+| **Tasa de elitismo** | Porcentaje de cohetes que se clonan sin mutar (0-100%). Alta → conserva lo aprendido |
+| **Pausa/Reanudar** | Detiene o reanuda la simulación |
+
+**Importante**: cambiar la población reinicia la simulación desde la generación 1.
+
+#### El canvas de simulación
+
+El panel izquierdo muestra la simulación en tiempo real:
+
+- **Puntos rojos**: los cohetes volando
+- **Rectángulos amarillos**: obstáculos (tubos) que deben esquivar
+- Cada cohete tiene su propia red neuronal independiente
+
+### 3. Las gráficas
+
+Debajo del canvas se actualizan cuatro gráficas en tiempo real (explicadas en detalle en la sección anterior). Puedes:
+
+- **Pausar** la simulación para analizar las gráficas con calma
+- **Guardar** los resultados desde el botón correspondiente
+- Cambiar entre los diferentes tipos de gráfica
+
+### 4. Guardar y recuperar simulaciones
+
+Cuando veas resultados interesantes:
+
+1. Pulsa **Guardar todas** para guardar las 4 gráficas de la generación actual
+2. Ponle un nombre descriptivo a la simulación
+3. Los datos se guardan en la base de datos asociados a tu cuenta
+
+Puedes ver tus simulaciones guardadas desde la página de **Perfil**.
+
+### 5. Gestión de perfil
+
+Desde **Mi Perfil** puedes:
+
+- Ver tu información de usuario
+- **Cambiar contraseña**: introduce tu contraseña actual y la nueva
+- **Eliminar cuenta**: borra permanentemente tu cuenta y todos los datos asociados
+
+### Consejos para obtener buenos resultados
+
+- **Empieza con valores por defecto** (100 cohetes, 30% mutación, 10% elitismo)
+- **Observa las primeras 10 generaciones**: los cohetes deberían empezar a mejorar
+- **Si se estancan**: prueba a bajar el elitismo o subir la mutación
+- **Si son muy erráticos**: sube el elitismo y baja la mutación
+- **Para resultados rápidos**: usa poblaciones pequeñas (30-50 cohetes)
+- **Para resultados óptimos**: usa poblaciones grandes (200-500) y déjalo correr

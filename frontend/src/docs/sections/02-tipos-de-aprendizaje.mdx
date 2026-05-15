@@ -1,20 +1,33 @@
-## ¿Qué es el aprendizaje automático y qué tipos existen?
-El **aprendizaje automático (ML)** es un subconjunto de la informática, la ciencia de datos y la inteligencia artificial que permite a los sistemas aprender y mejorar a partir de datos sin intervenciones adicionales de programación.
+## Tipos de aprendizaje automático
 
-Los modelos de aprendizaje automático están basados en algoritmos y modelos estadísticos que implementan tareas apoyadas en patrones de datos e inferencias. Su función es utilizar los datos de entrada para predecir los datos de salida, actualizándolos continuamente a medida que se dispone de nuevos datos.
+El **aprendizaje automático** (*machine learning*) es la disciplina que permite a las máquinas aprender sin ser programadas explícitamente. Existen varias estrategias para conseguirlo:
 
 ### Aprendizaje supervisado
-El usuario proporciona a los modelos conjuntos de datos etiquetados que ofrecen la respuesta correcta por adelantado. La red neuronal aprende lentamente a base de prueba y error mediante la respuesta correcta.
+
+El modelo entrena con datos etiquetados: cada ejemplo de entrada tiene su respuesta correcta asociada. La red intenta adivinar la respuesta, compara con la real, y ajusta sus pesos para acercarse más la próxima vez.
+
+**Ejemplo**: un dataset de fotos etiquetadas como "perro" o "gato". La red aprende a clasificar nuevas fotos.
 
 ### Aprendizaje no supervisado
-Los modelos extraen conclusiones de conjuntos de datos no etiquetados, lo que facilita el análisis de estos y permite el reconocimiento de patrones y el modelado predictivo.
+
+El modelo recibe datos sin etiquetar y debe encontrar patrones por sí mismo. Es útil para descubrir estructuras ocultas en los datos.
+
+**Ejemplo**: agrupar clientes de una tienda por comportamiento de compra sin conocer las categorías de antemano.
 
 ### Aprendizaje autosupervisado
-Permite a los modelos entrenarse con datos no etiquetados. Se implementan algoritmos predictivos o de pretexto, permitiendo que se generen automáticamente etiquetas y transformando los problemas no supervisados en supervisados. Suele utilizarse para trabajos donde el volumen de datos es masivo.
 
-### Aprendizaje por refuerzo
-Entrenan modelos mediante un sistema de recompensa y castigo. Se requiere un entorno específico para alcanzar un objetivo predeterminado. Este tipo de aprendizaje suele utilizarse en el desarrollo de videojuegos o para enseñar a robots a realizar tareas.
-(Utilizado en la simulación)
+El modelo genera sus propias etiquetas a partir de los datos sin etiquetar. Por ejemplo, ocultar una parte de una imagen y pedirle que la adivine. Se usa cuando hay datos masivos pero sin etiquetar.
 
 ### Aprendizaje semisupervisado
-Se trata de una combinación de algoritmo supervisado y no supervisado. Se entrenan con un conjunto de datos etiquetados, encargados de guiar el proceso de aprendizaje, y un gran conjunto sin etiquetar.
+
+Combinación de supervisado y no supervisado: unos pocos datos etiquetados guían el aprendizaje de un conjunto grande sin etiquetar.
+
+### Aprendizaje por refuerzo
+
+Un **agente** aprende a base de interactuar con un entorno y recibir **recompensas** o **castigos**. No se le dice qué hacer, sino que descubre las mejores acciones por prueba y error.
+
+**Ejemplo**: enseñar a un programa a jugar al ajedrez. Gana puntos cuando gana, los pierde cuando pierde.
+
+### ¿Y nuestra simulación?
+
+La simulación de este proyecto utiliza una **combinación** de aprendizaje por refuerzo (los cohetes reciben una "recompensa" por sobrevivir más tiempo) y **algoritmos genéticos** (las mejores redes se seleccionan y mutan para crear la siguiente generación). Esta técnica híbrida se llama **neuroevolución** y la exploraremos en detalle más adelante.

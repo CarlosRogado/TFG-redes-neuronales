@@ -1,0 +1,55 @@
+import NetworkFlow from '../../components/docs/NetworkFlow'
+
+## Arquitectura de una red neuronal
+
+Una red neuronal se organiza en **capas** de neuronas. Cada neurona de una capa está conectada con todas las neuronas de la capa siguiente. A esto se le llama **capa completamente conectada** o *dense layer*.
+
+### Las tres capas fundamentales
+
+#### 1. Capa de entrada (*input layer*)
+
+Es por donde entra la información a la red. Cada neurona de esta capa representa una **característica** del problema. No realiza ningún cálculo; simplemente pasa los datos a la siguiente capa.
+
+En nuestra simulación, la capa de entrada tiene **4 neuronas**:
+- Posición vertical del cohete
+- Velocidad actual
+- Distancia al obstáculo más cercano
+- Centro del hueco del obstáculo
+
+#### 2. Capa oculta (*hidden layer*)
+
+Aquí ocurre la magia. Cada neurona recibe señales de entrada, las multiplica por unos **pesos**, suma un **sesgo**, y aplica una **función de activación**. El resultado se envía a la siguiente capa.
+
+Las capas ocultas pueden ser una, dos, o cientos. Cuantas más capas, más "profunda" es la red. A esto se le llama **aprendizaje profundo** (*deep learning*).
+
+Nuestra red tiene **una sola capa oculta con 8 neuronas** y activación **ReLU**.
+
+#### 3. Capa de salida (*output layer*)
+
+Proporciona el resultado final. El número de neuronas aquí depende del problema:
+
+- **Clasificación binaria** (¿salta o no salta?): 1 neurona con sigmoide
+- **Clasificación múltiple** (¿es perro, gato o pájaro?): 3 neuronas con softmax
+- **Regresión** (predecir un número): 1 neurona lineal
+
+Nuestra red tiene **1 neurona de salida** con activación **sigmoide**. Si el valor es > 0.5, el cohete salta.
+
+### Tipos de arquitecturas
+
+**Red prealimentada o perceptrón multicapa (MLP):**
+Los datos fluyen en una sola dirección, de entrada a salida. No hay ciclos. Es la más simple y la que usa este proyecto.
+
+**Red convolucional (CNN):**
+Diseñada para procesar imágenes. Utiliza capas de convolución que detectan características como bordes, texturas y formas.
+
+**Red recurrente (RNN):**
+Diseñada para datos secuenciales como texto o audio. Tiene "memoria": la salida depende de las entradas actuales y de las anteriores.
+
+**Red generativa adversarial (GAN):**
+Dos redes compiten: una genera contenido falso y la otra intenta detectarlo. Se usa para crear imágenes, música o voces realistas.
+
+### Visualización del flujo de datos
+
+El siguiente diagrama muestra el recorrido completo de los datos desde que entran en la red hasta que se toma una decisión:
+
+<NetworkFlow />
