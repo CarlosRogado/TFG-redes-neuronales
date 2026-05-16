@@ -1,6 +1,6 @@
 import { useRef, useEffect } from "react";
 import { useLatestRef } from "../hooks/useLatestRef";
-import p5 from "p5";
+import { CANVAS_W, CANVAS_H } from "../logic/constants";
 import rocket from "../logic/rocket";
 import obstacle from "../logic/obstacle";
 import nextGeneration from "../logic/evolution";
@@ -43,79 +43,75 @@ export default function GameCanvas({
   onDatosDispersionChange,
   onSegundosChange,
 }: GameCanvasProps) {
-  const canvasRef = useRef<HTMLDivElement>(null); 
-  const p5InstanceRef = useRef<p5 | null>(null); 
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const animationRef = useRef<number>(0);
 
-  const tasaMutacionRef = useLatestRef(tasaMutacion); 
-  const tasaElitismoRef = useLatestRef(tasaElitismo); 
-  const onGeneracionChangeRef = useLatestRef(onGeneracionChange); 
-  const onVivosChangeRef = useLatestRef(onVivosChange); 
-  const onHistorialEntryRef = useLatestRef(onHistorialEntry); 
-  const onCausaMuerteChangeRef = useLatestRef(onCausaMuerteChange);   
-  const onDatosDispersionChangeRef = useLatestRef(onDatosDispersionChange); 
-   const onSegundosChangeRef = useLatestRef(onSegundosChange); 
+  const tasaMutacionRef = useLatestRef(tasaMutacion);
+  const tasaElitismoRef = useLatestRef(tasaElitismo);
+  const isPausaRef = useRef(isPausa);
+  const onGeneracionChangeRef = useLatestRef(onGeneracionChange);
+  const onVivosChangeRef = useLatestRef(onVivosChange);
+  const onHistorialEntryRef = useLatestRef(onHistorialEntry);
+  const onBarcharDataChangeRef = useLatestRef(onBarcharDataChange);
+  const onCausaMuerteChangeRef = useLatestRef(onCausaMuerteChange);
+  const onDatosDispersionChangeRef = useLatestRef(onDatosDispersionChange);
+  const onSegundosChangeRef = useLatestRef(onSegundosChange);
 
   useEffect(() => {
-    if (p5InstanceRef.current) {
-      if (isPausa) {
-        p5InstanceRef.current.noLoop(); 
-      } else {
-        p5InstanceRef.current.loop(); 
-      }
-    }
+    isPausaRef.current = isPausa;
   }, [isPausa]);
 
   useEffect(() => {
-    const canvasElement = canvasRef.current; 
-    if (!canvasElement) return;
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext("2d")!;
 
-    const juego = (p: p5) => {
-      let cohetes: rocket[] = [];
-      let obstacles: obstacle[] = [];
-      let cohetesMuertos: rocket[] = [];
-      let frames = 0;
-      let generacion = 1;
-      let generando = false;
-      p.setup = () => {
-        p.createCanvas(768, 512).parent(canvasElement); 
+    let cohetes: rocket[] = [];
+    let obstacles: obstacle[] = [];
+    let cohetesMuertos: rocket[] = [];
+    let frames = 0;
+    let generacion = 1;
+    let generando = false;
 
-        for (let i = 0; i < totalCohetes; i++) {
-          cohetes.push(new rocket(200, p.height / 2, i));
-        }
+    for (let i = 0; i < totalCohetes; i++) {
+      cohetes.push(new rocket(200, CANVAS_H / 2, i));
+    }
+    obstacles.push(new obstacle());
+    onVivosChangeRef.current(totalCohetes);
+    onGeneracionChangeRef.current(generacion);
 
-        obstacles.push(new obstacle(p));
-        onVivosChangeRef.current(totalCohetes);
-        onGeneracionChangeRef.current(generacion);
-      };
-      p.draw = () => {
-        p.background(20);
+    function gameLoop() {
+      if (!isPausaRef.current) {
         frames++;
 
+        ctx.fillStyle = "#141414";
+        ctx.fillRect(0, 0, CANVAS_W, CANVAS_H);
+
         if (frames % 150 === 0) {
-          obstacles.push(new obstacle(p));
+          obstacles.push(new obstacle());
         }
 
         if (frames % 60 === 0) {
           if (cohetes.length > 0) {
-            const currentFrames = cohetes[cohetes.length - 1].score;
-            const currentSegundos = (currentFrames / 60).toFixed(0);
-            onSegundosChangeRef.current?.(Number(currentSegundos));
+            const f = cohetes[cohetes.length - 1].score;
+            onSegundosChangeRef.current?.(Math.floor(f / 60));
           } else {
             onSegundosChangeRef.current?.(0);
           }
+        }
 
-          const currentBarcharData = [...cohetesMuertos, ...cohetes].map((currentRocket) => ({
-              id: `Cohete ${currentRocket.id + 1}`,
-              segundos: Number((currentRocket.score / 60).toFixed(2)),
-            }),
+        if (frames % 60 === 0) {
+          const currentBarcharData = [...cohetesMuertos, ...cohetes].map(
+            (r) => ({
+              id: `Cohete ${r.id + 1}`,
+              segundos: Number((r.score / 60).toFixed(2)),
+            })
           );
-          if (onBarcharDataChange) {
-            onBarcharDataChange(currentBarcharData);
-          }
+          onBarcharDataChangeRef.current?.(currentBarcharData);
         }
 
         for (let i = obstacles.length - 1; i >= 0; i--) {
-          obstacles[i].show(p);
+          obstacles[i].show(ctx);
           obstacles[i].update();
           if (obstacles[i].offscreen()) {
             obstacles.splice(i, 1);
@@ -124,7 +120,6 @@ export default function GameCanvas({
 
         let closest: obstacle | null = null;
         let record = Infinity;
-
         for (const obs of obstacles) {
           const distance = obs.x + obs.width - 200;
           if (distance > 0 && distance < record) {
@@ -137,22 +132,23 @@ export default function GameCanvas({
           const cohete = cohetes[i];
 
           if (closest && frames % 8 === 0) {
-            cohete.think(closest, p);
+            cohete.think(closest);
           }
 
           cohete.update();
-          cohete.show(p);
+          cohete.show(ctx);
 
           let hit = false;
-          if (closest && closest.hits(cohete, p)) {
+          if (closest && closest.hits(cohete)) {
             hit = true;
-          } else if (cohete.y + cohete.height > p.height) {
+          } else if (cohete.y + cohete.height > CANVAS_H) {
             cohete.causaMuerte = "Suelo";
             hit = true;
           } else if (cohete.y < 0) {
             cohete.causaMuerte = "Techo";
             hit = true;
           }
+
           if (hit) {
             cohetesMuertos.push(cohete);
             cohetes.splice(i, 1);
@@ -170,18 +166,18 @@ export default function GameCanvas({
             Suelo: 0,
             Techo: 0,
           };
-          cohetesMuertos.forEach((cohete) => {
-            if (causasCount[cohete.causaMuerte] !== undefined) {
-              causasCount[cohete.causaMuerte]++;
+          cohetesMuertos.forEach((c) => {
+            if (causasCount[c.causaMuerte] !== undefined) {
+              causasCount[c.causaMuerte]++;
             }
           });
           const causas = Object.keys(causasCount).map((key) => ({
             name: key,
             value: causasCount[key],
           }));
+
           generando = true;
           nextGeneration({
-            p,
             cohetesMuertos,
             totalCohetes,
             tasaMutacion: tasaMutacionRef.current,
@@ -192,6 +188,7 @@ export default function GameCanvas({
             generando = false;
             onCausaMuerteChangeRef.current?.(causas);
             onDatosDispersionChangeRef.current?.(result.datosDispersion);
+
             cohetes = result.cohetes;
             obstacles = result.obstacles;
             cohetesMuertos = result.cohetesMuertos;
@@ -208,18 +205,31 @@ export default function GameCanvas({
             onSegundosChangeRef.current?.(0);
           });
         }
-      };
-    };
-    const p5Instance = new p5(juego);
-    p5InstanceRef.current = p5Instance;
+      }
+
+      animationRef.current = requestAnimationFrame(gameLoop);
+    }
+
+    animationRef.current = requestAnimationFrame(gameLoop);
 
     return () => {
-      p5Instance.remove();
+      cancelAnimationFrame(animationRef.current);
+      [...cohetes, ...cohetesMuertos].forEach((r) => {
+        try {
+          r.brain.dispose();
+        } catch (_) {}
+      });
     };
   }, [totalCohetes]);
+
   return (
-    <div className="w-3xl h-lg bg-gray-800 rounde-lg">
-      <div ref={canvasRef} />
+    <div className="w-3xl h-lg bg-gray-800 rounded-lg flex items-center justify-center">
+      <canvas
+        ref={canvasRef}
+        width={CANVAS_W}
+        height={CANVAS_H}
+        className="block"
+      />
     </div>
   );
 }

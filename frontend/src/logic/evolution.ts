@@ -1,6 +1,6 @@
-import p5 from 'p5';
 import obstacle from "../logic/obstacle";
 import rocket from "../logic/rocket";
+import { CANVAS_H } from "./constants";
 
 export type DatosDispersion = {
     id: string;
@@ -24,7 +24,6 @@ export interface EvolutionResult {
 }
 
 interface NextGenerationParams { 
-    p: p5;
     cohetesMuertos: rocket[];
     totalCohetes: number;
     tasaMutacion: number;
@@ -35,7 +34,6 @@ interface NextGenerationParams {
 
 
 export default async function nextGeneration({ 
-    p,
     cohetesMuertos,
     totalCohetes,
     tasaMutacion,
@@ -56,15 +54,15 @@ export default async function nextGeneration({
             const indiceElite = i%rankingCohetes.length;
             const cerebroParaCopiar = rankingCohetes[indiceElite].copy();
             
-            const nuevoHijo = new rocket(200, p.height / 2, i, cerebroParaCopiar);
+            const nuevoHijo = new rocket(200, CANVAS_H / 2, i, cerebroParaCopiar);
             nuevosCohetes.push(nuevoHijo);
         }
         else{
             const poolSize = numClones > 0 ? numClones : Math.min(5, rankingCohetes.length);
             const randomEliteindex = Math.floor(Math.random() * poolSize);
             const cerebroParaCopiar = rankingCohetes[randomEliteindex].copy();
-            const nuevoHijo = new rocket(200, p.height / 2, i, cerebroParaCopiar);
-            nuevoHijo.mutate(tasaMutacion, p);
+            const nuevoHijo = new rocket(200, CANVAS_H / 2, i, cerebroParaCopiar);
+            nuevoHijo.mutate(tasaMutacion);
             nuevosCohetes.push(nuevoHijo);
         }
     }
@@ -104,7 +102,7 @@ export default async function nextGeneration({
 
     return {
         cohetes: nuevosCohetes,
-        obstacles: [new obstacle(p)],
+        obstacles: [new obstacle()],
         cohetesMuertos: [],
         frames: 0,
         generacion: nuevaGeneracion,

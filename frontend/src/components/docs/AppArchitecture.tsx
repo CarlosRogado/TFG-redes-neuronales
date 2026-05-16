@@ -11,7 +11,7 @@ export default function AppArchitecture() {
         {/* Browser */}
         <rect x="130" y="15" width="260" height="60" rx="8" fill="#f8fafc" stroke="#64748b" strokeWidth="2" />
         <text x="260" y="43" textAnchor="middle" fill="#1e293b" fontSize="14" fontWeight="bold">Navegador</text>
-        <text x="260" y="62" textAnchor="middle" fill="#94a3b8" fontSize="11">React + Vite + p5.js + TensorFlow.js</text>
+        <text x="260" y="62" textAnchor="middle" fill="#94a3b8" fontSize="11">React + Vite + HTML Canvas + TensorFlow.js</text>
 
         {/* Arrow */}
         <line x1="260" y1="75" x2="260" y2="105" stroke="#64748b" strokeWidth="2" markerEnd="url(#arr)" />

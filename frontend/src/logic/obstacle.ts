@@ -1,5 +1,6 @@
-import p5 from 'p5';
 import rocket from './rocket';
+import { CANVAS_W } from './constants';
+import { CANVAS_H } from './constants';
 export default class obstacle{
     x: number;
     top: number;
@@ -9,19 +10,19 @@ export default class obstacle{
     speed: number;
     passed: boolean;
 
-    constructor(p: p5){
+    constructor(){
         this.gap = 150;
         this.width = 60;
-        this.top = p.random(50, p.height-this.gap-50);
-        this.bottom = p.height - (this.top + this.gap);
-        this.x = p.width;
+        this.top = Math.random()*(CANVAS_H - this.gap - 100) + 50;
+        this.bottom = CANVAS_H - (this.top + this.gap);
+        this.x = CANVAS_W;
         this.speed = 5;
         this.passed = false;
     }
-    show(p: p5){
-        p.fill(255,255,0);
-        p.rect(this.x, 0, this.width, this.top);
-        p.rect(this.x, p.height - this.bottom, this.width, this.bottom);
+    show(ctx: CanvasRenderingContext2D){
+        ctx.fillStyle = 'yellow';
+        ctx.fillRect(this.x, 0, this.width, this.top);
+        ctx.fillRect(this.x, CANVAS_H - this.bottom, this.width, this.bottom);
     }
     update(){
         this.x -= this.speed;
@@ -30,7 +31,7 @@ export default class obstacle{
         return (this.x < -this.width);
     }
 
-    hits(rocket: rocket, p: p5){
+    hits(rocket: rocket){
         let rLeft = rocket.x;
         let rRight = rocket.x + rocket.width;
         let rTop = rocket.y;
@@ -39,7 +40,7 @@ export default class obstacle{
         let tLeft = this.x;
         let tRight = this.x + this.width;
         let tTopY= this.top;
-        let tBottomY = p.height - this.bottom;
+        let tBottomY = CANVAS_H - this.bottom;
 
         if (rRight > tLeft && rLeft < tRight) {
             if(rTop < tTopY){
@@ -54,11 +55,11 @@ export default class obstacle{
         return false;
     }
 
-    getData(p: p5){
+    getData(){
         return{
             x: this.x,
             top: this.top,
-            bottom: p.height - this.bottom,
+            bottom: CANVAS_H - this.bottom,
             center: this.top + (this.gap / 2)
         };
     }

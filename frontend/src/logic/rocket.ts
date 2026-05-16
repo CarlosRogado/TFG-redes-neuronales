@@ -1,6 +1,6 @@
-import p5 from 'p5';
 import * as tf from '@tensorflow/tfjs';
 import obstacle from './obstacle';
+import { CANVAS_H, CANVAS_W } from './constants';
 
 export default class rocket {
     x: number;
@@ -57,7 +57,7 @@ export default class rocket {
         }) as unknown as tf.Sequential; 
     }
 
-    mutate(rate: number, p: p5): void {
+    mutate(rate: number): void {
         tf.tidy(() => {
             const weights = this.brain.getWeights();
             const pesosMutados = [];
@@ -67,7 +67,7 @@ export default class rocket {
                 const size = shape.reduce((a: number, b: number) => a * b, 1);
 
                 const mask = tf.tensor(
-                    Array.from({ length: size }, () => p.random(1) < rate ? 1 : 0),
+                    Array.from({ length: size }, () => Math.random() < rate ? 1 : 0),
                     shape
                 );
                 const ruido = tf.randomNormal(shape, 0, 0.1);
@@ -84,17 +84,17 @@ export default class rocket {
         });
     }
 
-    think(closest: obstacle, p: p5) { 
+    think(closest: obstacle) { 
         if (!closest || this.pendingThink) {
             return;
         }
 
-        let oData = closest.getData(p); 
+        let oData = closest.getData(); 
         let inputs = [
-            this.y / p.height,             
+            this.y / CANVAS_H,             
             this.velocity / 10,        
-            oData.x / p.width,   
-            oData.center / p.height         
+            oData.x / CANVAS_W,   
+            oData.center / CANVAS_H         
         ];
 
         this.pendingThink = true;
@@ -114,9 +114,9 @@ export default class rocket {
                 this.pendingThink = false;
             });
     }
-    show(p: p5) {
-        p.fill(255, 0, 0, 150); 
-        p.rect(this.x, this.y, this.width, this.height);
+    show(ctx: CanvasRenderingContext2D) {
+        ctx.fillStyle = 'red';
+        ctx.fillRect(this.x, this.y, this.width, this.height);
     }
 
     update() {

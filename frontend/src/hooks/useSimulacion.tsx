@@ -92,7 +92,7 @@ export function useSimulacion() {
 
             const pLineal = DatabaseService.guardarSimulacion("Lineal" + nombre, { tipo: "Lineal", contenido: historial });
             const pBarchar = DatabaseService.guardarSimulacion("Barras" + nombre, { tipo: "Barras", contenido: historicoBarchar });
-            const pCausaMuerte = DatabaseService.guardarSimulacion("Forense" + nombre, { tipo: "Forense", contenido: historicoCausaMuerte });
+            const pCausaMuerte = DatabaseService.guardarSimulacion("Forense" + nombre, { tipo: "CausaMuerte", contenido: historicoCausaMuerte });
             const pDispersion = DatabaseService.guardarSimulacion("Dispersión" + nombre, { tipo: "Dispersion", contenido: historicoDispersion });
 
             await Promise.all([pLineal, pBarchar, pCausaMuerte, pDispersion]);
