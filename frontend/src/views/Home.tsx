@@ -1,11 +1,21 @@
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import LogoRedNeuronal from '../components/Logo';
 import { AuthService } from '../services/AuthService';
+import { toast } from 'sonner';
 
 export default function Home() {
     const navigate = useNavigate();
+    const location = useLocation();
     const [estaAutenticado, setEstaAutenticado] = useState(false);
+
+    useEffect(() => {
+        if (location.state?.toastMessage) {
+            toast.success(location.state.toastMessage);
+            navigate(location.pathname, { replace: true, state: {} });
+        }
+    }, [location, navigate]);
+
     useEffect(() => {
         setEstaAutenticado(AuthService.tieneSesionActiva());
     }, []);

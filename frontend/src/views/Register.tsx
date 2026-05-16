@@ -6,7 +6,6 @@ export default function Register() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
   const [cargando, setCargando] = useState(false);
-  const [mensaje, setMensaje] = useState('');
     const [error, setError] = useState('');
     const navigate = useNavigate();
 
@@ -17,19 +16,12 @@ export default function Register() {
   const manejarEnvio = async (e: React.FormEvent) => {
         e.preventDefault();
     setCargando(true);
-    setMensaje('');
         setError('');
 
         try {
       await AuthService.registrarUsuario(email, password);
-      setMensaje('¡Registrado exitosamente! Ahora inicia sesión');
-            setEmail('');
-            setPassword('');
-
-          setTimeout(() => {
-            navigate('/login');
-          }, 1200);
-        } catch (err: any) {
+      navigate('/login', { state: { toastMessage: '¡Registrado exitosamente! Ahora inicia sesión' } });
+    } catch (err: any) {
             setError(err.message || 'Error al registrar el usuario');
         } finally {
           setCargando(false);
@@ -111,11 +103,6 @@ export default function Register() {
             </button>
           </form>
 
-          {mensaje && (
-            <p className="mt-4 rounded-lg border border-emerald-700/60 bg-emerald-900/40 px-4 py-3 text-sm text-emerald-300">
-              {mensaje}
-            </p>
-          )}
           {error && (
             <p className="mt-4 rounded-lg border border-red-700/60 bg-red-900/40 px-4 py-3 text-sm text-red-300">
               {error}

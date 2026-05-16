@@ -4,6 +4,7 @@ import {
   Route,
   Link,
   Navigate,
+  useLocation
 } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { Toaster, toast } from "sonner";
@@ -27,9 +28,12 @@ function RutaProtegidaSimulacion() {
 
 function BarraNavegacion() {
   const [estaAutenticado, setEstaAutenticado] = useState(false);
+  const location = useLocation();
+
   useEffect(() => {
     setEstaAutenticado(AuthService.tieneSesionActiva());
-  }, []);
+  }, [location]);
+
   const manejarCerrarSesion = () => {
     sessionStorage.removeItem("authSession");
     localStorage.removeItem("user_data");
