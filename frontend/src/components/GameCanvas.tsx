@@ -28,6 +28,8 @@ type GameCanvasProps = {
   onCausaMuerteChange?: (causas: CausaMuerte[]) => void;
   onDatosDispersionChange?: (data: DatosDispersion[]) => void;
   onSegundosChange?: (segundos: number) => void;
+  onRocketsReady?: (getRockets: () => rocket[]) => void;
+  importedRockets?: rocket[] | null;
 };
 
 export default function GameCanvas({
@@ -42,6 +44,8 @@ export default function GameCanvas({
   onCausaMuerteChange,
   onDatosDispersionChange,
   onSegundosChange,
+  onRocketsReady,
+  importedRockets,
 }: GameCanvasProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const animationRef = useRef<number>(0);
@@ -73,12 +77,20 @@ export default function GameCanvas({
     let generacion = 1;
     let generando = false;
 
-    for (let i = 0; i < totalCohetes; i++) {
-      cohetes.push(new rocket(200, CANVAS_H / 2, i));
+    if (importedRockets && importedRockets.length > 0) {
+      cohetes = importedRockets;
+    } else {
+      for (let i = 0; i < totalCohetes; i++) {
+        cohetes.push(new rocket(200, CANVAS_H / 2, i));
+      }
     }
     obstacles.push(new obstacle());
-    onVivosChangeRef.current(totalCohetes);
+    onVivosChangeRef.current(cohetes.length);
     onGeneracionChangeRef.current(generacion);
+
+    if (onRocketsReady) {
+      onRocketsReady(() => cohetes);
+    }
 
     function gameLoop() {
       if (!isPausaRef.current) {
@@ -220,7 +232,7 @@ export default function GameCanvas({
         } catch (_) {}
       });
     };
-  }, [totalCohetes]);
+  }, [totalCohetes, importedRockets]);
 
   return (
     <div className="w-3xl h-lg bg-gray-800 rounded-lg flex items-center justify-center">

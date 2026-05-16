@@ -1,5 +1,8 @@
+import { useRef, useState } from "react";
 import GameCanvas from "../components/GameCanvas";
 import SettingsPanel from "../components/SettingsPanel";
+import { exportarGeneracionCSV, descargarCSV, importarGeneracionCSV } from "../logic/csv";
+import rocket from "../logic/rocket";
 import Stats from "../components/Stats";
 import DashboardGraficas from "../components/DashboardGraficas";
 import ModalGuardar from "../components/ModalGuardar";
@@ -8,6 +11,39 @@ import "../style.css";
 
 export default function Simulation() {
   const { settings, datosEnVivo, graficas, historicos, guardado, ref } = useSimulacion();
+  const getRocketsRef = useRef<(() => rocket[]) | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [importedRockets, setImportedRockets] = useState<rocket[] | null>(null);
+
+  const handleExport = () => {
+    if (!getRocketsRef.current) return;
+    const rockets = getRocketsRef.current();
+    if (rockets.length === 0) return;
+    const csv = exportarGeneracionCSV(rockets);
+    descargarCSV(csv, `generacion-${datosEnVivo.generacion}`);
+  };
+
+  const handleImportClick = () => {
+    fileInputRef.current?.click();
+  };
+
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    try {
+      const rockets = await importarGeneracionCSV(file, settings.totalCohetes);
+      setImportedRockets(rockets);
+      datosEnVivo.setGeneracion(1);
+      graficas.setHistorial([]);
+      graficas.setBarcharData([]);
+      graficas.setCausaMuerteData([]);
+      graficas.setDatosDispersion([]);
+    } catch (err: any) {
+      alert("Error al importar: " + err.message);
+    }
+    if (fileInputRef.current) fileInputRef.current.value = "";
+  };
+
   return (
     <div className="min-h-screen bg-gray-900 text-slate-200 font-sans p-6">
       <header className="max-w-6xl mx-auto flex justify-between items-center mb-8">
@@ -30,6 +66,27 @@ export default function Simulation() {
                 <h2 className="text-white font-bold tracking-wider">
                   SIMULACIÓN
                 </h2>
+              </div>
+              <div className="flex gap-2">
+                <button
+                  onClick={handleExport}
+                  className="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold rounded transition"
+                >
+                  EXPORTAR CSV
+                </button>
+                <button
+                  onClick={handleImportClick}
+                  className="px-3 py-1.5 bg-amber-600 hover:bg-amber-500 text-white text-xs font-bold rounded transition"
+                >
+                  IMPORTAR CSV
+                </button>
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept=".csv"
+                  onChange={handleFileChange}
+                  className="hidden"
+                />
               </div>
             </div>
             <div className="flex-1 bg-black flex items-center justify-center relative">
@@ -54,6 +111,8 @@ export default function Simulation() {
                   graficas.setDatosDispersion(data);
                   historicos.setHistoricoDispersion(prev => ({...prev, [ref.generacionref.current]: data}));
                 }}
+                onRocketsReady={(getRockets) => { getRocketsRef.current = getRockets; }}
+                importedRockets={importedRockets}
               />
             </div>
           </div>
