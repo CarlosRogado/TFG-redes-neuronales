@@ -78,7 +78,15 @@ export default function GameCanvas({
     let generando = false;
 
     if (importedRockets && importedRockets.length > 0) {
-      cohetes = importedRockets;
+      cohetes = importedRockets.map((r, i) => {
+        const brainCopy = r.copy();
+        const clon = new rocket(r.x, r.y, i, brainCopy);
+        clon.score = r.score;
+        clon.fitness = r.fitness;
+        clon.causaMuerte = r.causaMuerte;
+        clon.velocity = r.velocity;
+        return clon;
+      });
     } else {
       for (let i = 0; i < totalCohetes; i++) {
         cohetes.push(new rocket(200, CANVAS_H / 2, i));

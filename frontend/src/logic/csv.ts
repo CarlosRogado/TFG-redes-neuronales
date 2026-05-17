@@ -38,8 +38,7 @@ export function descargarCSV(csv: string, nombre: string = 'generacion') {
 }
 
 export async function importarGeneracionCSV(
-  file: File,
-  totalCohetes: number
+  file: File
 ): Promise<rocket[]> {
   const text = await file.text();
   const lineas = text.trim().split('\n');
@@ -52,7 +51,7 @@ export async function importarGeneracionCSV(
   const nuevosCohetes: rocket[] = [];
   const datos = lineas.slice(1);
 
-  for (let i = 0; i < Math.min(datos.length, totalCohetes); i++) {
+  for (let i = 0; i < datos.length; i++) {
     const cols = datos[i].split(',').map(Number);
 
     const w1 = cols.slice(3, 35);     
@@ -74,10 +73,6 @@ export async function importarGeneracionCSV(
 
     const r = new rocket(200, 256, i, model);
     nuevosCohetes.push(r);
-  }
-
-  for (let i = nuevosCohetes.length; i < totalCohetes; i++) {
-    nuevosCohetes.push(new rocket(200, 256, i));
   }
 
   return nuevosCohetes;

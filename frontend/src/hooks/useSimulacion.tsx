@@ -105,7 +105,7 @@ export function useSimulacion() {
     };
 
     return {
-        settings: { totalCohetes, tasaMutacion, tasaElitismo, setTasaMutacion, setTasaElitismo, handleTotalChange },
+        settings: { totalCohetes, setTotalCohetes, tasaMutacion, tasaElitismo, setTasaMutacion, setTasaElitismo, handleTotalChange },
         datosEnVivo: { esPausa, setEsPausa, generacion, setGeneracion, vivos, setVivos, segundos, setSegundosActuales },
         graficas: { historial, setHistorial, barcharData, setBarcharData, causaMuerteData, setCausaMuerteData, datosDispersion, setDatosDispersion },
         historicos: { historicoBarchar, setHistoricoBarchar, historicoCausaMuerte, setHistoricoCausaMuerte, historicoDispersion, setHistoricoDispersion },

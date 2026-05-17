@@ -31,7 +31,8 @@ export default function Simulation() {
     const file = e.target.files?.[0];
     if (!file) return;
     try {
-      const rockets = await importarGeneracionCSV(file, settings.totalCohetes);
+      const rockets = await importarGeneracionCSV(file);
+      settings.setTotalCohetes(rockets.length);
       setImportedRockets(rockets);
       datosEnVivo.setGeneracion(1);
       graficas.setHistorial([]);
