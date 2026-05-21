@@ -106,6 +106,15 @@ export default function Login() {
             </p>
           )}
 
+          <div className="mt-4 text-center">
+            <Link
+              to="/forgot-password"
+              className="text-sm text-blue-400 hover:text-blue-300 transition"
+            >
+              ¿Olvidaste tu contraseña?
+            </Link>
+          </div>
+
           <div className="mt-6 border-t border-gray-700 pt-4">
             <p className="mb-3 text-center text-sm text-gray-400">
               ¿No tienes cuenta?

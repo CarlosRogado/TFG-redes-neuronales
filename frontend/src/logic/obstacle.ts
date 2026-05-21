@@ -20,7 +20,7 @@ export default class obstacle{
         this.passed = false;
     }
     show(ctx: CanvasRenderingContext2D){
-        ctx.fillStyle = 'yellow';
+        ctx.fillStyle = '#47c7a5';
         ctx.fillRect(this.x, 0, this.width, this.top);
         ctx.fillRect(this.x, CANVAS_H - this.bottom, this.width, this.bottom);
     }

@@ -2,6 +2,8 @@ const express = require('express');
 const { PrismaClient } = require('@prisma/client');
 const cors = require('cors');
 const bcrypt = require('bcryptjs');
+const crypto = require('crypto');
+const nodemailer = require('nodemailer');
 
 const prisma = new PrismaClient();
 
@@ -9,6 +11,20 @@ const app = express();
 
 const EMAIL_ADMIN = process.env.ADMIN_EMAIL || 'admin@simulation.local';
 const CONTRASENA_ADMIN = process.env.ADMIN_PASSWORD || '1234';
+
+const transporter = nodemailer.createTransport({
+  host: process.env.SMTP_HOST,
+  port: process.env.SMTP_PORT,
+  secure: false,
+  auth: {
+    user: process.env.SMTP_USER,
+    pass: process.env.SMTP_PASSWORD
+  }
+});
+
+function generarToken(){
+  return crypto.randomBytes(32).toString('hex');
+}
 
 async function asegurarUsuarioAdmin() {
   const hashedPassword = await bcrypt.hash(CONTRASENA_ADMIN, 10);
@@ -284,6 +300,76 @@ app.delete('/delete-account', async (req, res) => {
   }
 });
 
+app.post('/forgot-password', async (req, res) => {
+  const { email } = req.body;
+
+  try{
+    if (!email) return res.status(400).json({ error: "Introduce tu correo electrónico" });
+
+    const user = await prisma.user.findUnique({ where: { email }});
+
+    if (!user) return res.json({ message: "Si el correo existe, recibirás un email con instrucciones" });
+
+    const token = generarToken();
+    const expire = new Date(Date.now() + 3600000);
+
+    await prisma.user.update({
+      where: { email },
+      data: {
+        resetToken: token,
+        resetTokenExp: expire
+      }
+    });
+
+    const resetUrl = `${process.env.FRONTEND_URL}/recuperar-contrasena?token=${token}`;
+
+    await transporter.sendMail({
+      from: process.env.SMTP_USER,
+      to: email,
+      subject: "Recuperación de contraseña",
+      html: `<p>Haz clic en el siguiente enlace para restablecer tu contraseña:</p><a href="${resetUrl}">${resetUrl}</a>`
+    });
+    res.json({ message: "Si el correo existe, recibirás un email con instrucciones" });
+  } catch (e) {
+    console.error(e);
+    res.status(500).json({ error: "Error al enviar el correo de recuperación" });
+  }
+});
+
+app.post('/reset-password', async (req, res) => {
+  const { token, newPassword } = req.body;
+
+  try{
+    if (!token || !newPassword) return res.status(400).json({ error: "Faltan datos requeridos" });
+    if (!esContrasenaValida(newPassword)) {
+      return res.status(400).json({ error: "La nueva contraseña debe tener mínimo 8 caracteres" });
+    }
+
+    const user = await prisma.user.findFirst({
+      where: {
+        resetToken: token,
+        resetTokenExp: { gt: new Date() }
+      }
+    });
+
+    if (!user) return res.status(400).json({ error: "El tiempo para restablecer la contraseña ha expirado" });
+
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+    await prisma.user.update({
+      where: { uid: user.uid },
+      data: {
+        password: hashedPassword,
+        resetToken: null,
+        resetTokenExp: null
+      }
+    });
+    res.json({ message: "Contraseña restablecida correctamente" });
+  } catch (e) {
+    console.error(e);
+    res.status(500).json({ error: "Error al restablecer la contraseña" });
+  }
+});
 async function startServer() {
   try {
     await asegurarUsuarioAdmin();

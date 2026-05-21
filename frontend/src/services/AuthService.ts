@@ -104,5 +104,39 @@ export const AuthService = {
         const session = sessionStorage.getItem(AuthService.CLAVE_SESION);
         const user = localStorage.getItem(AuthService.CLAVE_USUARIO);
         return !!session && !!user;
+    },
+
+    solicitarRecuperacion: async (email: string) => {
+        const response = await fetch('http://localhost:4000/forgot-password', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ email }),
+        });
+
+        const payload = await response.json();
+
+        if (!response.ok) {
+            throw new Error(payload.error || 'Error al solicitar recuperación de contraseña');
+        }
+
+        return payload;
+    },
+
+    restablecerContrasena: async (token: string, newPassword: string) => {
+        const response = await fetch('http://localhost:4000/reset-password', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ token, newPassword }),
+        });
+
+        const payload = await response.json();
+        
+        if (!response.ok) throw new Error(payload.error || 'Error al restablecer la contraseña');
+
+        return payload;
     }
 }

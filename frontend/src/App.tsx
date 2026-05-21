@@ -18,6 +18,8 @@ import Simulation from "./views/Simulation";
 import LogoRedNeuronal from "./components/Logo.tsx";
 import { AuthService } from "./services/AuthService";
 import Profile from "./views/Profile.tsx";
+import ForgotPassword from "./views/ForgotPassword.tsx";
+import ResetPassword from "./views/ResetPassword.tsx";
 
 function RutaProtegidaSimulacion() {
   if (!AuthService.tieneSesionActiva()) {
@@ -115,6 +117,8 @@ function App() {
         <Route path="/" element={<Home />} />
         <Route path="/register" element={<Register />} />
         <Route path="/login" element={<Login />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/recuperar-contrasena" element={<ResetPassword />} />
         <Route path="/docs" element={<Docs />} />
         <Route path="/simulation" element={<RutaProtegidaSimulacion />} />
         <Route path="/profile" element={<Profile />} />

@@ -115,8 +115,36 @@ export default class rocket {
             });
     }
     show(ctx: CanvasRenderingContext2D) {
-        ctx.fillStyle = 'red';
-        ctx.fillRect(this.x, this.y, this.width, this.height);
+        const cx = this.x + this.width / 2;
+        const cy = this.y + this.height / 2;
+        const w = this.width;
+        const h = this.height;
+
+        // Fuego
+        ctx.fillStyle = '#ff8800';
+        ctx.beginPath();
+        ctx.moveTo(cx - 2, cy + h * 0.2);
+        ctx.lineTo(cx, cy + h * 0.5);
+        ctx.lineTo(cx + 2, cy + h * 0.2);
+        ctx.fill();
+
+        // Cuerpo
+        ctx.fillStyle = '#e53935';
+        ctx.strokeStyle = '#c62828';
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.moveTo(cx, cy - h / 2);
+        ctx.lineTo(cx - w / 2, cy + h * 0.3);
+        ctx.lineTo(cx + w / 2, cy + h * 0.3);
+        ctx.closePath();
+        ctx.fill();
+        ctx.stroke();
+
+        // Ventanita
+        ctx.fillStyle = '#81d4fa';
+        ctx.beginPath();
+        ctx.arc(cx, cy - h * 0.05, w * 0.18, 0, Math.PI * 2);
+        ctx.fill();
     }
 
     update() {

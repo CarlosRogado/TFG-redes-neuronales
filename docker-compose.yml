@@ -25,6 +25,8 @@ services:
   # API Node.js + Prisma
   backend:
     build: ./backend
+    env_file:
+      - ./backend/.env
     environment:
       DATABASE_URL: "postgresql://user_admin:password123@db:5432/simulation_db"
       ADMIN_EMAIL: "admin@admin.es"

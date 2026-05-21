@@ -104,7 +104,7 @@ export default function GameCanvas({
       if (!isPausaRef.current) {
         frames++;
 
-        ctx.fillStyle = "#141414";
+        ctx.fillStyle = "#0a0f1a";
         ctx.fillRect(0, 0, CANVAS_W, CANVAS_H);
 
         if (frames % 150 === 0) {
