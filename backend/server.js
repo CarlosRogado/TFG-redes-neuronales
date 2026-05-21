@@ -317,11 +317,11 @@ app.post('/forgot-password', async (req, res) => {
       where: { email },
       data: {
         resetToken: token,
-        resetTokenExp: expire
+        resetTokenExpire: expire
       }
     });
 
-    const resetUrl = `${process.env.FRONTEND_URL}/recuperar-contrasena?token=${token}`;
+    const resetUrl = `${process.env.FRONTEND_URL}/reset-password?token=${token}`;
 
     await transporter.sendMail({
       from: process.env.SMTP_USER,
@@ -348,7 +348,7 @@ app.post('/reset-password', async (req, res) => {
     const user = await prisma.user.findFirst({
       where: {
         resetToken: token,
-        resetTokenExp: { gt: new Date() }
+        resetTokenExpire: { gt: new Date() }
       }
     });
 
@@ -361,7 +361,7 @@ app.post('/reset-password', async (req, res) => {
       data: {
         password: hashedPassword,
         resetToken: null,
-        resetTokenExp: null
+        resetTokenExpire: null
       }
     });
     res.json({ message: "Contraseña restablecida correctamente" });
