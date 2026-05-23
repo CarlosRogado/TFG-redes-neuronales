@@ -97,7 +97,7 @@ export default function GameCanvas({
     onGeneracionChangeRef.current(generacion);
 
     if (onRocketsReady) {
-      onRocketsReady(() => cohetes);
+      onRocketsReady(() => [...cohetes, ...cohetesMuertos]);
     }
 
     function gameLoop() {

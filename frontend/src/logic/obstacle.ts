@@ -11,7 +11,7 @@ export default class obstacle{
     passed: boolean;
 
     constructor(){
-        this.gap = 150;
+        this.gap = 180;
         this.width = 60;
         this.top = Math.random()*(CANVAS_H - this.gap - 100) + 50;
         this.bottom = CANVAS_H - (this.top + this.gap);

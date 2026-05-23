@@ -33,28 +33,24 @@ export default class rocket {
     }
 
     createBrain(): tf.Sequential {
-       return tf.tidy(() => {
-            const model = tf.sequential({
-                layers: [
-                    tf.layers.dense({ inputShape: [4], units: 8, activation: 'relu' }),
-                    tf.layers.dense({ units: 1, activation: 'sigmoid' })
-                ]
-            });
-            return model as unknown as tf.Tensor; 
-        }) as unknown as tf.Sequential;
+        const model = tf.sequential({
+            layers: [
+                tf.layers.dense({ inputShape: [6], units: 8, activation: 'relu' }),
+                tf.layers.dense({ units: 1, activation: 'sigmoid' })
+            ]
+        });
+        return model;
     }
 
     copy(): tf.Sequential {
-        return tf.tidy(() => {
-            const modelCopy = this.createBrain();
-            const weights = this.brain.getWeights();
-            const weightCopies = [];
-            for (let i = 0; i < weights.length; i++) {
-                weightCopies[i] = weights[i].clone();
-            }
-            modelCopy.setWeights(weightCopies);
-            return modelCopy as unknown as tf.Tensor;
-        }) as unknown as tf.Sequential; 
+        const modelCopy = this.createBrain();
+        const weights = this.brain.getWeights();
+        const weightCopies = [];
+        for (let i = 0; i < weights.length; i++) {
+            weightCopies[i] = weights[i].clone();
+        }
+        modelCopy.setWeights(weightCopies);
+        return modelCopy;
     }
 
     mutate(rate: number): void {
@@ -91,10 +87,12 @@ export default class rocket {
 
         let oData = closest.getData(); 
         let inputs = [
-            this.y / CANVAS_H,             
-            this.velocity / 10,        
-            oData.x / CANVAS_W,   
-            oData.center / CANVAS_H         
+            this.y / CANVAS_H,             // Posición Y del cohete
+            this.velocity / 10,             // Velocidad vertical
+            oData.x / CANVAS_W,            // Posición X del obstáculo
+            oData.center / CANVAS_H,        // Centro del hueco
+            oData.top / CANVAS_H,          // Techo del hueco
+            oData.bottom / CANVAS_H        // Suelo del hueco
         ];
 
         this.pendingThink = true;
