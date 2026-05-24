@@ -11,15 +11,21 @@ La simulación ejecuta este ciclo continuamente:
 3. **Muerte**: cuando un cohete choca, se registra su fitness
 4. **Nueva generación**: cuando todos han muerto, se ejecuta el algoritmo genético
 
-### Fitness: la medida del éxito
+### Score y Fitness: dos medidas complementarias
 
-El fitness de un cohete es simplemente el número de **frames** que ha sobrevivido:
+El **score** es el número de frames que el cohete ha sobrevivido. Se incrementa cada frame:
 
 ```typescript
 this.score++;  // Se incrementa cada frame
 ```
 
-Más frames = mejor fitness. Simple y efectivo.
+El **fitness** es el score elevado al cuadrado y escalado. Se calcula **en el momento de la muerte**:
+
+```typescript
+cohete.fitness = cohete.score ** 2 * 100;
+```
+
+¿Por qué cuadrático? Porque amplifica la diferencia entre cohetes. Uno que dura 100 frames (fitness = 1.000.000) vs uno que dura 200 frames (fitness = 4.000.000). El que dura el doble tiene **4 veces más fitness**, lo que acelera la selección de los mejores.
 
 ### Elitismo
 
@@ -29,7 +35,7 @@ El **elitismo** asegura que los mejores individuos no se pierdan. En cada genera
 const numClones = Math.floor(totalCohetes * (tasaElitismo / 100));
 ```
 
-Si hay 100 cohetes y un 10% de elitismo, los 10 mejores se clonan directamente a la siguiente generación **sin mutación**. Esto preserva el progreso.
+Si hay 100 cohetes y un 20% de elitismo, los 20 mejores se clonan directamente a la siguiente generación **sin mutación**. Esto preserva más progreso entre generaciones.
 
 ### Mutación
 
@@ -42,7 +48,7 @@ if (probabilidad_aleatoria < tasaMutacion) {
 }
 ```
 
-La **tasa de mutación** (por defecto 0.3 = 30%) controla cuántos pesos se modifican. El ruido gaussiano con desviación 0.1 asegura que las mutaciones sean pequeñas y graduales.
+La **tasa de mutación** (por defecto 0.1 = 10%) controla cuántos pesos se modifican. El ruido gaussiano con desviación 0.1 asegura que las mutaciones sean pequeñas y graduales.
 
 ### Parámetros ajustables
 
@@ -51,8 +57,8 @@ El usuario puede modificar tres parámetros clave:
 | Parámetro | Valor por defecto | Rango | Efecto |
 |-----------|-------------------|-------|--------|
 | **Población** | 100 | 10-500 | Más cohetes = más diversidad, pero más lento |
-| **Tasa de mutación** | 0.3 (30%) | 0-1 | Alta → más exploración. Baja → más refinamiento |
-| **Tasa de elitismo** | 10% | 0-100 | Alta → conserva lo aprendido. Baja → más innovación |
+| **Tasa de mutación** | 0.1 (10%) | 0-1 | Alta → más exploración. Baja → más refinamiento |
+| **Tasa de elitismo** | 20% | 0-100 | Alta → conserva lo aprendido. Baja → más innovación |
 
 ### Ciclo completo en código
 
@@ -64,16 +70,16 @@ El usuario puede modificar tres parámetros clave:
    - Decide si saltar
    - Actualiza física (gravedad, posición)
    - Comprueba colisiones
-3. Si un cohete choca → pasa a "cohetesMuertos"
+3. Si un cohete choca → se calcula su fitness (score² × 100) y pasa a "cohetesMuertos"
 4. Cuando todos han muerto:
 
-   a. Ordenar cohetes por fitness (score)
-   b. Clonar los mejores (elitismo)
+   a. Ordenar cohetes por score
+   b. Clonar los mejores (elitismo 20%)
    c. Del resto, cada uno:
       - Elegir un padre élite al azar
       - Copiar sus pesos
-      - Mutar los pesos con probabilidad tasaMutacion
-   d. Crear nuevos obstáculos
+      - Mutar los pesos con probabilidad 10%
+   d. Cada 10 generaciones, cambiar los obstáculos (época)
    e. Resetear frames
    f. Incrementar generación
 
@@ -83,5 +89,7 @@ El usuario puede modificar tres parámetros clave:
 ### ¿Qué esperar?
 
 En la práctica, tras 30-50 generaciones los cohetes empiezan a esquivar obstáculos de forma consistente. Hacia la generación 100, muchos cohetes pueden volar durante más de 30 segundos sin chocar.
+
+Los obstáculos cambian cada 10 generaciones (épocas), forzando a los cohetes a generalizar en lugar de memorizar una posición concreta. Dentro de cada época los obstáculos son fijos, lo que permite que la selección natural funcione sobre un entorno estable.
 
 Puedes acelerar o ralentizar el proceso ajustando los parámetros. Una población más grande y una tasa de mutación más alta exploran más soluciones, pero cada generación tarda más en completarse.

@@ -70,7 +70,7 @@ $P(y_i) = \frac{e^{z_i}}{\sum_{j} e^{z_j}}$
 
 | Componente | Papel | Ejemplo en la simulación |
 |-----------|-------|-------------------------|
-| Entradas ($x$) | Datos del entorno | 4 valores: posición, velocidad, distancia obstáculo, centro hueco |
+| Entradas ($x$) | Datos del entorno | 6 valores: posición, velocidad, distancia obstáculo, centro del hueco, borde superior, borde inferior |
 | Pesos ($w$) | Importancia de cada entrada | Valores iniciales aleatorios que evolucionan |
 | Sesgo ($b$) | Umbral de activación | Se ajusta junto a los pesos |
 | Activación ($f$) | Decisión final | ReLU en capa oculta, sigmoide en salida |

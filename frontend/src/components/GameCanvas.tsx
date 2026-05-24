@@ -170,6 +170,7 @@ export default function GameCanvas({
           }
 
           if (hit) {
+            cohete.fitness = cohete.score ** 2 * 100;
             cohetesMuertos.push(cohete);
             cohetes.splice(i, 1);
           }

@@ -21,7 +21,7 @@ A la derecha del canvas tienes los controles:
 |---------|------------|
 | **Población** | Número de cohetes por generación (10-500). Más cohetes = más diversidad pero más lento |
 | **Tasa de mutación** | Probabilidad de que un peso mute (0-100%). Alta → exploración. Baja → refinamiento |
-| **Tasa de elitismo** | Porcentaje de cohetes que se clonan sin mutar (0-100%). Alta → conserva lo aprendido |
+| **Tasa de elitismo** | Porcentaje de cohetes que se clonan sin mutar (0-100%, por defecto 20%). Alta → conserva lo aprendido |
 | **Pausa/Reanudar** | Detiene o reanuda la simulación |
 
 **Importante**: cambiar la población reinicia la simulación desde la generación 1.
@@ -62,7 +62,7 @@ Desde **Mi Perfil** puedes:
 
 ### Consejos para obtener buenos resultados
 
-- **Empieza con valores por defecto** (100 cohetes, 30% mutación, 10% elitismo)
+- **Empieza con valores por defecto** (100 cohetes, 10% mutación, 20% elitismo)
 - **Observa las primeras 10 generaciones**: los cohetes deberían empezar a mejorar
 - **Si se estancan**: prueba a bajar el elitismo o subir la mutación
 - **Si son muy erráticos**: sube el elitismo y baja la mutación

@@ -9,13 +9,14 @@ export default function NetworkFlow() {
         </defs>
 
         {/* Input box */}
-        <rect x="10" y="75" width="180" height="110" rx="10" fill="#f8fafc" stroke="#94a3b8" strokeWidth="2.5" />
-        <text x="100" y="115" textAnchor="middle" fill="#1e293b" fontSize="13" fontWeight="bold" className="font-mono">[posY, vel, obsX,</text>
-        <text x="100" y="135" textAnchor="middle" fill="#1e293b" fontSize="13" fontWeight="bold" className="font-mono">centroHueco]</text>
-        <text x="100" y="166" textAnchor="middle" fill="#64748b" fontSize="12">4 entradas</text>
+        <rect x="10" y="75" width="210" height="110" rx="10" fill="#f8fafc" stroke="#94a3b8" strokeWidth="2.5" />
+        <text x="115" y="108" textAnchor="middle" fill="#1e293b" fontSize="11" fontWeight="bold" className="font-mono">[posY, vel, obsX,</text>
+        <text x="115" y="125" textAnchor="middle" fill="#1e293b" fontSize="11" fontWeight="bold" className="font-mono">centro, top,</text>
+        <text x="115" y="142" textAnchor="middle" fill="#1e293b" fontSize="11" fontWeight="bold" className="font-mono">bottom]</text>
+        <text x="115" y="168" textAnchor="middle" fill="#64748b" fontSize="12">6 entradas</text>
 
         {/* Arrow 1 */}
-        <line x1="190" y1="130" x2="240" y2="130" stroke="#64748b" strokeWidth="2.5" markerEnd="url(#arr)" />
+        <line x1="220" y1="130" x2="240" y2="130" stroke="#64748b" strokeWidth="2.5" markerEnd="url(#arr)" />
 
         {/* Hidden layer */}
         <rect x="245" y="75" width="180" height="110" rx="10" fill="#f8fafc" stroke="#64748b" strokeWidth="2.5" />

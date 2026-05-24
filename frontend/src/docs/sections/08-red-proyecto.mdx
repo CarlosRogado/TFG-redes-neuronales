@@ -5,21 +5,21 @@ Hasta ahora hemos hablado de teoría. En esta sección vamos a ver **exactamente
 ### Arquitectura concreta
 
 ```
-Capa de entrada:     4 neuronas  (sin activación)
+Capa de entrada:     6 neuronas  (sin activación)
 Capa oculta:         8 neuronas  (activación: ReLU)
 Capa de salida:      1 neurona   (activación: sigmoide)
 ```
 
 Total de parámetros:
 
-$4 \times 8 + 8 = 40$ pesos y sesgos (capa oculta)
+$6 \times 8 + 8 = 56$ pesos y sesgos (capa oculta)
 $8 \times 1 + 1 = 9$ pesos y sesgos (capa salida)
 
-**Total: 49 parámetros** que evolucionan a lo largo de las generaciones.
+**Total: 65 parámetros** que evolucionan a lo largo de las generaciones.
 
-### Las 4 entradas
+### Las 6 entradas
 
-La red recibe **exactamente** estos 4 valores en cada fotograma:
+La red recibe **exactamente** estos 6 valores en cada fotograma:
 
 ```
 1. posY / altura_lienzo
@@ -36,6 +36,14 @@ La red recibe **exactamente** estos 4 valores en cada fotograma:
 4. centro_hueco / altura_lienzo
    → Centro del hueco del obstáculo normalizado (0-1)
    → El cohete intenta alinearse con este valor
+
+5. borde_superior_hueco / altura_lienzo
+   → Borde superior del hueco normalizado (0-1)
+   → La red puede "ver" hasta dónde no llegar
+
+6. borde_inferior_hueco / altura_lienzo
+   → Borde inferior del hueco normalizado (0-1)
+   → Sabe exactamente el espacio disponible para pasar
 ```
 
 Normalizar las entradas al rango [0, 1] o [-1, 1] es una práctica estándar en redes neuronales. Ayuda a que el entrenamiento sea más estable y rápido.
@@ -59,7 +67,7 @@ La red usa una **capa densa oculta con 8 neuronas y activación ReLU**, seguida 
 const model = tf.sequential({
     layers: [
         tf.layers.dense({
-            inputShape: [4],
+            inputShape: [6],  // 6 entradas
             units: 8,
             activation: 'relu'
         }),
@@ -73,7 +81,7 @@ const model = tf.sequential({
 
 ### ¿Por qué esta arquitectura en concreto?
 
-- **4 entradas**: cubren la información esencial para el problema. El cohete sabe dónde está, a qué velocidad va y dónde está el hueco.
+- **6 entradas**: cubren la información esencial para el problema. El cohete sabe dónde está, a qué velocidad va, dónde está el hueco **y el espacio exacto disponible** (bordes superior e inferior). Esto último fue clave: sin los bordes, la red tenía que inferir la altura del hueco a partir del centro; ahora lo sabe directamente.
 - **8 neuronas ocultas**: suficientes para aprender el patrón, no tantas como para que el entrenamiento sea lento o sobrequiste.
 - **ReLU**: rápida y evita la saturación de gradientes.
 - **1 salida sigmoide**: ideal para una decisión binaria (saltar / no saltar) interpretable como probabilidad.

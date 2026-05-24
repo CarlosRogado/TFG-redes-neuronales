@@ -45,7 +45,7 @@ export default async function nextGeneration({
 
     const nuevosCohetes: rocket[] = [];
 
-    const rankingCohetes = cohetesMuertos.slice().sort((a,b) => b.score - a.score);
+    const rankingCohetes = cohetesMuertos.slice().sort((a,b) => b.fitness - a.fitness);
 
     const numClones = Math.floor(totalCohetes * (tasaElitismo / 100));
 
@@ -98,7 +98,6 @@ export default async function nextGeneration({
 
     const segundos = Number((frames / 60).toFixed(2));
     const mediaSegundos = Number((cohetesMuertos.reduce((sum, c) => sum + c.score, 0) / cohetesMuertos.length / 60).toFixed(2));
-
 
     return {
         cohetes: nuevosCohetes,

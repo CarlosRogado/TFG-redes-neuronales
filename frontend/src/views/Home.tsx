@@ -29,10 +29,10 @@ export default function Home() {
             <main className="flex flex-col items-center justify-center min-h-[60vh] px-4 text-center">
                 <LogoRedNeuronal className="w-50 h-50" />
                 <h1 className="text-5xl md:text-7xl font-extrabold text-transparent bg-clip-text bg-linear-to-r from-green-300 to-blue-300 mb-6">
-                    Redes Neuronales en JS
+                   Simulador de Redes Neuronales 
                 </h1>
             <p className="text-xl md:text-2xl text-gray-300 max-w-2xl mb-10">
-                Un simulador interactivo de Algoritmos Genéticos. Observa cómo una red neuronal aprende a esquivar obstáculos en tiempo real usando Neuroevolución en tu navegador.
+                Observa cómo una red neuronal aprende a esquivar obstáculos en tiempo real en tu navegador mediante nuestro simulador interactivo.
             </p>
             
             <div className="flex gap-4">
@@ -58,20 +58,20 @@ export default function Home() {
             
             <div className="p-6 bg-gray-900 rounded-xl shadow-md border border-gray-700">
                 <div className="text-4xl mb-4">🧠</div>
-                <h3 className="text-xl font-bold mb-2">Red neuronal de avance directo</h3>
-                <p className="text-gray-400">Implementación de un perceptrón multicapa usando TensorFlow.js con backend WebGL.</p>
+                <h3 className="text-xl font-bold mb-2">Red neuronal FeedFordward</h3>
+                <p className="text-gray-400">Implementación de un perceptrón multicapa usando TensorFlow.js con backend WebGPU o WebGPL.</p>
             </div>
 
             <div className="p-6 bg-gray-900 rounded-xl shadow-md border border-gray-700">
                 <div className="text-4xl mb-4">🧬</div>
                 <h3 className="text-xl font-bold mb-2">Algoritmo Genético</h3>
-                <p className="text-gray-400">Selección natural basada en Fitness, Crossover matricial y mutaciones aleatorias.</p>
+                <p className="text-gray-400">Selección natural basada en Fitness, clonación y mutaciones aleatorias.</p>
             </div>
 
             <div className="p-6 bg-gray-900 rounded-xl shadow-md border border-gray-700">
                 <div className="text-4xl mb-4">📊</div>
                 <h3 className="text-xl font-bold mb-2">Analítica en vivo</h3>
-                <p className="text-gray-400">Visualización de datos en tiempo real mediante gráficas de Recharts y persistencia en BBDD.</p>
+                <p className="text-gray-400">Visualización de datos en tiempo real mediante gráficas y persistencia en BBDD.</p>
             </div>
 
             </div>

@@ -1,10 +1,10 @@
 import * as tf from '@tensorflow/tfjs';
 import rocket from './rocket';
 
-// Cabeceras del CSV
+// Cabeceras del CSV (6 entradas → 48 pesos en w1)
 const HEADERS = [
   'id', 'score', 'fitness',
-  ...Array.from({ length: 32 }, (_, i) => `w1_${i}`),   
+  ...Array.from({ length: 48 }, (_, i) => `w1_${i}`),   
   ...Array.from({ length: 8 }, (_, i) => `b1_${i}`),
   ...Array.from({ length: 8 }, (_, i) => `w2_${i}`),    
   'b2',
@@ -54,17 +54,19 @@ export async function importarGeneracionCSV(
   for (let i = 0; i < datos.length; i++) {
     const cols = datos[i].split(',').map(Number);
 
-    const w1 = cols.slice(3, 35);     
-    const b1 = cols.slice(35, 43);    
-    const w2 = cols.slice(43, 51);    
-    const b2 = [cols[51]];            
+    const score = cols[1];
+    const fitness = cols[2];
+    const w1 = cols.slice(3, 51);
+    const b1 = cols.slice(51, 59);
+    const w2 = cols.slice(59, 67);
+    const b2 = [cols[67]];
 
     const model = tf.sequential();
-    model.add(tf.layers.dense({ inputShape: [4], units: 8, activation: 'relu' }));
+    model.add(tf.layers.dense({ inputShape: [6], units: 8, activation: 'relu' }));
     model.add(tf.layers.dense({ units: 1, activation: 'sigmoid' }));
 
     const pesosTensors = [
-      tf.tensor2d(w1, [4, 8]),
+      tf.tensor2d(w1, [6, 8]),
       tf.tensor1d(b1),
       tf.tensor2d(w2, [8, 1]),
       tf.tensor1d(b2),
@@ -72,6 +74,8 @@ export async function importarGeneracionCSV(
     model.setWeights(pesosTensors);
 
     const r = new rocket(200, 256, i, model);
+    r.score = score;
+    r.fitness = fitness;
     nuevosCohetes.push(r);
   }
 
