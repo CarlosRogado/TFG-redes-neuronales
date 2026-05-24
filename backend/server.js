@@ -317,7 +317,7 @@ app.post('/forgot-password', async (req, res) => {
       where: { email },
       data: {
         resetToken: token,
-        resetTokenExpire: expire
+        resetTokenExp: expire
       }
     });
 
@@ -348,7 +348,7 @@ app.post('/reset-password', async (req, res) => {
     const user = await prisma.user.findFirst({
       where: {
         resetToken: token,
-        resetTokenExpire: { gt: new Date() }
+        resetTokenExp: { gt: new Date() }
       }
     });
 
@@ -361,7 +361,7 @@ app.post('/reset-password', async (req, res) => {
       data: {
         password: hashedPassword,
         resetToken: null,
-        resetTokenExpire: null
+        resetTokenExp: null
       }
     });
     res.json({ message: "Contraseña restablecida correctamente" });
