@@ -106,7 +106,6 @@ Cada cohete tiene una red neuronal 6→8→1 (6 entradas, 8 neuronas ocultas, 1 
   │       └── hooks/              # useSimulacion, useDocs, etc.
   ├── backend/                    # Express + Prisma
   │   └── prisma/                 # Schema y migraciones
-  ├── diagramas/                  # Diagramas UML del TFG (PlantUML)
   ├── docker-compose.yml
   ├── frontend/Dockerfile
   └── backend/Dockerfile
